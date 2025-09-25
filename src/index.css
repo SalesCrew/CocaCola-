@@ -1,0 +1,1877 @@
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --accent-red: #e60012;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Hide the top-level page scrollbar while preserving scroll */
+html {
+  overflow-y: auto; /* keep scrolling */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+body {
+  background: #F2F2F2;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  color: var(--text-primary);
+  /* Hide scrollbar while preserving functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Hide scrollbar for WebKit browsers */
+body::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+/* Hover-only page switch button used in both headers */
+.page-switch-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(51, 51, 51, 0.6);
+  cursor: pointer;
+  opacity: 0; /* invisible by default */
+  transition: opacity 0.2s ease, background 0.2s ease, color 0.2s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.header:hover .page-switch-btn,
+.gebietsleiter-header:hover .page-switch-btn {
+  opacity: 1; /* show on hover */
+}
+
+.page-switch-btn:hover {
+  background: rgba(255, 255, 255, 0.6);
+  color: rgba(51, 51, 51, 0.85);
+}
+
+.dashboard {
+  min-height: 100vh;
+  overflow-y: auto; /* ensure scrolling */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.dashboard::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.main-content {
+  padding-top: 80px;
+  padding: 80px 0 0 0;
+}
+
+.top-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 16px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  height: 384px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  /* subtle depth pattern */
+  background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.04) 1px, rgba(0, 0, 0, 0) 1px);
+  background-size: 18px 18px;
+}
+
+.card-header {
+  position: relative;
+  padding: 16px 16px 0 16px;
+}
+
+.card-header-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 0.6);
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 2px;
+}
+
+.card-divider {
+  height: 1px;
+  margin-top: 8px;
+  background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.08) 20%, rgba(0,0,0,0.08) 80%, rgba(0,0,0,0) 100%);
+}
+
+.card-content {
+  padding: 24px 16px 16px 16px;
+  height: calc(384px - 60px); /* card height minus header height */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.donut-chart {
+  display: flex;
+}
+
+/* Move OOS (non-mirrored) donut chart 20px left */
+.card-content:not(.mirrored) .donut-chart {
+  margin-left: -25px;
+}
+
+.chart-center-label {
+  font-size: 10px;
+  font-weight: 500;
+  fill: rgba(102, 102, 102, 0.7);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.chart-center-percentage {
+  font-size: 28px;
+  font-weight: 700;
+  fill: #28a745;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  filter: drop-shadow(0 1px 2px rgba(40, 167, 69, 0.2));
+}
+
+.legend-container {
+  position: relative;
+  width: 224px;
+}
+
+.legend-body {
+  background: linear-gradient(to top left, rgba(240, 240, 240, 0.5), rgba(255, 255, 255, 0.5));
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px 12px 12px 12px;
+  padding: 10px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  justify-content: space-between;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.dot-green { background: #28a745; }
+.dot-lightgreen { background: #b9e6c1; }
+.dot-red { background: #dc3545; }
+
+.legend-label {
+  font-size: 9px;
+  font-weight: 400;
+  color: rgba(51, 51, 51, 0.8);
+  line-height: 1.2;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.legend-number {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(51, 51, 51, 0.9);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  min-width: 28px;
+  text-align: right;
+}
+
+.legend-number.num-green { color: rgba(40, 167, 69, 0.9); }
+.legend-number.num-lightgreen { color: rgba(185, 230, 193, 1); }
+.legend-number.num-red { color: rgba(220, 53, 69, 0.9); }
+
+.legend-divider {
+  height: 1px;
+  margin: 8px 0 6px 0;
+  background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.08) 20%, rgba(0,0,0,0.08) 80%, rgba(0,0,0,0) 100%);
+}
+
+.legend-visits {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: center;
+}
+
+.legend-visits-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(128, 128, 128, 0.5);
+  flex-shrink: 0;
+}
+
+.legend-visits-text {
+  font-size: 7px;
+  font-weight: 600;
+  color: rgba(128, 128, 128, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Calendar Filter Styles */
+.header-divider-vertical {
+  width: 1px;
+  height: 16px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* Header Stats Section */
+.header-stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.stats-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #E6421A;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-right: 2px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.stat-indicator {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.stat-indicator.green {
+  background-color: #4CAF50;
+}
+
+.stat-indicator.blue {
+  background-color: #2196F3;
+}
+
+.stat-indicator.purple {
+  background-color: #9C27B0;
+}
+
+.stat-name {
+  font-size: 8px;
+  color: rgba(51, 51, 51, 0.55);
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+.stat-value {
+  font-size: 8px;
+  font-weight: 600;
+  color: rgba(51, 51, 51, 0.8);
+  margin-left: 2px;
+}
+
+.header-date {
+  font-size: 9px;
+  color: rgba(51, 51, 51, 0.35);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.calendar-filter {
+  position: relative;
+}
+
+.calendar-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 0.7);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  width: 90px;
+}
+
+.calendar-button:hover {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.calendar-button:active {
+  transform: translateY(0.5px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.calendar-icon {
+  opacity: 0.6;
+  width: 14px;
+  height: 14px;
+}
+
+.calendar-text {
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.calendar-arrow {
+  opacity: 0.5;
+  transition: transform 0.2s ease;
+}
+
+.calendar-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Calendar Dropdown */
+.calendar-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  z-index: 1000;
+  min-width: 320px;
+  overflow: hidden;
+}
+
+/* Ensure blur is applied when used in header */
+.calendar-filter:not(.filter-customizer *) .calendar-dropdown {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* Force blur on calendar dropdown in customizer */
+.filter-customizer .calendar-dropdown {
+  background: rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  min-width: 188px !important;
+}
+
+
+/* Quick Filters */
+.calendar-quick-filters {
+  display: flex;
+  gap: 4px;
+  padding: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.calendar-quick-filters button {
+  flex: 1;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 0.7);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.calendar-quick-filters button:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: rgba(51, 51, 51, 0.9);
+}
+
+.calendar-quick-filters button.active {
+  background: rgba(230, 0, 18, 0.1);
+  color: var(--accent-red);
+  border-color: var(--accent-red);
+  border-width: 1px;
+}
+
+/* Calendar Container */
+.calendar-container {
+  padding: 16px;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.calendar-nav {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: rgba(51, 51, 51, 0.7);
+}
+
+.calendar-nav:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.calendar-month-year {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(51, 51, 51, 0.9);
+  text-align: center;
+  flex: 1;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-weekday {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(51, 51, 51, 0.5);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 0;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 0.8);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.calendar-day:hover:not(.empty) {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.calendar-day.selected {
+  background: rgba(230, 0, 18, 0.08);
+  color: var(--accent-red);
+  border-color: var(--accent-red);
+  border-width: 1px;
+  font-weight: 600;
+}
+
+.calendar-day.selected:hover {
+  background: rgba(230, 0, 18, 0.15);
+  border-color: var(--accent-red);
+}
+
+.calendar-day.empty {
+  cursor: default;
+  background: transparent;
+  border: none;
+}
+
+/* Region Filter Styles */
+.region-filter {
+  position: relative;
+}
+
+.region-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 0.7);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  width: 110px;
+}
+
+.region-button:hover {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.region-button:active {
+  transform: translateY(0.5px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.region-icon {
+  opacity: 0.6;
+  width: 14px;
+  height: 14px;
+}
+
+.region-text {
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.region-arrow {
+  opacity: 0.5;
+  transition: transform 0.2s ease;
+}
+
+.region-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Region Dropdown */
+.region-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  min-width: 120px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+
+.region-dropdown:hover,
+.region-dropdown:focus-within {
+  background: transparent;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.region-option {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: none;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 0.85);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.region-option:hover {
+  background: rgba(230, 0, 18, 0.04);
+  color: var(--accent-red);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+}
+
+.region-option.active {
+  background: rgba(230, 0, 18, 0.03);
+  color: var(--accent-red);
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+}
+
+/* HaFi Filter Styles */
+.hafi-filter {
+  position: relative;
+}
+
+.hafi-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 0.7);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  width: 110px;
+}
+
+.hafi-button:hover {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.hafi-button:active {
+  transform: translateY(0.5px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.hafi-icon {
+  opacity: 0.6;
+  width: 14px;
+  height: 14px;
+}
+
+.hafi-text {
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.hafi-arrow {
+  opacity: 0.5;
+  transition: transform 0.2s ease;
+}
+
+.hafi-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* HaFi Dropdown */
+.hafi-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  min-width: 120px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+
+.hafi-dropdown:hover,
+.hafi-dropdown:focus-within {
+  background: transparent;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.hafi-option {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: none;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 0.85);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.hafi-option:hover {
+  background: rgba(230, 0, 18, 0.04);
+  color: var(--accent-red);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+}
+
+.hafi-option.active {
+  background: rgba(230, 0, 18, 0.03);
+  color: var(--accent-red);
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+}
+
+/* Market Filter Styles */
+.market-filter {
+  position: relative;
+}
+
+.market-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 0.7);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  width: 110px;
+}
+
+.market-button:hover {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.market-button:active {
+  transform: translateY(0.5px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.market-icon {
+  opacity: 0.6;
+  width: 14px;
+  height: 14px;
+}
+
+.market-text {
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.market-arrow {
+  opacity: 0.5;
+  transition: transform 0.2s ease;
+}
+
+.market-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Market Dropdown */
+.market-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  min-width: 120px;
+  max-height: 300px;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.market-dropdown::-webkit-scrollbar {
+  display: none;
+}
+
+
+.market-dropdown:hover,
+.market-dropdown:focus-within {
+  background: transparent;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.market-option {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: none;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 0.85);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.market-option:hover {
+  background: rgba(230, 0, 18, 0.04);
+  color: var(--accent-red);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+}
+
+.market-option.active {
+  background: rgba(230, 0, 18, 0.03);
+  color: var(--accent-red);
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+}
+
+/* Right Side Content Layout */
+.right-side-content {
+  position: absolute;
+  top: 50%;
+  left: 280px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+}
+
+.additional-container {
+  width: 280px;
+  height: 280px;
+  background: linear-gradient(to top left, rgba(240, 240, 240, 0.5), rgba(255, 255, 255, 0.5));
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+}
+
+/* Filter Customizer Styles */
+.filter-customizer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.customizer-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px 8px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(0, 0, 0, 0.02);
+  flex-shrink: 0;
+}
+
+.terminal-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #28a745;
+  box-shadow: 0 0 4px rgba(40, 167, 69, 0.4);
+  flex-shrink: 0;
+}
+
+.customizer-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(51, 51, 51, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.customizer-body {
+  flex: 1;
+  padding: 12px 12px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  max-width: 200px;
+}
+
+.filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+  align-items: flex-start;
+  position: relative;
+}
+
+.filter-label {
+  font-size: 8px;
+  font-weight: 600;
+  color: rgba(51, 51, 51, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+/* Customizer Filter Overrides */
+.filter-customizer .calendar-button,
+.filter-customizer .region-button,
+.filter-customizer .hafi-button,
+.filter-customizer .market-button {
+  width: 188px;
+  max-width: 188px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  padding: 6px 8px;
+  font-size: 9px;
+  justify-content: space-between;
+  min-height: 28px;
+  box-sizing: border-box;
+  margin-left: 0;
+  margin-right: auto;
+}
+
+/* Active state indicator for custom selections */
+.filter-customizer .calendar-button.has-custom-selection,
+.filter-customizer .region-button.has-custom-selection,
+.filter-customizer .hafi-button.has-custom-selection,
+.filter-customizer .market-button.has-custom-selection {
+  background: rgba(255, 89, 94, 0.03);
+  border: 1px solid rgba(255, 89, 94, 0.12);
+  box-shadow: 0 1px 2px rgba(255, 89, 94, 0.08);
+}
+
+.filter-customizer .calendar-button:hover,
+.filter-customizer .region-button:hover,
+.filter-customizer .hafi-button:hover,
+.filter-customizer .market-button:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.filter-customizer .calendar-text,
+.filter-customizer .region-text,
+.filter-customizer .hafi-text,
+.filter-customizer .market-text {
+  font-size: 9px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: calc(100% - 24px);
+  flex: 1;
+}
+
+.filter-customizer .calendar-icon,
+.filter-customizer .region-icon,
+.filter-customizer .hafi-icon,
+.filter-customizer .market-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.filter-customizer .calendar-arrow,
+.filter-customizer .region-arrow,
+.filter-customizer .hafi-arrow,
+.filter-customizer .market-arrow {
+  width: 8px;
+  height: 8px;
+}
+
+/* Filter dropdowns inside customizer */
+.filter-customizer .calendar-dropdown,
+.filter-customizer .region-dropdown,
+.filter-customizer .hafi-dropdown,
+.filter-customizer .market-dropdown {
+  width: 188px;
+  min-width: 188px;
+  max-width: 188px;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 95vw;
+  height: 90vh;
+  max-width: 1600px;
+  max-height: 1000px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.04);
+  border: none;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+
+.modal-close:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 24px;
+  gap: 24px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.modal-body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.modal-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.modal-filter-row {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 0 12px 12px 12px;
+  padding: 16px 20px;
+  backdrop-filter: blur(8px);
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  margin-top: 24px;
+  width: max-content;
+  align-self: flex-start;
+}
+
+.filter-flap {
+  position: absolute;
+  top: -27px;
+  left: 0;
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  padding: 6px 10px;
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  color: rgba(51, 51, 51, 0.7);
+  font-weight: 500;
+}
+
+.filter-flap-indicator {
+  width: 6px;
+  height: 6px;
+  background: #4CAF50;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.filter-flap-text {
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+}
+
+.modal-content-section {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 24px;
+}
+
+.modal-chart-container {
+  background: 
+    radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.04) 1px, transparent 0),
+    rgba(0, 0, 0, 0.02);
+  background-size: 8px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 376px;
+}
+
+.modal-chart-header {
+  display: flex;
+  align-items: center;
+}
+
+.modal-chart-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 0.6);
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 2px;
+}
+
+.modal-chart-content {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Line Chart Styles */
+.modal-line-chart-container {
+  background: 
+    radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.04) 1px, transparent 0),
+    rgba(0, 0, 0, 0.02);
+  background-size: 8px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(8px);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 376px;
+}
+
+/* Modal Bottom Section */
+.modal-bottom-section {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.modal-bottom-chart-container {
+  background: 
+    radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.04) 1px, transparent 0),
+    rgba(0, 0, 0, 0.02);
+  background-size: 8px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(8px);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 360px;
+  min-height: 360px;
+}
+
+.line-chart-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  overflow: hidden; /* Prevent any overflow */
+}
+
+.line-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.line-chart-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.interval-switcher {
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.interval-btn {
+  padding: 4px 8px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  font-size: 9px;
+  color: rgba(51, 51, 51, 0.6);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.interval-btn.active {
+  background: white;
+  color: rgba(51, 51, 51, 0.8);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.interval-btn:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.line-chart-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0 8px;
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+  touch-action: none; /* Disable touch scrolling */
+}
+
+.line-chart-legend {
+  display: flex;
+  gap: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-line {
+  width: 16px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.legend-fill {
+  width: 16px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.legend-fill.green {
+  background: rgba(76, 175, 80, 0.15);
+}
+
+.legend-fill.red {
+  background: rgba(255, 82, 82, 0.15);
+}
+
+.legend-text {
+  font-size: 9px;
+  color: rgba(51, 51, 51, 0.6);
+  font-weight: 500;
+}
+
+/* Daily scroll indicator */
+.daily-scroll-indicator {
+  margin-top: 8px;
+  padding: 0 30px;
+}
+
+.scroll-track {
+  position: relative;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+  margin-bottom: 4px;
+}
+
+.scroll-thumb {
+  position: absolute;
+  top: 0;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+  transition: left 0.1s ease;
+}
+
+.scroll-hint {
+  font-size: 8px;
+  color: rgba(0, 0, 0, 0.4);
+  text-align: center;
+  display: block;
+}
+
+/* Line Chart Tooltip */
+.line-chart-tooltip {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  z-index: 200000;
+  min-width: 240px;
+}
+
+.tooltip-header {
+  background: rgba(0, 0, 0, 0.02);
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(51, 51, 51, 0.8);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 8px 8px 0 0;
+}
+
+.tooltip-content {
+  padding: 10px 12px;
+}
+
+.tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 10px;
+}
+
+.tooltip-row:last-child {
+  margin-bottom: 0;
+}
+
+.tooltip-label {
+  color: rgba(51, 51, 51, 0.6);
+  font-weight: 400;
+}
+
+.tooltip-value {
+  font-weight: 600;
+  color: rgba(51, 51, 51, 0.9);
+}
+
+.tooltip-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.06);
+  margin: 8px -12px;
+}
+
+/* Gebietsmanager Filter Container - Left Positioned Mirror */
+.gebietsmanager-filter-container {
+  position: absolute;
+  top: 50%;
+  left: -60px;
+  transform: translateY(-50%);
+  width: 280px;
+  height: 280px;
+  background: linear-gradient(to top left, rgba(240, 240, 240, 0.5), rgba(255, 255, 255, 0.5));
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* GM Filter Header - Right aligned */
+.gm-filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 8px 12px 8px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(0, 0, 0, 0.02);
+  flex-shrink: 0;
+  height: 33px;
+}
+
+.gm-filter-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(51, 51, 51, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.gm-terminal-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #28a745;
+  box-shadow: 0 0 4px rgba(40, 167, 69, 0.4);
+  flex-shrink: 0;
+}
+
+/* GM Filter Body - Tighter spacing for 5 filters */
+.gm-filter-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 8px 10px 8px;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Hide scrollbar */
+.gm-filter-body::-webkit-scrollbar {
+  display: none;
+}
+
+.gm-filter-body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* GM Filter Section - Right aligned */
+.gm-filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  align-items: flex-end;
+}
+
+.gm-filter-label {
+  font-size: 8px;
+  font-weight: 600;
+  color: rgba(51, 51, 51, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  text-align: right;
+  width: 100%;
+  margin-right: 8px;
+}
+
+/* GM Filter Buttons - Matching shelf merchandising styling 1:1 */
+.gm-calendar-button,
+.gm-gm-button,
+.gm-region-button,
+.gm-chain-button,
+.gm-market-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 9px;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 0.7);
+  width: 188px;
+  max-width: 188px;
+  min-height: 28px;
+  box-sizing: border-box;
+  margin-right: 8px;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.gm-button-icon {
+  opacity: 0.6;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.gm-button-text {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: calc(100% - 38px);
+  flex: 1;
+  text-align: center;
+  padding-left: 10px;
+}
+
+.gm-button-arrow {
+  opacity: 0.5;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+}
+
+.gm-button-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Button hover states - matching shelf merchandising exactly */
+.gm-calendar-button:hover,
+.gm-gm-button:hover,
+.gm-region-button:hover,
+.gm-chain-button:hover,
+.gm-market-button:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Active/custom selection state - matching shelf merchandising exactly */
+.gm-calendar-button.has-custom-selection,
+.gm-gm-button.has-custom-selection,
+.gm-region-button.has-custom-selection,
+.gm-chain-button.has-custom-selection,
+.gm-market-button.has-custom-selection {
+  background: rgba(255, 89, 94, 0.03);
+  border: 1px solid rgba(255, 89, 94, 0.12);
+  box-shadow: 0 1px 2px rgba(255, 89, 94, 0.08);
+}
+
+/* GM Dropdown styles - Matching shelf merchandising */
+.gm-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  min-width: 188px;
+  max-width: 188px;
+  overflow: hidden;
+}
+
+.gm-dropdown:hover,
+.gm-dropdown:focus-within {
+  background: transparent;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.gm-dropdown-list {
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.gm-dropdown-list::-webkit-scrollbar {
+  display: none;
+}
+
+.gm-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  color: rgba(51, 51, 51, 0.7);
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.gm-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.4);
+  color: rgba(51, 51, 51, 0.9);
+}
+
+.gm-dropdown-item.active {
+  background: rgba(255, 89, 94, 0.08);
+  color: rgba(255, 89, 94, 0.9);
+  font-weight: 600;
+}
+
+/* Mirrored card layout - Legend next to filter, pie chart on right */
+.card-content.mirrored {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mirrored-legend-container {
+  position: absolute;
+  top: 50%;
+  left: 237px;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.card-content.mirrored .donut-chart {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Modal Stats Container - Matching filter row styling */
+.modal-stats-container {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  padding: 13px 20px;
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex: 1;
+  margin-top: 24px;
+  margin-left: 16px;
+}
+
+.modal-stats-container .stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex: 1;
+  position: relative;
+  min-height: 35px;
+}
+
+.modal-stats-container .stat-item::after {
+  content: '';
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.modal-stats-container .stat-item:last-child::after {
+  display: none;
+}
+
+.modal-stats-container .stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.modal-stats-container .stat-label {
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  text-align: center;
+}
+
+/* Stat colors */
+.modal-stats-container .stat-item:nth-child(1) .stat-value,
+.modal-stats-container .stat-item:nth-child(1) .stat-label {
+  color: #34495e;
+}
+
+.modal-stats-container .stat-item:nth-child(2) .stat-value,
+.modal-stats-container .stat-item:nth-child(2) .stat-label {
+  color: #2196F3;
+}
+
+.modal-stats-container .stat-item:nth-child(3) .stat-value,
+.modal-stats-container .stat-item:nth-child(3) .stat-label {
+  color: #FF6B6B;
+}
+
+.modal-stats-container .stat-item:nth-child(4) .stat-value,
+.modal-stats-container .stat-item:nth-child(4) .stat-label {
+  color: #28a745;
+}
+
+.modal-stats-container .stat-item:nth-child(5) .stat-value,
+.modal-stats-container .stat-item:nth-child(5) .stat-label {
+  color: #28a745;
+}
+
+/* New legend colors for Gebietsmanager */
+.dot-blue {
+  background: #1f77b4;
+}
+
+.dot-lightblue {
+  background: #5bc0de;
+}
+
+.dot-yellow {
+  background: #ffd700;
+}
+
+.num-blue {
+  color: #1f77b4;
+}
+
+.num-lightblue {
+  color: #5bc0de;
+}
+
+.num-yellow {
+  color: #ffd700;
+}
+
+/* Modal GM filter button overrides - Match shelf merchandising exact widths */
+.modal-filter-row .gm-calendar-button {
+  width: 90px;
+  max-width: 90px;
+}
+
+.modal-filter-row .gm-gm-button {
+  width: 110px;
+  max-width: 110px;
+}
+
+.modal-filter-row .gm-region-button {
+  width: 110px;
+  max-width: 110px;
+}
+
+.modal-filter-row .gm-chain-button {
+  width: 110px;
+  max-width: 110px;
+}
+
+.modal-filter-row .gm-market-button {
+  width: 110px;
+  max-width: 110px;
+}
+
