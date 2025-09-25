@@ -42,7 +42,7 @@ export default function RegionFilter() {
         </svg>
       </button>
       
-      <DropdownPortal targetRef={buttonRef} isOpen={isOpen} className="region-dropdown">
+      <DropdownPortal targetEl={buttonRef.current} isOpen={isOpen} className="region-dropdown">
         <div ref={dropdownRef}>
           {regions.map((region) => (
             <button

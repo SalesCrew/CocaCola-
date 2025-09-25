@@ -3,12 +3,12 @@ import ReactDOM from 'react-dom'
 
 interface DropdownPortalProps {
   children: React.ReactNode
-  targetRef: React.RefObject<HTMLElement>
+  targetEl: HTMLElement | null
   isOpen: boolean
   className?: string
 }
 
-export function DropdownPortal({ children, targetRef, isOpen, className }: DropdownPortalProps) {
+export function DropdownPortal({ children, targetEl, isOpen, className }: DropdownPortalProps) {
   const portalRef = useRef<HTMLDivElement>(document.createElement('div'))
   
   useEffect(() => {
@@ -16,15 +16,15 @@ export function DropdownPortal({ children, targetRef, isOpen, className }: Dropd
     portal.className = className || ''
     if (isOpen) {
       // Set initial position before adding to DOM
-      if (targetRef.current) {
-        const rect = targetRef.current.getBoundingClientRect()
+      if (targetEl) {
+        const rect = targetEl.getBoundingClientRect()
         portal.style.position = 'absolute'
         portal.style.left = `${rect.left + window.scrollX}px`
         portal.style.top = `${rect.bottom + window.scrollY + 8}px`
         portal.style.zIndex = '99999'
         
         // Check if this dropdown is inside a filter customizer by checking button's parent elements
-        let element = targetRef.current.parentElement
+        let element = targetEl.parentElement
         let isInCustomizer = false
         while (element) {
           if (element.classList?.contains('filter-customizer')) {
@@ -36,7 +36,7 @@ export function DropdownPortal({ children, targetRef, isOpen, className }: Dropd
         
         // Set width for customizer dropdowns to match button width (except calendar)
         if (isInCustomizer && className !== 'calendar-dropdown') {
-          const buttonWidth = targetRef.current.getBoundingClientRect().width
+          const buttonWidth = targetEl.getBoundingClientRect().width
           portal.style.width = `${buttonWidth}px`
           portal.style.minWidth = `${buttonWidth}px`
           portal.style.maxWidth = `${buttonWidth}px`
@@ -50,14 +50,14 @@ export function DropdownPortal({ children, targetRef, isOpen, className }: Dropd
         portal.parentNode.removeChild(portal)
       }
     }
-  }, [isOpen, className, targetRef])
+  }, [isOpen, className, targetEl])
   
   useEffect(() => {
-    if (!isOpen || !targetRef.current) return
+    if (!isOpen || !targetEl) return
     
     const updatePosition = () => {
-      if (!targetRef.current || !portalRef.current) return
-      const rect = targetRef.current.getBoundingClientRect()
+      if (!targetEl || !portalRef.current) return
+      const rect = targetEl.getBoundingClientRect()
       const portal = portalRef.current
       portal.style.position = 'absolute'
       portal.style.left = `${rect.left + window.scrollX}px`
@@ -65,7 +65,7 @@ export function DropdownPortal({ children, targetRef, isOpen, className }: Dropd
       portal.style.zIndex = '99999'
       
       // Re-check customizer status and set width accordingly
-      let element = targetRef.current.parentElement
+      let element = targetEl.parentElement
       let isInCustomizer = false
       while (element) {
         if (element.classList?.contains('filter-customizer')) {
@@ -77,7 +77,7 @@ export function DropdownPortal({ children, targetRef, isOpen, className }: Dropd
       
       // Set width for customizer dropdowns to match button width (except calendar)
       if (isInCustomizer && className !== 'calendar-dropdown') {
-        const buttonWidth = targetRef.current.getBoundingClientRect().width
+        const buttonWidth = targetEl.getBoundingClientRect().width
         portal.style.width = `${buttonWidth}px`
         portal.style.minWidth = `${buttonWidth}px`
         portal.style.maxWidth = `${buttonWidth}px`
@@ -94,7 +94,7 @@ export function DropdownPortal({ children, targetRef, isOpen, className }: Dropd
       window.removeEventListener('resize', updatePosition)
       window.removeEventListener('scroll', updatePosition)
     }
-  }, [isOpen, targetRef])
+  }, [isOpen, targetEl])
   
   if (!isOpen) return null
   

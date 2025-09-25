@@ -30,7 +30,8 @@ export default function CalendarFilter() {
 
   const handleQuickFilter = (filter: string) => {
     const today = new Date()
-    let start: Date, end: Date = today
+    let start = today
+    let end = today
 
     switch(filter) {
       case 'YTD':
@@ -60,6 +61,10 @@ export default function CalendarFilter() {
         start = new Date(today.getFullYear(), today.getMonth(), 1)
     }
 
+    // apply selected range so variables are used
+    setSelectedStartDate(start)
+    setSelectedEndDate(end)
+    setIsSelectingRange(false)
     setSelectedRange(filter)
     setIsOpen(false)
   }
@@ -110,7 +115,7 @@ export default function CalendarFilter() {
         </svg>
       </button>
       
-      <DropdownPortal targetRef={buttonRef} isOpen={isOpen} className="calendar-dropdown">
+      <DropdownPortal targetEl={buttonRef.current} isOpen={isOpen} className="calendar-dropdown">
         <div ref={dropdownRef}>
           <div className="calendar-quick-filters">
             <button onClick={() => handleQuickFilter('YTD')} className={selectedRange === 'YTD' ? 'active' : ''}>YTD</button>

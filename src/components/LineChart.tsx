@@ -12,7 +12,7 @@ export default function LineChart() {
   const [interval, setInterval] = useState<'daily' | 'weekly' | 'monthly'>('weekly')
   
   // Calculate start index based on actual data length to show newest values  
-  const getDefaultStartIndex = (intervalType: string, dataLength: number, visiblePoints: number) => {
+  const getDefaultStartIndex = (_intervalType: string, dataLength: number, visiblePoints: number) => {
     return Math.max(0, dataLength - visiblePoints) // Always show newest values
   }
   
@@ -31,7 +31,8 @@ export default function LineChart() {
   
   // Hover state
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  // Track mouse for possible future features (disabled to avoid unused var)
+  // const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   
@@ -281,7 +282,7 @@ export default function LineChart() {
   }).join(' ')
   
   // Calculate rolling average path for found OOS situations
-  const cumulativeAveragePath = data.map((point, i) => {
+  const cumulativeAveragePath = data.map((_point, i) => {
     const x = padding + i * xStep + centerOffset
     // Calculate average based on selected interval count
     let startIndex: number
@@ -292,8 +293,8 @@ export default function LineChart() {
     }
     const foundSum = data.slice(startIndex, i + 1).reduce((sum, p) => sum + p.found, 0)
     const rollingAverage = foundSum / (i - startIndex + 1)
-    const y = chartHeight - ((rollingAverage - yMin) * yScale) - 40
-    return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`
+      const yVal = chartHeight - ((rollingAverage - yMin) * yScale) - 40
+      return i === 0 ? `M ${x} ${yVal}` : `L ${x} ${yVal}`
   }).join(' ')
   
   // Create proper fill path between the two lines
@@ -331,7 +332,7 @@ export default function LineChart() {
       // Handle hover
       const rect = svgRef.current.getBoundingClientRect()
       const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
+      // const y = e.clientY - rect.top
       
       // Convert to SVG coordinates
       const svgX = (x / rect.width) * chartWidth
@@ -341,9 +342,8 @@ export default function LineChart() {
         const dataX = svgX - padding - centerOffset
         const index = Math.round(dataX / xStep)
         
-        if (index >= 0 && index < data.length) {
+          if (index >= 0 && index < data.length) {
           setHoveredIndex(index)
-          setMousePos({ x: e.clientX, y: e.clientY })
         } else {
           setHoveredIndex(null)
         }
@@ -362,7 +362,7 @@ export default function LineChart() {
     setHoveredIndex(null)
   }
   
-  const handleWheel = (e: React.WheelEvent) => {
+  const handleWheel = (_e: React.WheelEvent) => {
     // Handled by native event listener
   }
   

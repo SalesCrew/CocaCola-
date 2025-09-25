@@ -69,7 +69,7 @@ export default function GebietsmanagerChainFilter({ selectedChain, onChainChange
         </svg>
       </button>
       
-      <DropdownPortal targetRef={buttonRef as React.RefObject<HTMLElement>} isOpen={isOpen} className="gm-dropdown">
+      <DropdownPortal targetEl={buttonRef.current} isOpen={isOpen} className="gm-dropdown">
         <div ref={dropdownRef}>
           <div className="gm-dropdown-list">
             {chains.map(chain => (

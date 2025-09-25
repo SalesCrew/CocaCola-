@@ -37,7 +37,7 @@ export default function GebietsleiterStatsCard({ data }: GebietsleiterStatsCardP
   }
   
   const totalEarned = premiumData.q1.earned + premiumData.q2.earned + premiumData.q3.earned + premiumData.q4.earned + premiumData.q5.earned + premiumData.q6.earned
-  const totalTarget = premiumData.q1.target + premiumData.q2.target + premiumData.q3.target + premiumData.q4.target + premiumData.q5.target + premiumData.q6.target
+  // const totalTarget = premiumData.q1.target + premiumData.q2.target + premiumData.q3.target + premiumData.q4.target + premiumData.q5.target + premiumData.q6.target
   
   // Calculate average percentage from completed quarters only
   const completedQuarters = [premiumData.q1, premiumData.q2, premiumData.q3, premiumData.q4, premiumData.q5].filter(q => q.earned > 0)
@@ -202,14 +202,14 @@ export default function GebietsleiterStatsCard({ data }: GebietsleiterStatsCardP
             </div>
             
             <div className="premium-quarters-container">
-              {[
-                ['q3', premiumData.q3],
-                ['q2', premiumData.q2], 
-                ['q1', premiumData.q1],
-                ['q4', premiumData.q4],
-                ['q5', premiumData.q5],
-                ['q6', premiumData.q6]
-              ].map(([quarter, data], index) => {
+              {([
+                ['q3', premiumData.q3] as const,
+                ['q2', premiumData.q2] as const, 
+                ['q1', premiumData.q1] as const,
+                ['q4', premiumData.q4] as const,
+                ['q5', premiumData.q5] as const,
+                ['q6', premiumData.q6] as const
+              ]).map(([quarter, qdata]) => {
                 const isCompleted = quarter === 'q1' || quarter === 'q2' || quarter === 'q4' || quarter === 'q5'
                 const isCurrent = quarter === 'q3'
                 const isFuture = quarter === 'q6'
@@ -223,18 +223,18 @@ export default function GebietsleiterStatsCard({ data }: GebietsleiterStatsCardP
                     </div>
                     
                     <div className="quarter-amount-container">
-                      <div className="quarter-amount">{data.earned.toLocaleString()}</div>
-                      <div className="quarter-target">/{data.target.toLocaleString()}€</div>
+                      <div className="quarter-amount">{qdata.earned.toLocaleString()}</div>
+                      <div className="quarter-target">/{qdata.target.toLocaleString()}€</div>
                     </div>
                     
                     <div className="quarter-progress">
                       <div className="quarter-progress-bar">
                         <div 
                           className="quarter-progress-fill" 
-                          style={{ width: `${data.percentage}%` }}
+                          style={{ width: `${qdata.percentage}%` }}
                         />
                       </div>
-                      <div className="quarter-progress-text">{data.percentage}%</div>
+                      <div className="quarter-progress-text">{qdata.percentage}%</div>
                     </div>
                   </div>
                 )
@@ -265,23 +265,23 @@ export default function GebietsleiterStatsCard({ data }: GebietsleiterStatsCardP
             </div>
             
             <div className="ipp-months-container">
-              {[
-                ['jun', ippData.jun],
-                ['may', ippData.may],
-                ['apr', ippData.apr],
-                ['mar', ippData.mar],
-                ['feb', ippData.feb],
-                ['jan', ippData.jan],
-                ['jul', ippData.jul],
-                ['aug', ippData.aug],
-                ['sep', ippData.sep],
-                ['oct', ippData.oct],
-                ['nov', ippData.nov],
-                ['dec', ippData.dec]
-              ].map(([month, data], index) => {
-                const isCompleted = data.ipp > 0
+              {([
+                ['jun', ippData.jun] as const,
+                ['may', ippData.may] as const,
+                ['apr', ippData.apr] as const,
+                ['mar', ippData.mar] as const,
+                ['feb', ippData.feb] as const,
+                ['jan', ippData.jan] as const,
+                ['jul', ippData.jul] as const,
+                ['aug', ippData.aug] as const,
+                ['sep', ippData.sep] as const,
+                ['oct', ippData.oct] as const,
+                ['nov', ippData.nov] as const,
+                ['dec', ippData.dec] as const
+              ]).map(([month, mdata]) => {
+                const isCompleted = mdata.ipp > 0
                 const isCurrent = month === 'jun'
-                const isFuture = data.ipp === 0
+                const isFuture = mdata.ipp === 0
                 
                 return (
                   <div key={month} className={`month-card ${isCurrent ? 'current' : isFuture ? 'future' : 'completed'}`}>
@@ -293,16 +293,16 @@ export default function GebietsleiterStatsCard({ data }: GebietsleiterStatsCardP
                     
                     <div className="month-ipp-container">
                       <div className="month-ipp-row">
-                        <div className="month-ipp">{data.ipp > 0 ? data.ipp.toFixed(1) : '0.0'}</div>
-                        {data.change !== 0 && (
-                          <div className={`month-change ${data.change > 0 ? 'positive' : 'negative'}`}>
-                            {data.change > 0 ? '+' : ''}{data.change.toFixed(1)}%
+                      <div className="month-ipp">{mdata.ipp > 0 ? mdata.ipp.toFixed(1) : '0.0'}</div>
+                      {mdata.change !== 0 && (
+                        <div className={`month-change ${mdata.change > 0 ? 'positive' : 'negative'}`}>
+                          {mdata.change > 0 ? '+' : ''}{mdata.change.toFixed(1)}%
                           </div>
                         )}
                       </div>
                     </div>
                     
-                    {data.ipp > 0 && (
+                    {mdata.ipp > 0 && (
                       <div className="month-progress">
                         <div 
                           className="month-einsaetze-bar"
@@ -315,22 +315,22 @@ export default function GebietsleiterStatsCard({ data }: GebietsleiterStatsCardP
                                 <div class="tooltip-row">
                                   <div class="tooltip-color" style="background: #1f77b4"></div>
                                   <span class="tooltip-label">Standardbesuche</span>
-                                  <span class="tooltip-value" style="color: #1f77b4">${data.standardbesuche}</span>
+                                  <span class="tooltip-value" style="color: #1f77b4">${mdata.standardbesuche}</span>
                                 </div>
                                 <div class="tooltip-row">
                                   <div class="tooltip-color" style="background: #5bc0de"></div>
                                   <span class="tooltip-label">Flexbesuche</span>
-                                  <span class="tooltip-value" style="color: #5bc0de">${data.flexbesuche}</span>
+                                  <span class="tooltip-value" style="color: #5bc0de">${mdata.flexbesuche}</span>
                                 </div>
                                 <div class="tooltip-row">
                                   <div class="tooltip-color" style="background: #ffd700"></div>
                                   <span class="tooltip-label">Kühlerinventuren</span>
-                                  <span class="tooltip-value" style="color: #ffd700">${data.kuhlerinventuren}</span>
+                                  <span class="tooltip-value" style="color: #ffd700">${mdata.kuhlerinventuren}</span>
                                 </div>
                                 <div class="tooltip-divider"></div>
                                 <div class="tooltip-total">
                                   <span class="tooltip-total-label">Gesamt Einsätze</span>
-                                  <span class="tooltip-total-value">${data.standardbesuche + data.flexbesuche + data.kuhlerinventuren}</span>
+                                  <span class="tooltip-total-value">${mdata.standardbesuche + mdata.flexbesuche + mdata.kuhlerinventuren}</span>
                                 </div>
                               </div>
                             `
@@ -373,10 +373,10 @@ export default function GebietsleiterStatsCard({ data }: GebietsleiterStatsCardP
                           }}
                         >
                           {(() => {
-                            const total = data.standardbesuche + data.flexbesuche + data.kuhlerinventuren
-                            const standardPercent = (data.standardbesuche / total) * 100
-                            const flexPercent = (data.flexbesuche / total) * 100
-                            const kuhlPercent = (data.kuhlerinventuren / total) * 100
+                            const total = mdata.standardbesuche + mdata.flexbesuche + mdata.kuhlerinventuren
+                            const standardPercent = (mdata.standardbesuche / total) * 100
+                            const flexPercent = (mdata.flexbesuche / total) * 100
+                            const kuhlPercent = (mdata.kuhlerinventuren / total) * 100
                             
                             return (
                               <>
@@ -397,7 +397,7 @@ export default function GebietsleiterStatsCard({ data }: GebietsleiterStatsCardP
                           })()}
                         </div>
                         <div className="month-progress-text">
-                          {data.standardbesuche + data.flexbesuche + data.kuhlerinventuren} Einsätze
+                          {mdata.standardbesuche + mdata.flexbesuche + mdata.kuhlerinventuren} Einsätze
                         </div>
                       </div>
                     )}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+// no local state needed
 import CalendarFilter from './CalendarFilter'
 import RegionFilter from './RegionFilter'
 import HaFiFilter from './HaFiFilter'

@@ -30,7 +30,8 @@ export default function GebietsmanagerCalendarFilter() {
 
   const handleQuickFilter = (filter: string) => {
     const today = new Date()
-    let start: Date, end: Date = today
+    let start = today
+    let end = today
 
     switch(filter) {
       case 'YTD':
@@ -114,7 +115,7 @@ export default function GebietsmanagerCalendarFilter() {
         </svg>
       </button>
       
-      <DropdownPortal targetRef={buttonRef as React.RefObject<HTMLElement>} isOpen={isOpen} className="calendar-dropdown">
+      <DropdownPortal targetEl={buttonRef.current} isOpen={isOpen} className="calendar-dropdown">
         <div ref={dropdownRef}>
           <div className="calendar-quick-filters">
             <button onClick={() => handleQuickFilter('YTD')} className={selectedRange === 'YTD' ? 'active' : ''}>YTD</button>

@@ -73,7 +73,7 @@ export default function MarketFilter({ selectedHaFi }: MarketFilterProps) {
         </svg>
       </button>
       
-      <DropdownPortal targetRef={buttonRef} isOpen={isOpen} className="market-dropdown">
+      <DropdownPortal targetEl={buttonRef.current} isOpen={isOpen} className="market-dropdown">
         <div ref={dropdownRef}>
           {markets.map((market) => (
             <button

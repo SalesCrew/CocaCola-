@@ -46,7 +46,7 @@ export default function HaFiFilter({ selectedHaFi, onHaFiChange }: HaFiFilterPro
         </svg>
       </button>
       
-      <DropdownPortal targetRef={buttonRef} isOpen={isOpen} className="hafi-dropdown">
+      <DropdownPortal targetEl={buttonRef.current} isOpen={isOpen} className="hafi-dropdown">
         <div ref={dropdownRef}>
           {hafis.map((hafi) => (
             <button
