@@ -112,7 +112,8 @@ export default function Sidebar({ onSwitchPage, onMenuChange }: SidebarProps) {
       display: 'flex',
       flexDirection: 'column',
       transition: 'width 0.15s ease',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      zIndex: 1000
     }}>
       
       {/* Header */}
