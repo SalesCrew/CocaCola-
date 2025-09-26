@@ -6,7 +6,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ onSwitchPage, onMenuChange }: SidebarProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(true)
   const [activeIndex, setActiveIndex] = useState(0)
 
   const menuItems = [
