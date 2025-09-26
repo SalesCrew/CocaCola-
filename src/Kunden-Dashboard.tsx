@@ -13,9 +13,10 @@ import MarketDetailModal from './components/MarketDetailModal'
 
 interface KundenDashboardProps {
   onSwitchPage?: () => void
+  onSettingsPage?: () => void
 }
 
-export default function KundenDashboard({ onSwitchPage }: KundenDashboardProps) {
+export default function KundenDashboard({ onSwitchPage, onSettingsPage }: KundenDashboardProps) {
   const [selectedHaFi, setSelectedHaFi] = useState('Alle')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isGmModalOpen, setIsGmModalOpen] = useState(false)
@@ -27,47 +28,33 @@ export default function KundenDashboard({ onSwitchPage }: KundenDashboardProps) 
 
   return (
     <div className="dashboard">
-      <Header onSwitchPage={onSwitchPage} />
+      <Header onSwitchPage={onSwitchPage} onSettingsPage={onSettingsPage} />
       <main className="main-content">
         <div className="top-cards">
           <div className="card">
             <div className="card-header">
-                  <div className="card-header-top">
-                    <div className="card-title">Shelf merchandising</div>
-                    <div className="header-divider-vertical" />
-                    <div className="header-stats">
-                      <span className="stats-label">Heute:</span>
-                      <div className="stat-item">
-                        <div className="stat-indicator green"></div>
-                        <span className="stat-name">Anzahl Besuche</span>
-                        <span className="stat-value">24</span>
-                      </div>
-                      <div className="header-divider-vertical" />
-                      <div className="stat-item">
-                        <div className="stat-indicator blue"></div>
-                        <span className="stat-name">Anzahl Stunden</span>
-                        <span className="stat-value">7.5</span>
-                      </div>
-                      <div className="header-divider-vertical" />
-                      <div className="stat-item">
-                        <div className="stat-indicator purple"></div>
-                        <span className="stat-name">Behobene OOS-Situationen</span>
-                        <span className="stat-value">18</span>
-                      </div>
-                    </div>
-                    <div className="header-date">
-                      {new Date().toLocaleDateString('de-DE', { 
-                        weekday: 'short', 
-                        year: 'numeric', 
-                        month: 'short', 
-                        day: 'numeric' 
-                      })}
-                    </div>
-                  </div>
+              <div className="card-header-top">
+                <div className="card-title" style={{
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1.2px'
+                }}>Shelf merchandising</div>
+                <div className="header-date" style={{ marginLeft: 'auto' }}>
+                  {new Date().toLocaleDateString('de-DE', { 
+                    weekday: 'short', 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                  })}
+                </div>
+              </div>
               <div className="card-divider" />
             </div>
             <div className="card-content">
-              <DonutChart onClick={() => setIsModalOpen(true)} />
+              <div style={{ marginLeft: '-450px' }}>
+                <DonutChart onClick={() => setIsModalOpen(true)} />
+              </div>
               <div className="right-side-content">
                 <LegendPanel />
                 <div className="additional-container">
@@ -78,10 +65,14 @@ export default function KundenDashboard({ onSwitchPage }: KundenDashboardProps) 
           </div>
           <div className="card">
             <div className="card-header">
-              <div className="card-header-top">
-                <div className="card-title">Gebietsmanagement</div>
-                <div style={{ flex: 1 }}></div>
-                <div className="header-date">
+              <div className="card-header-top" style={{ display: 'flex !important', alignItems: 'center !important', gap: '4px !important', flexWrap: 'nowrap !important', whiteSpace: 'nowrap !important', overflow: 'hidden !important', minWidth: '100% !important' }}>
+                <div className="card-title" style={{
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1.2px'
+                }}>Gebietsmanagement</div>
+                <div className="header-date" style={{ marginLeft: 'auto' }}>
                   {new Date().toLocaleDateString('de-DE', { 
                     weekday: 'short', 
                     year: 'numeric', 

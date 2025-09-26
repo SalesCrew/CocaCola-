@@ -6,9 +6,10 @@ import './gebietsleiter.css'
 
 interface GebietsleiterDashboardProps {
   onSwitchPage?: () => void
+  onSettingsPage?: () => void
 }
 
-export default function GebietsleiterDashboard({ onSwitchPage }: GebietsleiterDashboardProps) {
+export default function GebietsleiterDashboard({ onSwitchPage, onSettingsPage }: GebietsleiterDashboardProps) {
   const [selectedMarket, setSelectedMarket] = useState<string>('')
 
   // Sample data - in real app this would come from props/context/API
@@ -37,7 +38,7 @@ export default function GebietsleiterDashboard({ onSwitchPage }: GebietsleiterDa
 
   return (
     <div className="gebietsleiter-dashboard">
-      <GebietsleiterHeader userData={gebietsleiterData} onSwitchPage={onSwitchPage} />
+      <GebietsleiterHeader userData={gebietsleiterData} onSwitchPage={onSwitchPage} onSettingsPage={onSettingsPage} />
       
       <main className="gebietsleiter-main">
         <div className="gebietsleiter-container">

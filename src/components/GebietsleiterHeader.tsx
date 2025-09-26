@@ -7,9 +7,10 @@ interface GebietsleiterHeaderProps {
     ipp: number
   }
   onSwitchPage?: () => void
+  onSettingsPage?: () => void
 }
 
-export default function GebietsleiterHeader({ userData, onSwitchPage }: GebietsleiterHeaderProps) {
+export default function GebietsleiterHeader({ userData, onSwitchPage, onSettingsPage }: GebietsleiterHeaderProps) {
   const [currentTime, setCurrentTime] = useState(new Date())
 
   useEffect(() => {
@@ -67,6 +68,16 @@ export default function GebietsleiterHeader({ userData, onSwitchPage }: Gebietsl
           title="Seite wechseln"
         >
           Wechseln
+        </button>
+      )}
+      {onSettingsPage && (
+        <button
+          className="page-switch-btn settings-btn"
+          onClick={onSettingsPage}
+          aria-label="Einstellungen"
+          title="Einstellungen"
+        >
+          ⚙️
         </button>
       )}
     </header>

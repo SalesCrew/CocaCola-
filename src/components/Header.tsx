@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 
 interface HeaderProps {
   onSwitchPage?: () => void
+  onSettingsPage?: () => void
 }
 
-export default function Header({ onSwitchPage }: HeaderProps) {
+export default function Header({ onSwitchPage, onSettingsPage }: HeaderProps) {
   const [currentTime, setCurrentTime] = useState(new Date())
 
   useEffect(() => {
@@ -83,6 +84,16 @@ export default function Header({ onSwitchPage }: HeaderProps) {
           title="Seite wechseln"
         >
           Wechseln
+        </button>
+      )}
+      {onSettingsPage && (
+        <button
+          className="page-switch-btn settings-btn"
+          onClick={onSettingsPage}
+          aria-label="Einstellungen"
+          title="Einstellungen"
+        >
+          ⚙️
         </button>
       )}
     </header>
