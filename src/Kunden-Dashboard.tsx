@@ -65,7 +65,7 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
           </div>
           <div className="card">
             <div className="card-header">
-              <div className="card-header-top" style={{ display: 'flex !important', alignItems: 'center !important', gap: '4px !important', flexWrap: 'nowrap !important', whiteSpace: 'nowrap !important', overflow: 'hidden !important', minWidth: '100% !important' }}>
+              <div className="card-header-top" style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'nowrap', whiteSpace: 'nowrap', overflow: 'hidden', minWidth: '100%' }}>
                 <div className="card-title" style={{
                   fontSize: '11px',
                   fontWeight: '600',

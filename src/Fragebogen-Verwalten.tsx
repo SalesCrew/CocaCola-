@@ -6,7 +6,7 @@ interface FragebogenVerwaltenProps {
   onBack?: () => void
 }
 
-export default function FragebogenVerwalten({ onBack }: FragebogenVerwaltenProps) {
+export default function FragebogenVerwalten({ onBack: _ }: FragebogenVerwaltenProps) {
   const [currentView, setCurrentView] = useState('overview')
 
   if (currentView === 'gebietsmanagement') {
