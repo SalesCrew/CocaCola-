@@ -25,14 +25,14 @@ export default function Sidebar({ onSwitchPage, onMenuChange }: SidebarProps) {
     const iconStyle = { width: '16px', height: '16px', stroke: 'currentColor', fill: 'none', strokeWidth: '2' }
     
     switch (index) {
-      case 0: // Übersicht
+      case 0:
         return (
           <svg {...iconStyle} viewBox="0 0 24 24">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
             <polyline points="9,22 9,12 15,12 15,22"/>
           </svg>
         )
-      case 1: // Einsatzplan
+      case 1:
         return (
           <svg {...iconStyle} viewBox="0 0 24 24">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -41,7 +41,7 @@ export default function Sidebar({ onSwitchPage, onMenuChange }: SidebarProps) {
             <line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
         )
-      case 2: // Promotoren
+      case 2:
         return (
           <svg {...iconStyle} viewBox="0 0 24 24">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -50,13 +50,13 @@ export default function Sidebar({ onSwitchPage, onMenuChange }: SidebarProps) {
             <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
           </svg>
         )
-      case 3: // Nachrichten
+      case 3:
         return (
           <svg {...iconStyle} viewBox="0 0 24 24">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
           </svg>
         )
-      case 4: // Statistiken
+      case 4:
         return (
           <svg {...iconStyle} viewBox="0 0 24 24">
             <line x1="18" y1="20" x2="18" y2="10"/>
@@ -64,14 +64,14 @@ export default function Sidebar({ onSwitchPage, onMenuChange }: SidebarProps) {
             <line x1="6" y1="20" x2="6" y2="14"/>
           </svg>
         )
-      case 5: // Schulungen
+      case 5:
         return (
           <svg {...iconStyle} viewBox="0 0 24 24">
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
           </svg>
         )
-      case 6: // Sales Challenge
+      case 6:
         return (
           <svg {...iconStyle} viewBox="0 0 24 24">
             <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
@@ -81,7 +81,7 @@ export default function Sidebar({ onSwitchPage, onMenuChange }: SidebarProps) {
             <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/>
           </svg>
         )
-      case 7: // DemoTool Agent
+      case 7:
         return (
           <svg {...iconStyle} viewBox="0 0 24 24">
             <rect x="3" y="11" width="18" height="10" rx="2" ry="2"/>
@@ -91,7 +91,7 @@ export default function Sidebar({ onSwitchPage, onMenuChange }: SidebarProps) {
             <line x1="16" y1="16" x2="16" y2="16"/>
           </svg>
         )
-      case 8: // Einstellungen
+      case 8:
         return (
           <svg {...iconStyle} viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="3"/>
@@ -115,11 +115,8 @@ export default function Sidebar({ onSwitchPage, onMenuChange }: SidebarProps) {
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       zIndex: 1000
     }}>
-      
-      {/* Header */}
       <div style={{ 
         padding: isCollapsed ? '20px 12px' : '20px 16px',
-        borderBottom: '1px solid #f3f4f6',
         display: 'flex',
         alignItems: 'center',
         gap: '12px',
@@ -128,18 +125,18 @@ export default function Sidebar({ onSwitchPage, onMenuChange }: SidebarProps) {
         <div style={{
           width: '36px',
           height: '36px',
-          background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+          background: '#f3f4f6',
           borderRadius: '8px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'white',
-          fontWeight: '700',
-          fontSize: '16px',
+          color: '#9ca3af',
+          fontWeight: '400',
+          fontSize: '14px',
           flexShrink: 0,
-          boxShadow: '0 2px 8px rgba(220, 38, 38, 0.2)'
+          border: '1px solid #d1d5db'
         }}>
-          SC
+          📸
         </div>
         {!isCollapsed && (
           <div>
@@ -153,7 +150,6 @@ export default function Sidebar({ onSwitchPage, onMenuChange }: SidebarProps) {
         )}
       </div>
 
-      {/* Menu */}
       <div style={{ 
         flex: 1, 
         padding: isCollapsed ? '16px 12px' : '16px 8px',
@@ -201,7 +197,6 @@ export default function Sidebar({ onSwitchPage, onMenuChange }: SidebarProps) {
               if (activeIndex !== index) {
                 e.currentTarget.style.backgroundColor = 'transparent'
               } else {
-                // Restore active color if this is the active item
                 e.currentTarget.style.backgroundColor = '#dc2626'
               }
             }}
@@ -229,7 +224,6 @@ export default function Sidebar({ onSwitchPage, onMenuChange }: SidebarProps) {
         ))}
       </div>
 
-      {/* Footer */}
       {onSwitchPage && (
         <div style={{ padding: '16px 8px', borderTop: '1px solid #f3f4f6' }}>
           <div
