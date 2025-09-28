@@ -26,14 +26,14 @@ export default function GebietsleiterStatsCard({ data }: GebietsleiterStatsCardP
   const kuehlPercentage = Math.min((data.kuehlInventuren.completed / data.kuehlInventuren.total) * 100, 100)
   const einsaetzePercentage = (data.q3Einsaetze.completed / data.q3Einsaetze.total) * 100
 
-  // Premium data that adds up mathematically - around 1000€ per Q with 90-100% rates
+  // Premium data that adds up mathematically - around 1050€ per Q with 95-100% rates
   const premiumData = {
-    q1: { earned: 950, target: 1000, percentage: 95.0 },
-    q2: { earned: 920, target: 1000, percentage: 92.0 },
-    q3: { earned: 870, target: 1000, percentage: 87.0 }, // current quarter
-    q4: { earned: 980, target: 1000, percentage: 98.0 },
-    q5: { earned: 940, target: 1000, percentage: 94.0 },
-    q6: { earned: 0, target: 1000, percentage: 0 }, // future quarter
+    q1: { earned: 1020, target: 1050, percentage: 97.1 },
+    q2: { earned: 1008, target: 1050, percentage: 96.0 },
+    q3: { earned: 998, target: 1050, percentage: 95.0 }, // current quarter
+    q4: { earned: 1050, target: 1050, percentage: 100.0 },
+    q5: { earned: 1035, target: 1050, percentage: 98.6 },
+    q6: { earned: 0, target: 1050, percentage: 0 }, // future quarter
   }
   
   const totalEarned = premiumData.q1.earned + premiumData.q2.earned + premiumData.q3.earned + premiumData.q4.earned + premiumData.q5.earned + premiumData.q6.earned
@@ -91,17 +91,17 @@ export default function GebietsleiterStatsCard({ data }: GebietsleiterStatsCardP
             >
               <div className="premium-content">
                 <div className="premium-numbers">
-                  <div className="premium-current">870</div>
+                  <div className="premium-current">998</div>
                   <div className="premium-separator">/</div>
-                  <div className="premium-target">1000</div>
+                  <div className="premium-target">1050</div>
                   <div className="premium-currency">€</div>
                 </div>
                 <div className="premium-label">Prämie erreicht</div>
                 <div className="premium-progress-mini">
                   <div className="premium-progress-track">
-                    <div className="premium-progress-fill" style={{ width: '87%' }}></div>
+                    <div className="premium-progress-fill" style={{ width: '95%' }}></div>
                   </div>
-                  <div className="premium-percentage">87%</div>
+                  <div className="premium-percentage">95%</div>
                 </div>
               </div>
             </div>
