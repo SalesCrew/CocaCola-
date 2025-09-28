@@ -328,7 +328,7 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
                           fontWeight: '600',
                           color: 'rgba(51, 51, 51, 0.8)'
                         }}>
-                          {gm.kuehl}/50
+                          {gm.kuehl}/121
                         </span>
                       </div>
                       <div style={{
@@ -338,7 +338,7 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
                         overflow: 'hidden'
                       }}>
                         <div style={{
-                          width: `${(gm.kuehl / 50) * 100}%`,
+                          width: `${(gm.kuehl / 121) * 100}%`,
                           height: '100%',
                           background: 'linear-gradient(90deg, #ffd700 0%, #ffed4e 50%, #f0c000 100%)',
                           borderRadius: '3px',
