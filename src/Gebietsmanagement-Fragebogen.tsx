@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import ModulErstellen from './ModulErstellen'
 
 interface GebietsmanagementFragebogenProps {
   onBack?: () => void
@@ -14,6 +15,7 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
   const [fragebogenName, setFragebogenName] = useState('')
   const [isNameSubmitted, setIsNameSubmitted] = useState(false)
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })
+  const [isCreatingModule, setIsCreatingModule] = useState(false)
   const dropdownButtonRef = useRef<HTMLButtonElement>(null)
 
   const modules = [
@@ -46,6 +48,18 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
     title: `Fragebogen ${i + 1}`,
     description: 'Beschreibung des Fragebogens'
   }))
+
+  // Show module creation interface when creating a module
+  if (isCreatingModule) {
+    return (
+      <ModulErstellen 
+        moduleName={selectedModule}
+        onBack={() => {
+          setIsCreatingModule(false)
+        }}
+      />
+    )
+  }
 
   return (
     <div style={{ 
@@ -174,9 +188,18 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
             }}
             title="Hinzufügen"
             onClick={() => {
+              alert('Selected module: ' + selectedModule)
               if (isSlideOut) return
-              setIsSlideOut(true)
-              window.setTimeout(() => setIsCleared(true), 600)
+              
+              // Simple logic: if not "Fragebögen", show module creation
+              if (selectedModule !== 'Fragebögen') {
+                alert('Opening module creation for: ' + selectedModule)
+                setIsCreatingModule(true)
+              } else {
+                alert('Opening questionnaire creation')
+                setIsSlideOut(true)
+                window.setTimeout(() => setIsCleared(true), 600)
+              }
             }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -197,49 +220,123 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
         transform: isSlideOut ? 'translateX(-120%)' : 'translateX(0)',
         opacity: isSlideOut ? 0 : 1
       }}>
-        {fragebogenCards.map((card) => (
-          <div
-            key={card.id}
-            style={{
-              background: '#ffffff',
-              border: '1px solid #e5e7eb',
-              borderRadius: '12px',
-              padding: '20px',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              aspectRatio: '1',
+        {selectedModule === 'Fragebögen' ? (
+          // Show questionnaire cards
+          fragebogenCards.map((card) => (
+            <div
+              key={card.id}
+              style={{
+                background: '#ffffff',
+                border: '1px solid #e5e7eb',
+                borderRadius: '12px',
+                padding: '20px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                aspectRatio: '1',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)'
+                e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.1)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)'
+                e.currentTarget.style.boxShadow = 'none'
+              }}
+            >
+              <h3 style={{ 
+                fontSize: '16px', 
+                fontWeight: '600', 
+                color: '#1f2937',
+                margin: '0 0 8px 0'
+              }}>
+                {card.title}
+              </h3>
+              <p style={{ 
+                fontSize: '14px', 
+                color: '#6b7280',
+                margin: 0
+              }}>
+                {card.description}
+              </p>
+            </div>
+          ))
+        ) : (
+          // Show empty state for modules (since they don't exist yet)
+          <div style={{
+            gridColumn: '1 / -1',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '60px 20px',
+            background: '#ffffff',
+            borderRadius: '16px',
+            border: '2px dashed #d1d5db',
+            textAlign: 'center'
+          }}>
+            <div style={{
+              width: '64px',
+              height: '64px',
+              background: '#f3f4f6',
+              borderRadius: '50%',
               display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
               alignItems: 'center',
-              textAlign: 'center'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)'
-              e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.1)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = 'none'
-            }}
-          >
-            <h3 style={{ 
-              fontSize: '16px', 
-              fontWeight: '600', 
-              color: '#1f2937',
+              justifyContent: 'center',
+              marginBottom: '16px'
+            }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              color: '#374151',
               margin: '0 0 8px 0'
             }}>
-              {card.title}
+              Keine Module für "{selectedModule}" vorhanden
             </h3>
-            <p style={{ 
-              fontSize: '14px', 
+            <p style={{
+              fontSize: '14px',
               color: '#6b7280',
-              margin: 0
+              margin: '0 0 20px 0',
+              maxWidth: '400px'
             }}>
-              {card.description}
+              Erstellen Sie Ihr erstes Modul für diese Kategorie, indem Sie auf den + Button klicken.
             </p>
+            <button
+              onClick={() => setIsCreatingModule(true)}
+              style={{
+                padding: '12px 24px',
+                background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 2px 8px rgba(220, 38, 38, 0.2)'
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Modul erstellen
+            </button>
           </div>
-        ))}
+        )}
       </div>
 
       {/* Back Button */}
@@ -287,6 +384,10 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
             onClick={() => {
               setSelectedModule('Fragebögen')
               setIsDropdownOpen(false)
+              // Reset all creation states when switching to Fragebögen
+              setIsCleared(false)
+              setIsSlideOut(false)
+              setIsCreatingModule(false)
             }}
             style={{
               width: '100%',
@@ -332,6 +433,10 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
               onClick={() => {
                 setSelectedModule(module)
                 setIsDropdownOpen(false)
+                // Reset all creation states when switching modules
+                setIsCleared(false)
+                setIsSlideOut(false)
+                setIsCreatingModule(false)
               }}
               style={{
                 width: '100%',
@@ -359,7 +464,7 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
       )}
 
       {/* New Fragebogen Creation UI */}
-      {isCleared && (
+      {isCleared && !isCreatingModule && selectedModule === 'Fragebögen' && (
         <div style={{
           opacity: isCleared ? 1 : 0,
           transition: 'opacity 300ms ease',
@@ -401,311 +506,203 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
                   Kategorie auswählen
                 </h3>
                 <div style={{
-                  width: '100%',
-                  height: '1px',
-                  background: '#e5e7eb',
-                  marginBottom: '8px'
-                }}></div>
-                <div style={{
-                  background: '#f8f9fa',
-                  borderRadius: '8px',
-                  padding: '8px',
-                  flex: 1,
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '6px',
-                  maxHeight: '120px',
-                  overflowY: 'auto',
-                  scrollbarWidth: 'none',
-                  msOverflowStyle: 'none'
+                  flex: 1,
+                  overflowY: 'auto'
                 }}>
-                  {categories.map((category) => {
-                    const isSelected = selectedCategory === category
-                    return (
-                      <button
-                        key={`${category}-${isSelected}`}
-                        onClick={() => setSelectedCategory(category)}
-                        style={{
-                          padding: '8px 12px',
-                          border: isSelected ? '1px solid rgba(220, 38, 38, 0.9)' : '1px solid #e5e7eb',
-                          borderRadius: '8px',
-                          background: isSelected 
-                            ? 'rgba(220, 38, 38, 0.072)'
-                            : '#ffffff',
-                          color: isSelected ? 'rgba(220, 38, 38, 0.9)' : '#374151',
-                          fontSize: '14px',
-                          fontWeight: isSelected ? '600' : '500',
-                          cursor: 'pointer',
-                          textAlign: 'left',
-                          order: isSelected ? -1 : 0,
-                          pointerEvents: 'auto'
-                        }}
-                        {...(!isSelected && {
-                          onMouseEnter: (e) => {
-                            e.currentTarget.style.background = '#f3f4f6'
-                          },
-                          onMouseLeave: (e) => {
-                            e.currentTarget.style.background = '#ffffff'
-                          }
-                        })}
-                      >
-                        {category}
-                      </button>
-                    )
-                  })}
+                  {categories.map((category) => (
+                    <button
+                      key={category}
+                      onClick={() => setSelectedCategory(category)}
+                      style={{
+                        padding: '8px 12px',
+                        border: selectedCategory === category ? '2px solid #dc2626' : '1px solid #e5e7eb',
+                        borderRadius: '6px',
+                        background: selectedCategory === category ? '#fef2f2' : '#ffffff',
+                        color: selectedCategory === category ? '#dc2626' : '#374151',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        textAlign: 'left',
+                        transition: 'all 0.15s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (selectedCategory !== category) {
+                          e.currentTarget.style.backgroundColor = '#f9fafb'
+                          e.currentTarget.style.borderColor = '#d1d5db'
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (selectedCategory !== category) {
+                          e.currentTarget.style.backgroundColor = '#ffffff'
+                          e.currentTarget.style.borderColor = '#e5e7eb'
+                        }
+                      }}
+                    >
+                      {category}
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              {/* Small Cards Carousel */}
-              <div style={{ flex: 1 }}>
-                <div style={{
-                  display: 'flex',
-                  gap: '24px',
-                  marginBottom: '16px',
-                  justifyContent: 'space-between',
-                  padding: '0 20px'
-                }}>
-                  {Array.from({ length: 5 }, (_, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        width: '120px',
-                        height: '120px',
-                        background: '#ffffff',
-                        borderRadius: '12px',
-                        border: '2px solid #e5e7eb',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'translateY(-2px)'
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)'
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'translateY(0)'
-                        e.currentTarget.style.boxShadow = 'none'
-                      }}
-                    >
-                      {/* Placeholder for module content */}
-                    </div>
-                  ))}
-                </div>
-                {/* Navigation Arrows */}
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: '16px'
-                }}>
-                  <button style={{
+              {/* Navigation Arrows */}
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '20px 0'
+              }}>
+                <button
+                  style={{
                     width: '32px',
                     height: '32px',
+                    border: '1px solid #e5e7eb',
                     borderRadius: '50%',
-                    border: '1px solid #d1d5db',
                     background: '#ffffff',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    ←
-                  </button>
-                  <button style={{
+                    justifyContent: 'center',
+                    color: '#6b7280'
+                  }}
+                >
+                  ←
+                </button>
+                <button
+                  style={{
                     width: '32px',
                     height: '32px',
+                    border: '1px solid #e5e7eb',
                     borderRadius: '50%',
-                    border: '1px solid #d1d5db',
                     background: '#ffffff',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    →
-                  </button>
-                </div>
+                    justifyContent: 'center',
+                    color: '#6b7280'
+                  }}
+                >
+                  →
+                </button>
+              </div>
+
+              {/* Empty Cards Grid */}
+              <div style={{
+                flex: 1,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '12px',
+                maxWidth: '600px'
+              }}>
+                {Array.from({ length: 6 }, (_, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      aspectRatio: '1',
+                      border: '2px dashed #d1d5db',
+                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#9ca3af',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      background: '#fafafa'
+                    }}
+                  >
+                    Position {i + 1}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Bottom Section - Fragebogen Creation */}
+          {/* Bottom Section - Name Input and Action Buttons */}
           <div style={{
             background: '#ffffff',
             borderRadius: '16px',
             padding: '24px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '20px'
           }}>
-            {/* Name Input and Add Markets Button */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '16px',
-              marginBottom: '32px'
-            }}>
-              <div style={{ maxWidth: '400px' }}>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#374151',
-                  marginBottom: '8px'
-                }}>
-                  Name des Fragebogens
-                </label>
-                {!isNameSubmitted ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <input
-                      type="text"
-                      value={fragebogenName}
-                      onChange={(e) => setFragebogenName(e.target.value)}
-                      placeholder="Fragebogen Name eingeben..."
-                      style={{
-                        width: '350px',
-                        padding: '12px 16px',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        outline: 'none'
-                      }}
-                    />
-                    {fragebogenName.trim() && (
-                      <button
-                        onClick={() => setIsNameSubmitted(true)}
-                        style={{
-                          width: '36px',
-                          height: '36px',
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: '#10b981'
-                        }}
-                      >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="20,6 9,17 4,12"/>
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <div
-                    style={{
-                      position: 'relative',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: '12px 16px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      background: '#f9fafb',
-                      cursor: 'pointer',
-                      width: 'fit-content',
-                      transition: 'background-color 0.2s ease'
-                    }}
-                    onMouseEnter={(e) => {
-                      const editIcon = e.currentTarget.querySelector('.edit-icon') as HTMLElement
-                      const nameText = e.currentTarget.querySelector('.name-text') as HTMLElement
-                      if (editIcon) editIcon.style.opacity = '1'
-                      if (nameText) nameText.style.opacity = '0.3'
-                      e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'
-                    }}
-                    onMouseLeave={(e) => {
-                      const editIcon = e.currentTarget.querySelector('.edit-icon') as HTMLElement
-                      const nameText = e.currentTarget.querySelector('.name-text') as HTMLElement
-                      if (editIcon) editIcon.style.opacity = '0'
-                      if (nameText) nameText.style.opacity = '1'
-                      e.currentTarget.style.backgroundColor = '#f9fafb'
-                    }}
-                    onClick={() => setIsNameSubmitted(false)}
-                  >
-                    <span className="name-text" style={{ transition: 'opacity 0.2s ease' }}>{fragebogenName}</span>
-                    <svg 
-                      className="edit-icon"
-                      width="16" 
-                      height="16" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="#6b7280" 
-                      strokeWidth="2"
-                      style={{ 
-                        opacity: 0, 
-                        transition: 'opacity 0.2s ease',
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)'
-                      }}
-                    >
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                  </div>
-                )}
-              </div>
-              <div style={{ display: 'flex', gap: '12px', marginTop: '24px', marginLeft: 'auto' }}>
-                <button style={{
-                  padding: '12px 24px',
-                  background: 'linear-gradient(135deg, #dc2626, #991b1b)',
-                  color: '#ffffff',
-                  border: 'none',
+            <div style={{ flex: 1 }}>
+              <label style={{
+                fontSize: '14px',
+                fontWeight: '600',
+                color: '#374151',
+                display: 'block',
+                marginBottom: '8px'
+              }}>
+                Name des Fragebogens
+              </label>
+              <input
+                type="text"
+                placeholder="Fragebogen Name eingeben..."
+                value={fragebogenName}
+                onChange={(e) => setFragebogenName(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  border: '1px solid #d1d5db',
                   borderRadius: '8px',
                   fontSize: '14px',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}>
-                  + Märkte hinzufügen
-                </button>
-                <button style={{
+                  outline: 'none',
+                  background: '#ffffff'
+                }}
+              />
+            </div>
+            
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button style={{
+                padding: '12px 24px',
+                background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 2px 8px rgba(220, 38, 38, 0.2)'
+              }}>
+                + Märkte hinzufügen
+              </button>
+              
+              <button 
+                onClick={() => {
+                  if (fragebogenName.trim() && selectedCategory) {
+                    setIsNameSubmitted(true)
+                  }
+                }}
+                style={{
                   padding: '12px 24px',
-                  background: 'linear-gradient(135deg, #10b981, #047857)',
-                  color: '#ffffff',
+                  background: fragebogenName.trim() && selectedCategory 
+                    ? 'linear-gradient(135deg, #10b981, #047857)' 
+                    : '#e5e7eb',
+                  color: fragebogenName.trim() && selectedCategory ? '#ffffff' : '#9ca3af',
                   border: 'none',
                   borderRadius: '8px',
+                  cursor: fragebogenName.trim() && selectedCategory ? 'pointer' : 'not-allowed',
                   fontSize: '14px',
                   fontWeight: '600',
-                  cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="20,6 9,17 4,12"/>
-                  </svg>
-                  Fragebogen erstellen
-                </button>
-              </div>
-            </div>
-
-            {/* 6 Empty Containers for Categories */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '16px'
-            }}>
-              {Array.from({ length: 6 }, (_, i) => (
-                <div
-                  key={i}
-                  style={{
-                    height: '120px',
-                    background: '#f8f9fa',
-                    border: '2px dashed #d1d5db',
-                    borderRadius: '12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#9ca3af',
-                    fontSize: '14px',
-                    fontWeight: '500'
-                  }}
-                >
-                  Position {i + 1}
-                </div>
-              ))}
+                  gap: '8px',
+                  boxShadow: fragebogenName.trim() && selectedCategory 
+                    ? '0 2px 8px rgba(16, 185, 129, 0.2)' 
+                    : 'none'
+                }}
+              >
+                ✓ Fragebogen erstellen
+              </button>
             </div>
           </div>
         </div>
