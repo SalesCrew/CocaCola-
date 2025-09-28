@@ -18,7 +18,7 @@ export default function GebietsleiterDashboard({ onSwitchPage, onSettingsPage }:
     region: 'West',
     ipp: 5.6,
     personalGoals: 98, // percentage
-    kuehlInventuren: { completed: 46, total: 50 }, // can be over 100%
+    kuehlInventuren: { completed: 58, total: 121 }, // can be over 100%
     q3Einsaetze: { completed: 270, total: 312 },
     currentQuarter: 'Q3 2025'
   }

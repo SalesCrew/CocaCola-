@@ -174,7 +174,7 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
               { name: 'Mario Riedenbauer', regions: ['Süd'], ipp: 5.5, personalGoals: 69, kuehl: 31 },
               { name: 'Michael Wilhelmi', regions: ['Süd'], ipp: 5.3, personalGoals: 91, kuehl: 39 },
               { name: 'Eva Zausinger', regions: ['Süd'], ipp: 5.1, personalGoals: 76, kuehl: 42 },
-              { name: 'Thomas Nobis', regions: ['West'], ipp: 5.6, personalGoals: 98, kuehl: 56 },
+              { name: 'Thomas Nobis', regions: ['West'], ipp: 5.6, personalGoals: 98, kuehl: 58 },
               { name: 'Josef Schellhorn', regions: ['West'], ipp: 5.4, personalGoals: 84, kuehl: 29 },
               { name: 'Benjamin Spiegel', regions: ['West'], ipp: 5.2, personalGoals: 86, kuehl: 47 }
             ].map((gm) => {
