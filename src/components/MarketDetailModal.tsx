@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { gmData } from './GebietsmanagerGMFilter'
 
@@ -16,20 +16,6 @@ interface MarketDetailModalProps {
   } | null
 }
 
-// Generate random goals data
-const generateGoalsData = () => {
-  return {
-    schuette: Math.floor(Math.random() * 40) + 60,
-    display: Math.floor(Math.random() * 30) + 70,
-    platzierungOhneMaterial: Math.floor(Math.random() * 35) + 55,
-    platzierungMitMaterial: Math.floor(Math.random() * 45) + 45,
-    zweitplatzierungen: Math.floor(Math.random() * 50) + 50,
-    e3: Math.floor(Math.random() * 30) + 40,
-    grossplatzierungen: Math.floor(Math.random() * 40) + 60,
-    permanentRags: Math.floor(Math.random() * 35) + 65,
-    flexziel: Math.floor(Math.random() * 40) + 50
-  }
-}
 
 // Find which GM manages this market
 const findMarketGM = (marketName: string, marketChain: string) => {
@@ -46,7 +32,6 @@ const findMarketGM = (marketName: string, marketChain: string) => {
 }
 
 export default function MarketDetailModal({ isOpen, onClose, marketData }: MarketDetailModalProps) {
-  const [goals] = useState(generateGoalsData())
   const modalRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

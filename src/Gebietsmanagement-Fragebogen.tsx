@@ -13,7 +13,7 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
   const [isCleared, setIsCleared] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('')
   const [fragebogenName, setFragebogenName] = useState('')
-  const [isNameSubmitted, setIsNameSubmitted] = useState(false)
+  const [, setIsNameSubmitted] = useState(false)
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })
   const [isCreatingModule, setIsCreatingModule] = useState(false)
   const dropdownButtonRef = useRef<HTMLButtonElement>(null)
@@ -188,15 +188,12 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
             }}
             title="Hinzufügen"
             onClick={() => {
-              alert('Selected module: ' + selectedModule)
               if (isSlideOut) return
               
               // Simple logic: if not "Fragebögen", show module creation
               if (selectedModule !== 'Fragebögen') {
-                alert('Opening module creation for: ' + selectedModule)
                 setIsCreatingModule(true)
               } else {
-                alert('Opening questionnaire creation')
                 setIsSlideOut(true)
                 window.setTimeout(() => setIsCleared(true), 600)
               }
