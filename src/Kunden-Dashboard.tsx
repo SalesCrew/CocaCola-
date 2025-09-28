@@ -280,7 +280,7 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
                           textTransform: 'uppercase',
                           letterSpacing: '0.3px'
                         }}>
-                          Persönliche Ziele
+                          Persönliche Boni ziele
                         </span>
                         <span style={{ 
                           fontSize: '11px', 
@@ -444,13 +444,11 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
             ].map((market) => {
               const ipp = 4.8 + Math.random() * 1.1
               const marktZiele = Math.floor(Math.random() * 40) + 60
-              const kuehlInventur = Math.random() > 0.7 ? 100 : 0 // 70% chance of being complete
-
               return {
                 ...market,
                 ipp,
                 marktZiele,
-                kuehlInventur
+                kuehlInventur: null // No Kühlerinventur for Universumsmärkte
               }
             }).map((market) => {
               const getGoalColor = (percentage: number) => {
@@ -581,48 +579,6 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
                       </div>
                     </div>
 
-                        {/* Kühlerinventur Progress */}
-                    <div>
-                      <div style={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '8px'
-                      }}>
-                        <span style={{ 
-                          fontSize: '11px', 
-                          fontWeight: '600',
-                          color: 'rgba(51, 51, 51, 0.7)',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.3px'
-                        }}>
-                              Kühlerinventur
-                        </span>
-                        <span style={{ 
-                          fontSize: '11px', 
-                          fontWeight: '600',
-                          color: market.kuehlInventur === 100 ? '#28a745' : '#dc3545'
-                        }}>
-                          {market.kuehlInventur === 100 ? '✓' : '–'}
-                        </span>
-                      </div>
-                      <div style={{
-                        height: '6px',
-                        backgroundColor: 'rgba(0, 0, 0, 0.06)',
-                        borderRadius: '3px',
-                        overflow: 'hidden'
-                      }}>
-                        <div style={{
-                          width: `${market.kuehlInventur}%`,
-                          height: '100%',
-                          background: market.kuehlInventur === 100
-                            ? 'linear-gradient(90deg, #a8e6a3 0%, #28a745 100%)'
-                            : 'transparent',
-                          borderRadius: '3px',
-                          transition: 'width 0.8s ease'
-                        }} />
-                      </div>
-                    </div>
                   </div>
                 </div>
               )
@@ -680,7 +636,7 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
                 ...market,
                 ipp,
                 marktZiele,
-                kuehlInventur: null, // No Kühlerinventur for Flexmärkte
+                kuehlInventur: Math.random() > 0.7 ? 100 : 0, // 70% chance of being complete
                 hasIPP,
                 isFlexMarket: true // Flag to identify flex markets
               }
@@ -809,6 +765,49 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
                           width: `${market.marktZiele}%`,
                           height: '100%',
                           background: getGoalGradient(market.marktZiele),
+                          borderRadius: '3px',
+                          transition: 'width 0.8s ease'
+                        }} />
+                      </div>
+                    </div>
+
+                    {/* Kühlerinventur Progress */}
+                    <div style={{ marginTop: '16px' }}>
+                      <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '8px'
+                      }}>
+                        <span style={{ 
+                          fontSize: '11px', 
+                          fontWeight: '600',
+                          color: 'rgba(51, 51, 51, 0.7)',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.3px'
+                        }}>
+                              Kühlerinventur
+                        </span>
+                        <span style={{ 
+                          fontSize: '11px', 
+                          fontWeight: '600',
+                          color: market.kuehlInventur === 100 ? '#28a745' : '#dc3545'
+                        }}>
+                          {market.kuehlInventur === 100 ? '✓' : '–'}
+                        </span>
+                      </div>
+                      <div style={{
+                        height: '6px',
+                        backgroundColor: 'rgba(0, 0, 0, 0.06)',
+                        borderRadius: '3px',
+                        overflow: 'hidden'
+                      }}>
+                        <div style={{
+                          width: `${market.kuehlInventur}%`,
+                          height: '100%',
+                          background: market.kuehlInventur === 100
+                            ? 'linear-gradient(90deg, #a8e6a3 0%, #28a745 100%)'
+                            : 'transparent',
                           borderRadius: '3px',
                           transition: 'width 0.8s ease'
                         }} />

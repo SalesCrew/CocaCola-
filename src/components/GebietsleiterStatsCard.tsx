@@ -116,7 +116,7 @@ export default function GebietsleiterStatsCard({ data }: GebietsleiterStatsCardP
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <span>Persönliche Ziele</span>
+                <span>Persönliche Boni ziele</span>
               </div>
               <div className="stat-percentage">{data.personalGoals}%</div>
             </div>
@@ -149,6 +149,27 @@ export default function GebietsleiterStatsCard({ data }: GebietsleiterStatsCardP
                 <div 
                   className={`progress-fill warning`}
                   style={{ width: `${Math.min(einsaetzePercentage, 100)}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* MHD */}
+          <div className="stat-item mhd-stat">
+            <div className="stat-header">
+              <div className="stat-label-with-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span>MHD</span>
+              </div>
+              <div className="stat-percentage">84%</div>
+            </div>
+            <div className="progress-bar">
+              <div className="progress-track">
+                <div 
+                  className="progress-fill"
+                  style={{ width: '84%', background: 'linear-gradient(90deg, #a3c7ff 0%, #007bff 100%)' }}
                 />
               </div>
             </div>

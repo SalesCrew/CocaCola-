@@ -81,17 +81,6 @@ export default function MarketDetailModal({ isOpen, onClose, marketData }: Marke
     return 'linear-gradient(90deg, #f8a8a8 0%, #dc3545 100%)'
   }
 
-  const goalItems = [
-    { label: 'Schütte', value: goals.schuette },
-    { label: 'Display', value: goals.display },
-    { label: 'Platzierung ohne Material', value: goals.platzierungOhneMaterial },
-    { label: 'Platzierung mit Material', value: goals.platzierungMitMaterial },
-    { label: 'Zweitplatzierungen', value: goals.zweitplatzierungen },
-    { label: 'E3', value: goals.e3 },
-    { label: 'Großplatzierungen', value: goals.grossplatzierungen },
-    { label: 'Permanent Rags', value: goals.permanentRags },
-    { label: 'Flexziel', value: goals.flexziel }
-  ]
 
   const marketGM = findMarketGM(marketData.name, marketData.chain)
 
@@ -212,12 +201,14 @@ export default function MarketDetailModal({ isOpen, onClose, marketData }: Marke
           {/* Pills Row */}
           <div style={{
             display: 'flex',
-            justifyContent: marketData.kuehlInventur === null ? 'flex-start' : 'space-between', // Flex markets: left align, Regular markets: space between
+            justifyContent: 'space-between',
             marginBottom: '16px',
-            alignItems: 'center'
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '8px'
           }}>
-            {/* GM Badge - Left (only for regular markets) */}
-            {marketData.kuehlInventur !== null && marketGM && (
+            {/* GM Badge - Left (for Universumsmärkte) or Regular markets with GM */}
+            {(marketData.kuehlInventur === null || (marketData.kuehlInventur !== null && marketGM)) && (
               <div style={{
                 background: 'linear-gradient(135deg, rgba(51, 51, 51, 0.05) 0%, rgba(51, 51, 51, 0.08) 100%)',
                 border: '1px solid rgba(51, 51, 51, 0.15)',
@@ -241,7 +232,7 @@ export default function MarketDetailModal({ isOpen, onClose, marketData }: Marke
                   fontWeight: '600', 
                   color: 'rgba(51, 51, 51, 0.8)'
                 }}>
-                  {marketGM.name}
+                  {marketGM ? marketGM.name : 'Thomas Nobis'}
                 </span>
               </div>
             )}
@@ -273,6 +264,36 @@ export default function MarketDetailModal({ isOpen, onClose, marketData }: Marke
                   fontStyle: 'italic'
                 }}>
                   Nicht zugeordnet
+                </span>
+              </div>
+            )}
+
+            {/* Frequency Badge - Only for Universumsmärkte */}
+            {marketData.kuehlInventur === null && (
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(253, 126, 20, 0.08) 0%, rgba(253, 126, 20, 0.12) 100%)',
+                border: '1px solid rgba(253, 126, 20, 0.25)',
+                borderRadius: '10px',
+                padding: '8px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}>
+                <span style={{ 
+                  fontSize: '12px', 
+                  color: 'rgba(253, 126, 20, 0.8)',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  Frequenz
+                </span>
+                <span style={{ 
+                  fontSize: '12px', 
+                  fontWeight: '700', 
+                  color: '#fd7e14'
+                }}>
+                  {[6, 8, 10, 12, 24][Math.floor(Math.random() * 5)]}/Jahr
                 </span>
               </div>
             )}
@@ -356,7 +377,7 @@ export default function MarketDetailModal({ isOpen, onClose, marketData }: Marke
             padding: '14px',
             border: '1px solid rgba(0, 0, 0, 0.04)'
           }}>
-            {/* Markt Ziele */}
+            {/* Besuchsfrequenz */}
             <div style={{ marginBottom: '14px' }}>
               <div style={{
                 display: 'flex',
@@ -371,7 +392,7 @@ export default function MarketDetailModal({ isOpen, onClose, marketData }: Marke
                   textTransform: 'uppercase',
                   letterSpacing: '0.3px'
                 }}>
-                  Markt Ziele
+                  Besuchsfrequenz {marketGM ? marketGM.name : 'Thomas Nobis'}
                 </span>
                 <span style={{
                   fontSize: '11px',
@@ -397,56 +418,58 @@ export default function MarketDetailModal({ isOpen, onClose, marketData }: Marke
               </div>
             </div>
 
-            {/* Kühlerinventur */}
-            <div>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '6px'
-              }}>
-                <span style={{
-                  fontSize: '11px',
-                  fontWeight: '600',
-                  color: 'rgba(51, 51, 51, 0.7)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.3px'
-                }}>
-                  Kühlerinventur
-                </span>
-                <span style={{
-                  fontSize: '11px',
-                  fontWeight: '600',
-                  color: marketData.kuehlInventur === 100 ? '#28a745' : '#dc3545'
-                }}>
-                  {marketData.kuehlInventur === 100 ? 'Abgeschlossen' : 'Ausstehend'}
-                </span>
-              </div>
-              <div style={{
-                height: '8px',
-                backgroundColor: 'rgba(0, 0, 0, 0.06)',
-                borderRadius: '4px',
-                overflow: 'hidden'
-              }}>
+            {/* Kühlerinventur - Only for Flex markets */}
+            {marketData.kuehlInventur !== null && (
+              <div>
                 <div style={{
-                  width: `${marketData.kuehlInventur}%`,
-                  height: '100%',
-                  background: marketData.kuehlInventur === 100 
-                    ? 'linear-gradient(90deg, #a8e6a3 0%, #28a745 100%)'
-                    : 'rgba(0, 0, 0, 0.06)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '6px'
+                }}>
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: '600',
+                    color: 'rgba(51, 51, 51, 0.7)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.3px'
+                  }}>
+                    Kühlerinventur
+                  </span>
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: '600',
+                    color: marketData.kuehlInventur === 100 ? '#28a745' : '#dc3545'
+                  }}>
+                    {marketData.kuehlInventur === 100 ? 'Abgeschlossen' : 'Ausstehend'}
+                  </span>
+                </div>
+                <div style={{
+                  height: '8px',
+                  backgroundColor: 'rgba(0, 0, 0, 0.06)',
                   borderRadius: '4px',
-                  transition: 'width 0.8s ease'
-                }} />
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    width: `${marketData.kuehlInventur}%`,
+                    height: '100%',
+                    background: marketData.kuehlInventur === 100 
+                      ? 'linear-gradient(90deg, #a8e6a3 0%, #28a745 100%)'
+                      : 'rgba(0, 0, 0, 0.06)',
+                    borderRadius: '4px',
+                    transition: 'width 0.8s ease'
+                  }} />
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
-        {/* Scrollable Goals */}
+        {/* Einzelne Besuche */}
         <div style={{
           flex: 1,
           overflowY: 'auto',
-          padding: '20px 24px',
+          padding: '20px 24px 20px 32px',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
           WebkitScrollbar: { display: 'none' }
@@ -459,11 +482,47 @@ export default function MarketDetailModal({ isOpen, onClose, marketData }: Marke
             letterSpacing: '0.5px',
             marginBottom: '16px'
           }}>
-            Markt-spezifische Ziele
+            Einzelne Besuche
           </h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {goalItems.map((goal, index) => (
+            {[
+              { 
+                date: '23.09.2025', 
+                gl: 'Thomas Nobis',
+                anfahrtszeit: 23, 
+                arbeitszeit: 45, 
+                activities: { schuetten: 1, displays: 2, distributionsziel: 1, flexziel: 0 }
+              },
+              { 
+                date: '20.09.2025', 
+                gl: 'Alexander Felsberger',
+                anfahrtszeit: 18, 
+                arbeitszeit: 52, 
+                activities: { schuetten: 0, displays: 1, distributionsziel: 2, flexziel: 1 }
+              },
+              { 
+                date: '17.09.2025', 
+                gl: 'Thomas Nobis',
+                anfahrtszeit: 31, 
+                arbeitszeit: 38, 
+                activities: { schuetten: 2, displays: 0, distributionsziel: 1, flexziel: 1 }
+              },
+              { 
+                date: '14.09.2025', 
+                gl: 'Alexander Felsberger',
+                anfahrtszeit: 25, 
+                arbeitszeit: 41, 
+                activities: { schuetten: 1, displays: 1, distributionsziel: 0, flexziel: 2 }
+              },
+              { 
+                date: '11.09.2025', 
+                gl: 'Thomas Nobis',
+                anfahrtszeit: 22, 
+                arbeitszeit: 48, 
+                activities: { schuetten: 3, displays: 1, distributionsziel: 1, flexziel: 0 }
+              }
+            ].map((visit, index) => (
               <div
                 key={index}
                 style={{
@@ -475,39 +534,84 @@ export default function MarketDetailModal({ isOpen, onClose, marketData }: Marke
                 }}
               >
                 <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  color: 'rgba(51, 51, 51, 0.9)',
                   marginBottom: '8px'
                 }}>
-                  <span style={{
-                    fontSize: '12px',
-                    fontWeight: '500',
-                    color: 'rgba(51, 51, 51, 0.8)'
-                  }}>
-                    {goal.label}
-                  </span>
-                  <span style={{
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    color: getGoalColor(goal.value)
-                  }}>
-                    {goal.value}%
-                  </span>
+                  Besuch {visit.date}
                 </div>
                 <div style={{
-                  height: '6px',
-                  backgroundColor: 'rgba(0, 0, 0, 0.06)',
-                  borderRadius: '3px',
-                  overflow: 'hidden'
+                  fontSize: '11px',
+                  color: 'rgba(51, 51, 51, 0.7)',
+                  marginBottom: '8px',
+                  fontWeight: '500'
                 }}>
-                  <div style={{
-                    width: `${goal.value}%`,
-                    height: '100%',
-                    background: getGoalGradient(goal.value),
-                    borderRadius: '3px',
-                    transition: 'width 0.8s ease'
-                  }} />
+                  {visit.gl}
+                </div>
+                <div style={{
+                  fontSize: '11px',
+                  color: 'rgba(51, 51, 51, 0.6)',
+                  marginBottom: '8px',
+                  display: 'flex',
+                  gap: '16px'
+                }}>
+                  <span>Anfahrtszeit {visit.anfahrtszeit}min</span>
+                  <span>Arbeitszeit {visit.arbeitszeit}min</span>
+                </div>
+                <div style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '8px'
+                }}>
+                  {visit.activities.schuetten > 0 && (
+                    <span style={{
+                      fontSize: '10px',
+                      fontWeight: '600',
+                      color: '#28a745',
+                      background: '#28a74515',
+                      padding: '3px 6px',
+                      borderRadius: '4px'
+                    }}>
+                      Schütten +{visit.activities.schuetten}
+                    </span>
+                  )}
+                  {visit.activities.displays > 0 && (
+                    <span style={{
+                      fontSize: '10px',
+                      fontWeight: '600',
+                      color: '#007bff',
+                      background: '#007bff15',
+                      padding: '3px 6px',
+                      borderRadius: '4px'
+                    }}>
+                      Displays +{visit.activities.displays}
+                    </span>
+                  )}
+                  {visit.activities.distributionsziel > 0 && (
+                    <span style={{
+                      fontSize: '10px',
+                      fontWeight: '600',
+                      color: '#fd7e14',
+                      background: '#fd7e1415',
+                      padding: '3px 6px',
+                      borderRadius: '4px'
+                    }}>
+                      Distributionsziel +{visit.activities.distributionsziel}
+                    </span>
+                  )}
+                  {visit.activities.flexziel > 0 && (
+                    <span style={{
+                      fontSize: '10px',
+                      fontWeight: '600',
+                      color: '#6f42c1',
+                      background: '#6f42c115',
+                      padding: '3px 6px',
+                      borderRadius: '4px'
+                    }}>
+                      Flexziel +{visit.activities.flexziel}
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
