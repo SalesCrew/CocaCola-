@@ -13,7 +13,6 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
   const [isCleared, setIsCleared] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('')
   const [fragebogenName, setFragebogenName] = useState('')
-  const [, setIsNameSubmitted] = useState(false)
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })
   const [isCreatingModule, setIsCreatingModule] = useState(false)
   const dropdownButtonRef = useRef<HTMLButtonElement>(null)
@@ -62,11 +61,18 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
   }
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      background: isCleared ? '#ffffff' : '#f5f5f5', 
-      padding: '20px'
-    }}>
+    <>
+      <style>{`
+        .category-scroll::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+      <div style={{ 
+        height: '100vh',
+        overflow: 'hidden',
+        background: isCleared ? '#ffffff' : '#f5f5f5', 
+        padding: '20px'
+      }}>
       {/* Header Bar */}
       <div style={{
         display: 'flex',
@@ -108,7 +114,7 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
         </div>
 
         {/* Search Bar */}
-        <div style={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
+        <div style={{ position: 'relative', flex: 1, maxWidth: '300px' }}>
           <svg 
             style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}
             width="16" 
@@ -204,6 +210,59 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
               <line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
           </button>
+
+          {/* Fragebogen Action Buttons - Only show when in fragebogen creation mode */}
+          {selectedModule === 'Fragebögen' && isCleared && (
+            <>
+              <button style={{
+                padding: '8px 16px',
+                background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '12px',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 8px rgba(220, 38, 38, 0.2)',
+                whiteSpace: 'nowrap'
+              }}>
+                + Märkte hinzufügen
+              </button>
+              
+              <button 
+                onClick={() => {
+                  if (fragebogenName.trim() && selectedCategory) {
+                    console.log('Creating fragebogen:', fragebogenName, selectedCategory)
+                  }
+                }}
+                style={{
+                  padding: '8px 16px',
+                  background: fragebogenName.trim() && selectedCategory 
+                    ? 'linear-gradient(135deg, #10b981, #047857)' 
+                    : '#e5e7eb',
+                  color: fragebogenName.trim() && selectedCategory ? '#ffffff' : '#9ca3af',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: fragebogenName.trim() && selectedCategory ? 'pointer' : 'not-allowed',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: fragebogenName.trim() && selectedCategory 
+                    ? '0 2px 8px rgba(16, 185, 129, 0.2)' 
+                    : 'none',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                ✓ Fragebogen erstellen
+              </button>
+            </>
+          )}
+
         </div>
       </div>
 
@@ -478,18 +537,19 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
           <div style={{
             background: '#ffffff',
             borderRadius: '16px',
-            padding: '24px',
+            padding: '16px',
             marginBottom: '24px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+            height: '280px'
           }}>
             <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
               {/* Category Selection Card */}
               <div style={{
                 background: '#f8f9fa',
                 borderRadius: '12px',
-                padding: '16px',
-                width: '450px',
-                maxHeight: '200px',
+                padding: '12px',
+                width: '320px',
+                maxHeight: '248px',
                 border: '1px solid #e5e7eb',
                 display: 'flex',
                 flexDirection: 'column'
@@ -502,22 +562,24 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
                 }}>
                   Kategorie auswählen
                 </h3>
-                <div style={{
+                <div className="category-scroll" style={{
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '6px',
                   flex: 1,
-                  overflowY: 'auto'
+                  overflowY: 'auto',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none'
                 }}>
-                  {categories.map((category) => (
+                  {[selectedCategory, ...categories.filter(c => c !== selectedCategory)].filter(Boolean).map((category) => (
                     <button
                       key={category}
                       onClick={() => setSelectedCategory(category)}
                       style={{
                         padding: '8px 12px',
-                        border: selectedCategory === category ? '2px solid #dc2626' : '1px solid #e5e7eb',
+                        border: selectedCategory === category ? '1px solid rgba(220, 38, 38, 0.3)' : '1px solid #e5e7eb',
                         borderRadius: '6px',
-                        background: selectedCategory === category ? '#fef2f2' : '#ffffff',
+                        background: selectedCategory === category ? 'rgba(220, 38, 38, 0.04)' : '#ffffff',
                         color: selectedCategory === category ? '#dc2626' : '#374151',
                         cursor: 'pointer',
                         fontSize: '13px',
@@ -544,56 +606,186 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
                 </div>
               </div>
 
-              {/* Navigation Arrows */}
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '20px 0'
-              }}>
-                <button
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '50%',
-                    background: '#ffffff',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#6b7280'
-                  }}
-                >
-                  ←
-                </button>
-                <button
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '50%',
-                    background: '#ffffff',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#6b7280'
-                  }}
-                >
-                  →
-                </button>
-              </div>
 
-              {/* Empty Cards Grid */}
+              {/* Positions 1-6 in One Row */}
               <div style={{
                 flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                paddingLeft: '24px'
+              }}>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(6, 1fr)',
+                  gap: '12px',
+                  width: '100%',
+                  maxWidth: '720px',
+                  marginBottom: '16px',
+                  marginTop: '60px'
+                }}>
+                  {Array.from({ length: 6 }, (_, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        aspectRatio: '1',
+                        border: '2px dashed #d1d5db',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#9ca3af',
+                        fontSize: '10px',
+                        fontWeight: '500',
+                        background: '#fafafa'
+                      }}
+                    >
+                      {i + 1}
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Navigation Arrows */}
+                <div style={{
+                  display: 'flex',
+                  gap: '8px',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%'
+                }}>
+                  <button
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '50%',
+                      background: '#ffffff',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#6b7280'
+                    }}
+                  >
+                    ←
+                  </button>
+                  <button
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '50%',
+                      background: '#ffffff',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#6b7280'
+                    }}
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Section - Name Input and Action Buttons */}
+          <div style={{
+            background: '#ffffff',
+            borderRadius: '16px',
+            padding: '24px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '12px' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: '#374151',
+                  display: 'block',
+                  marginBottom: '8px'
+                }}>
+                  Name des Fragebogens
+                </label>
+                <input
+                  type="text"
+                  placeholder="Fragebogen Name eingeben..."
+                  value={fragebogenName}
+                  onChange={(e) => setFragebogenName(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    outline: 'none',
+                    background: '#ffffff'
+                  }}
+                />
+              </div>
+              
+              <button style={{
+                padding: '12px 20px',
+                background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 8px rgba(220, 38, 38, 0.2)',
+                whiteSpace: 'nowrap'
+              }}>
+                + Märkte hinzufügen
+              </button>
+              
+              <button 
+                onClick={() => {
+                  if (fragebogenName.trim() && selectedCategory) {
+                    console.log('Creating fragebogen:', fragebogenName, selectedCategory)
+                  }
+                }}
+                style={{
+                  padding: '12px 20px',
+                  background: fragebogenName.trim() && selectedCategory 
+                    ? 'linear-gradient(135deg, #10b981, #047857)' 
+                    : '#e5e7eb',
+                  color: fragebogenName.trim() && selectedCategory ? '#ffffff' : '#9ca3af',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: fragebogenName.trim() && selectedCategory ? 'pointer' : 'not-allowed',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: fragebogenName.trim() && selectedCategory 
+                    ? '0 2px 8px rgba(16, 185, 129, 0.2)' 
+                    : 'none',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                ✓ Fragebogen erstellen
+              </button>
+            </div>
+            
+            {/* 6 Empty Boxes moved below */}
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
+                gridTemplateColumns: 'repeat(6, 1fr)',
                 gap: '12px',
-                maxWidth: '600px'
+                maxWidth: '900px',
+                width: '100%'
               }}>
                 {Array.from({ length: 6 }, (_, i) => (
                   <div
@@ -611,99 +803,15 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
                       background: '#fafafa'
                     }}
                   >
-                    Position {i + 1}
+                    {i + 1}
                   </div>
                 ))}
               </div>
             </div>
           </div>
-
-          {/* Bottom Section - Name Input and Action Buttons */}
-          <div style={{
-            background: '#ffffff',
-            borderRadius: '16px',
-            padding: '24px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '20px'
-          }}>
-            <div style={{ flex: 1 }}>
-              <label style={{
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                display: 'block',
-                marginBottom: '8px'
-              }}>
-                Name des Fragebogens
-              </label>
-              <input
-                type="text"
-                placeholder="Fragebogen Name eingeben..."
-                value={fragebogenName}
-                onChange={(e) => setFragebogenName(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  outline: 'none',
-                  background: '#ffffff'
-                }}
-              />
-            </div>
-            
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button style={{
-                padding: '12px 24px',
-                background: 'linear-gradient(135deg, #dc2626, #991b1b)',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '600',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                boxShadow: '0 2px 8px rgba(220, 38, 38, 0.2)'
-              }}>
-                + Märkte hinzufügen
-              </button>
-              
-              <button 
-                onClick={() => {
-                  if (fragebogenName.trim() && selectedCategory) {
-                    setIsNameSubmitted(true)
-                  }
-                }}
-                style={{
-                  padding: '12px 24px',
-                  background: fragebogenName.trim() && selectedCategory 
-                    ? 'linear-gradient(135deg, #10b981, #047857)' 
-                    : '#e5e7eb',
-                  color: fragebogenName.trim() && selectedCategory ? '#ffffff' : '#9ca3af',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: fragebogenName.trim() && selectedCategory ? 'pointer' : 'not-allowed',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  boxShadow: fragebogenName.trim() && selectedCategory 
-                    ? '0 2px 8px rgba(16, 185, 129, 0.2)' 
-                    : 'none'
-                }}
-              >
-                ✓ Fragebogen erstellen
-              </button>
-            </div>
-          </div>
         </div>
       )}
     </div>
+    </>
   )
 }
