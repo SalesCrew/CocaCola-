@@ -479,7 +479,7 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
         <div style={{ 
           position: 'fixed',
           bottom: '20px',
-          left: '20px'
+          left: '80px'
         }}>
           <button
             onClick={onBack}
@@ -679,6 +679,11 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {helpQuestions
                 .filter(q => {
+                  // Filter by selected module (show all if "Fragebögen" is selected)
+                  const moduleMatch = selectedModule === 'Fragebögen' || q.module === selectedModule
+                  if (!moduleMatch) return false
+                  
+                  // Filter by search query
                   const s = helpSearchQuery.trim().toLowerCase()
                   if (!s) return true
                   return (

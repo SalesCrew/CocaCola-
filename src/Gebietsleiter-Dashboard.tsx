@@ -74,21 +74,12 @@ export default function GebietsleiterDashboard({ onSwitchPage, onSettingsPage }:
           {/* Personal Goals Carousel */}
           <div className="personal-goals-carousel">
             <div className="carousel-container">
-              <div className="carousel-track">
-                {/* Duplicate the goals array for infinite scroll */}
+              <div className="carousel-track manual-scroll">
                 {[
-                  { name: 'Verkaufsziele', percentage: 92, current: 32, target: 35, color: '#28a745' },
-                  { name: 'Kundenzufriedenheit', percentage: 87, current: 24, target: 28, color: '#17a2b8' },
-                  { name: 'Produktplatzierung', percentage: 94, current: 38, target: 40, color: '#ffc107' },
-                  { name: 'Marktanalyse', percentage: 78, current: 17, target: 22, color: '#6f42c1' },
-                  { name: 'Teamführung', percentage: 89, current: 28, target: 31, color: '#e83e8c' },
-                  { name: 'Umsatzsteigerung', percentage: 96, current: 36, target: 38, color: '#fd7e14' },
-                  { name: 'Verkaufsziele', percentage: 92, current: 32, target: 35, color: '#28a745' },
-                  { name: 'Kundenzufriedenheit', percentage: 87, current: 24, target: 28, color: '#17a2b8' },
-                  { name: 'Produktplatzierung', percentage: 94, current: 38, target: 40, color: '#ffc107' },
-                  { name: 'Marktanalyse', percentage: 78, current: 17, target: 22, color: '#6f42c1' },
-                  { name: 'Teamführung', percentage: 89, current: 28, target: 31, color: '#e83e8c' },
-                  { name: 'Umsatzsteigerung', percentage: 96, current: 36, target: 38, color: '#fd7e14' }
+                  { name: 'Schütten/Displays', percentage: Math.floor(Math.random() * 40) + 60, current: Math.floor(Math.random() * 15) + 10, target: 25, color: '#28a745' },
+                  { name: 'Distributionsziel', percentage: Math.floor(Math.random() * 30) + 70, current: Math.floor(Math.random() * 12) + 18, target: 30, color: '#17a2b8' },
+                  { name: 'Flexziel', percentage: Math.floor(Math.random() * 35) + 65, current: Math.floor(Math.random() * 10) + 15, target: 25, color: '#ffc107' },
+                  { name: 'Qualitätsziele', percentage: Math.floor(Math.random() * 25) + 75, current: Math.floor(Math.random() * 8) + 20, target: 28, color: '#6f42c1' }
                 ].map((goal, index) => (
                   <div key={index} className="goal-card">
                     <div className="goal-card-header">
