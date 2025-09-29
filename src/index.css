@@ -169,9 +169,20 @@ body::-webkit-scrollbar {
   display: flex;
 }
 
-/* Move OOS (non-mirrored) donut chart 20px left */
+/* Non-mirrored card layout - Same positioning approach as mirrored but reversed */
+.card-content:not(.mirrored) {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Position OOS (non-mirrored) donut chart on left - mirrored from GL card positioning */
 .card-content:not(.mirrored) .donut-chart {
-  margin-left: -25px;
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .chart-center-label {
@@ -284,6 +295,49 @@ body::-webkit-scrollbar {
   color: rgba(128, 128, 128, 0.7);
   text-transform: uppercase;
   letter-spacing: 0.3px;
+}
+
+/* Responsive Legend - Smaller on 14" screens */
+@media (max-width: 1400px) {
+  .legend-container {
+    width: 180px; /* Reduced from 224px */
+  }
+  
+  .legend-body {
+    padding: 8px; /* Reduced from 10px */
+  }
+  
+  .legend-items {
+    gap: 4px; /* Reduced from 6px */
+  }
+  
+  .legend-item {
+    gap: 6px; /* Reduced from 8px */
+  }
+  
+  .legend-label {
+    font-size: 8px; /* Reduced from 9px */
+  }
+  
+  .legend-number {
+    font-size: 9px; /* Reduced from 10px */
+    min-width: 24px; /* Reduced from 28px */
+  }
+  
+  .legend-dot {
+    width: 6px; /* Reduced from 8px */
+    height: 6px; /* Reduced from 8px */
+  }
+  
+  .legend-visits-text {
+    font-size: 6px; /* Reduced from 7px */
+  }
+  
+  /* Make pie charts smaller on 14" screens to save space */
+  .donut-chart svg {
+    width: 240px !important; /* Reduced from 280px */
+    height: 240px !important; /* Reduced from 280px */
+  }
 }
 
 /* Calendar Filter Styles */
@@ -950,7 +1004,7 @@ body::-webkit-scrollbar {
 .right-side-content {
   position: absolute;
   top: 50%;
-  left: 280px;
+  right: -65px;
   transform: translateY(-50%);
   display: flex;
   flex-direction: row;
