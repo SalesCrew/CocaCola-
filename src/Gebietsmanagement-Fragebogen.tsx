@@ -39,56 +39,60 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
     type: QuestionType
     title: string
     requiresPhoto?: boolean
+    requiresComment?: boolean
+    requiresSKU?: boolean
+    options?: string[]
+    skuCount?: number
   }
 
   const questionTypeLabel: Record<QuestionType, string> = {
     'yes-no': 'Ja/Nein',
     'multiple-choice': 'Multiple Choice',
-    'scale': 'Skala',
+    'scale': 'Skala 1-10',
     'text': 'Text'
   }
 
   const helpQuestions: HelpQuestion[] = [
     { id: 1, module: 'Allgemein', type: 'yes-no', title: 'Wurde die RED Survey ausgefüllt? (nur in RED-Märkten)' },
-    { id: 2, module: 'Allgemein', type: 'text', title: 'ZUSATZTASK Mitbewerber - Ist ein markeneigener Kühler vorhanden? (+ Kommentar wie viele, wenn mehr als 1)', requiresPhoto: true },
-    { id: 3, module: 'Allgemein', type: 'text', title: 'ZUSATZTASK Mitbewerber - Sind Großplatzierungen bzw. Aufbauten vom Mitbewerb vorhanden? (+ Kommentar wie viele, wenn mehr als 1)', requiresPhoto: true },
+    { id: 2, module: 'Allgemein', type: 'text', title: 'ZUSATZTASK Mitbewerber - Ist ein markeneigener Kühler vorhanden?', requiresPhoto: true, requiresComment: true },
+    { id: 3, module: 'Allgemein', type: 'text', title: 'ZUSATZTASK Mitbewerber - Sind Großplatzierungen bzw. Aufbauten vom Mitbewerb vorhanden?', requiresPhoto: true, requiresComment: true },
     { id: 4, module: 'Distributionsziel/Verfügbarkeit', type: 'yes-no', title: 'Ist die Powerade MB 4-Pack im Markt verfügbar?', requiresPhoto: true },
-    { id: 5, module: 'Distributionsziel/Verfügbarkeit', type: 'yes-no', title: 'Ist die CR, CZ, F - 4 Pack 0,33L CAN im Markt verfügbar?', requiresPhoto: true },
-    { id: 6, module: 'Distributionsziel/Verfügbarkeit', type: 'yes-no', title: 'Ist die Jack & Coke 330ml CAN im Markt verfügbar?', requiresPhoto: true },
-    { id: 7, module: 'Distributionsziel/Verfügbarkeit', type: 'yes-no', title: 'Ist die BACARDI Coca-Cola 0,25L CAN im Markt verfügbar?', requiresPhoto: true },
+    { id: 5, module: 'Distributionsziel/Verfügbarkeit', type: 'multiple-choice', title: 'Ist die CR, CZ, F - 4 Pack 0,33L CAN im Markt verfügbar?', options: ['Verfügbar', 'Nicht verfügbar', 'Teilweise verfügbar'], requiresPhoto: true },
+    { id: 6, module: 'Distributionsziel/Verfügbarkeit', type: 'yes-no', title: 'Ist die Jack & Coke 330ml CAN im Markt verfügbar?', requiresPhoto: true, requiresSKU: true, skuCount: 3 },
+    { id: 7, module: 'Distributionsziel/Verfügbarkeit', type: 'scale', title: 'Wie gut ist die BACARDI Coca-Cola 0,25L CAN platziert?', requiresPhoto: true },
     { id: 8, module: 'Distributionsziel/Verfügbarkeit', type: 'yes-no', title: 'Ist die Mezzo Mix 0,5L PET im Markt verfügbar?', requiresPhoto: true },
-    { id: 9, module: 'Distributionsziel/Verfügbarkeit', type: 'yes-no', title: 'Ist die Finlandia Classic 700ml im Markt verfügbar?', requiresPhoto: true },
-    { id: 10, module: 'Distributionsziel/Verfügbarkeit', type: 'yes-no', title: 'Ist der Limoncetta 0,5L NRGB im Markt verfügbar?', requiresPhoto: true },
-    { id: 11, module: 'POS Material', type: 'yes-no', title: 'Monster Schütte 0,5L MIT CROWNER in richtiger Zone platziert (Incidence Zone, Kassa, Brot/Gebäck, Milch/Käse, Pasta, Fertiggerichte, Tiefkühlprodukte)' },
+    { id: 9, module: 'Distributionsziel/Verfügbarkeit', type: 'multiple-choice', title: 'Ist die Finlandia Classic 700ml im Markt verfügbar?', options: ['Ja, gut sichtbar', 'Ja, schlecht platziert', 'Nein'], requiresPhoto: true },
+    { id: 10, module: 'Distributionsziel/Verfügbarkeit', type: 'yes-no', title: 'Ist der Limoncetta 0,5L NRGB im Markt verfügbar?', requiresPhoto: true, requiresComment: true },
+    { id: 11, module: 'POS Material', type: 'multiple-choice', title: 'Monster Schütte 0,5L MIT CROWNER in richtiger Zone platziert', options: ['Incidence Zone', 'Kassa', 'Brot/Gebäck', 'Milch/Käse', 'Nicht platziert'] },
     { id: 12, module: 'POS Material', type: 'yes-no', title: 'Monster Schütte 0,5L MIT CROWNER in sonstiger Zone platziert' },
-    { id: 13, module: 'POS Material', type: 'yes-no', title: 'Monster Display 0,5L MIT HEADER in richtiger Zone platziert (Incidence, Kassa, Brot/Gebäck, Milch/Käse, Pasta, Fertiggerichte, Tiefkühlprodukte)' },
+    { id: 13, module: 'POS Material', type: 'scale', title: 'Wie gut ist das Monster Display 0,5L MIT HEADER platziert?', requiresPhoto: true },
     { id: 14, module: 'POS Material', type: 'yes-no', title: 'Monster Display 0,5L MIT HEADER in sonstiger Zone platziert' },
-    { id: 15, module: 'POS Material', type: 'yes-no', title: 'Coke Schütte (SSD 0,5L) in richtiger Zone platziert (Frequency, Chips/Salziges, Feinkost/Sandwiches/Frischfleisch)' },
-    { id: 16, module: 'POS Material', type: 'yes-no', title: 'Coke Schütte (SSD 0,5L) in sonstiger Zone platziert' },
-    { id: 17, module: 'POS Material', type: 'yes-no', title: 'Coke Display (0,5L) in richtiger Zone platziert (Frequency, Chips/Salziges, Feinkost/Sandwiches/Frischfleisch)' },
+    { id: 15, module: 'POS Material', type: 'text', title: 'Coke Schütte (SSD 0,5L) - Beschreiben Sie die Platzierung', requiresPhoto: true, requiresComment: true },
+    { id: 16, module: 'POS Material', type: 'yes-no', title: 'Coke Schütte (SSD 0,5L) in sonstiger Zone platziert', requiresSKU: true, skuCount: 5 },
+    { id: 17, module: 'POS Material', type: 'multiple-choice', title: 'Coke Display (0,5L) Platzierung bewerten', options: ['Sehr gut', 'Gut', 'Befriedigend', 'Schlecht'], requiresPhoto: true },
     { id: 18, module: 'POS Material', type: 'yes-no', title: 'Coke Display (0,5L) in sonstiger Zone platziert' },
-    { id: 19, module: 'POS Material', type: 'yes-no', title: 'Coke Schütte (0,33L) in richtiger Zone platziert (Frequency, Chips/Salziges, Feinkost/Sandwiches/Frischfleisch)' },
+    { id: 19, module: 'POS Material', type: 'scale', title: 'Bewerten Sie die Coke Schütte (0,33L) Sichtbarkeit', requiresPhoto: true, requiresComment: true },
     { id: 20, module: 'POS Material', type: 'yes-no', title: 'Coke Schütte (0,33L) in sonstiger Zone platziert' },
-    { id: 21, module: 'POS Material', type: 'yes-no', title: 'Coke Display (0,33L) in richtiger Zone platziert (Frequency, Chips/Salziges, Feinkost/Sandwiches/Frischfleisch)' },
-    { id: 22, module: 'POS Material', type: 'yes-no', title: 'Coke Display (0,33L) in sonstiger Zone platziert' },
-    { id: 23, module: 'POS Material', type: 'yes-no', title: 'Coke LIME Schütte 0,33L CAN in richtiger Zone platziert (Frequency, Chips/Salziges, Feinkost/Sandwiches/Frischfleisch)' },
+    { id: 21, module: 'POS Material', type: 'text', title: 'Coke Display (0,33L) - Zusätzliche Bemerkungen', requiresPhoto: true },
+    { id: 22, module: 'POS Material', type: 'yes-no', title: 'Coke Display (0,33L) in sonstiger Zone platziert', requiresSKU: true, skuCount: 8 },
+    { id: 23, module: 'POS Material', type: 'multiple-choice', title: 'Coke LIME Schütte 0,33L CAN - Welche Zone?', options: ['Frequency', 'Chips/Salziges', 'Feinkost/Sandwiches', 'Andere Zone'], requiresPhoto: true },
     { id: 24, module: 'POS Material', type: 'yes-no', title: 'Coke LIME Schütte 0,33L CAN in sonstiger Zone platziert' },
-    { id: 25, module: 'POS Material', type: 'yes-no', title: 'Coke Cherry 0,33L CAN Schütte - in richtiger Zone platziert (Frequency, Chips/Salziges, Feinkost/Sandwiches/Frischfleisch)' },
-    { id: 26, module: 'POS Material', type: 'yes-no', title: 'Coke Cherry Schütte 0,33L CAN - in sonstiger Zone platziert?' },
-    { id: 27, module: 'POS Material', type: 'yes-no', title: 'Coke Cherry 0,5L PET Schütte - in richtiger Zone platziert? (Frequency, Chips/Salziges, Feinkost/Sandwiches/Frischfleisch)' },
+    { id: 25, module: 'POS Material', type: 'scale', title: 'Coke Cherry 0,33L CAN Schütte - Bewertung der Platzierung' },
+    { id: 26, module: 'POS Material', type: 'yes-no', title: 'Coke Cherry Schütte 0,33L CAN - in sonstiger Zone platziert?', requiresComment: true },
+    { id: 27, module: 'POS Material', type: 'text', title: 'Coke Cherry 0,5L PET Schütte - Standortbeschreibung', requiresPhoto: true, requiresComment: true },
     { id: 28, module: 'POS Material', type: 'yes-no', title: 'Coke Cherry Schütte 0,5L PET - in sonstiger Zone platziert?' },
-    { id: 29, module: 'POS Material', type: 'yes-no', title: 'Coke Flavors 0,33L CAN Schütte - in richtiger Zone platziert? (Frequency, Chips/Salziges, Feinkost/Sandwiches/Frischfleisch)' },
+    { id: 29, module: 'POS Material', type: 'multiple-choice', title: 'Coke Flavors 0,33L CAN Schütte - Zonenbewertung', options: ['Frequency', 'Chips/Salziges', 'Feinkost', 'Falsche Zone'], requiresPhoto: true, requiresSKU: true, skuCount: 4 },
     { id: 30, module: 'POS Material', type: 'yes-no', title: 'Coke Flavors 0,33L CAN Schütte - in sonstiger Zone platziert?' },
-    { id: 31, module: 'POS Material', type: 'yes-no', title: 'Fanta Schütte (SSD 0,5L) in richtiger Zone platziert (Frequency, Chips/Salziges, Feinkost/Sandwiches/Frischfleisch)' },
-    { id: 32, module: 'POS Material', type: 'yes-no', title: 'Fanta Schütte (SSD 0,5L) in sonstiger Zone platziert' },
-    { id: 33, module: 'POS Material', type: 'yes-no', title: 'Fanta Display in richtiger Zone platziert (Frequency, Chips/Salziges, Feinkost/Sandwiches/Frischfleisch)' },
-    { id: 34, module: 'POS Material', type: 'yes-no', title: 'Fanta Display in sonstiger Zone platziert?' },
-    { id: 35, module: 'POS Material', type: 'yes-no', title: 'Fuzetea Schütte (0,5L) - in richtiger Zone platziert (Frequency, Feinkost/Sandwiches/frisches Fleisch, Obst/Gemüse, Healthy Snacks)' },
-    { id: 36, module: 'POS Material', type: 'yes-no', title: 'Fuzetea Schütte (0,5L) - in sonstiger Zone platziert' },
-    { id: 37, module: 'POS Material', type: 'yes-no', title: 'Fuzetea Display (0,5L) - in richtiger Zone platziert (Frequency, Feinkost/Sandwiches/Frisches Fleisch, Obst/Gemüse, Healthy Snacks)' },
-    { id: 38, module: 'POS Material', type: 'yes-no', title: 'Fuzetea Display (0,5L) - in sonstiger Zone platziert' },
-    { id: 39, module: 'POS Material', type: 'yes-no', title: 'Sprite 0,5L PET Schütte - in richtiger Zone platziert (Frequency, Chips/Salziges, Feinkost/Sandwiches/Frischfleisch)' },
-    { id: 40, module: 'POS Material', type: 'yes-no', title: 'Sprite 0,5L PET Schütte - in sonstiger Zone platziert?' }
+    { id: 31, module: 'Sonstige Platzierungen', type: 'scale', title: 'Fanta Schütte (SSD 0,5L) - Sichtbarkeitsbewertung', requiresPhoto: true },
+    { id: 32, module: 'Sonstige Platzierungen', type: 'yes-no', title: 'Fanta Schütte (SSD 0,5L) in sonstiger Zone platziert', requiresComment: true },
+    { id: 33, module: 'Sonstige Platzierungen', type: 'text', title: 'Fanta Display - Detaillierte Standortbeschreibung', requiresPhoto: true, requiresComment: true },
+    { id: 34, module: 'Sonstige Platzierungen', type: 'multiple-choice', title: 'Fanta Display Zone?', options: ['Frequency', 'Chips/Salziges', 'Feinkost', 'Andere'], requiresPhoto: true },
+    { id: 35, module: 'Spirits Jahreschallenge', type: 'yes-no', title: 'Fuzetea Schütte (0,5L) - in optimaler Zone platziert?', requiresPhoto: true, requiresSKU: true, skuCount: 6 },
+    { id: 36, module: 'Spirits Jahreschallenge', type: 'scale', title: 'Fuzetea Schütte (0,5L) - Gesamtbewertung der Platzierung' },
+    { id: 37, module: 'Spirits Jahreschallenge', type: 'multiple-choice', title: 'Fuzetea Display (0,5L) - Welcher Bereich?', options: ['Frequency', 'Feinkost/Sandwiches', 'Obst/Gemüse', 'Healthy Snacks', 'Andere'], requiresPhoto: true, requiresComment: true },
+    { id: 38, module: 'Spirits Jahreschallenge', type: 'text', title: 'Fuzetea Display (0,5L) - Verbesserungsvorschläge', requiresComment: true },
+    { id: 39, module: 'Verfügbarkeit', type: 'scale', title: 'Sprite 0,5L PET Schütte - Platzierungsqualität bewerten', requiresPhoto: true },
+    { id: 40, module: 'Verfügbarkeit', type: 'yes-no', title: 'Sprite 0,5L PET Schütte - in sonstiger Zone platziert?', requiresComment: true, requiresSKU: true, skuCount: 7 }
   ]
 
   // Categories for selection (excluding Fragebögen)
@@ -594,41 +598,42 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
         </div>
       )}
 
-      {/* Help Panel - Questions catalog */}
+      {/* Help Panel - Questions catalog - Outside main container to avoid transform stacking context */}
       {isHelpOpen && (
         <div style={{
           position: 'absolute',
           top: `${helpPanelPosition.top}px`,
           left: `${helpPanelPosition.left}px`,
-          width: '880px',
-          maxHeight: '520px',
+          width: '920px',
+          maxHeight: '560px',
           background: '#ffffff',
-          border: '1px solid #f3f4f6',
+          border: '1px solid #e5e7eb',
           borderRadius: '12px',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.12)',
           zIndex: 11000,
           display: 'flex',
           flexDirection: 'column'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #f3f4f6' }}>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: '#111827' }}>Fragenkatalog (alle Module)</div>
-            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid #f3f4f6' }}>
+            <div style={{ fontSize: '15px', fontWeight: 700, color: '#111827' }}>Fragenkatalog (alle Module)</div>
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ position: 'relative' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" style={{ position: 'absolute', left: 8, top: 7 }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" style={{ position: 'absolute', left: 10, top: 8 }}>
                   <circle cx="11" cy="11" r="8"/>
                   <path d="M21 21l-4.35-4.35"/>
                 </svg>
                 <input
                   value={helpSearchQuery}
                   onChange={(e) => setHelpSearchQuery(e.target.value)}
-                  placeholder="Fragen suchen..."
+                  placeholder="Fragen durchsuchen..."
                   style={{
-                    width: '260px',
-                    padding: '6px 12px 6px 28px',
-                    border: '1px solid #e5e7eb',
+                    width: '280px',
+                    padding: '8px 14px 8px 32px',
+                    border: '1px solid #d1d5db',
                     borderRadius: '8px',
-                    fontSize: '12px',
-                    outline: 'none'
+                    fontSize: '13px',
+                    outline: 'none',
+                    background: '#fafafa'
                   }}
                 />
               </div>
@@ -636,8 +641,9 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
                 onClick={() => setIsHelpOpen(false)}
                 title="Schließen"
                 style={{
-                  width: '28px', height: '28px', borderRadius: '6px',
-                  background: '#f3f4f6', border: '1px solid #e5e7eb', cursor: 'pointer', color: '#6b7280'
+                  width: '32px', height: '32px', borderRadius: '8px',
+                  background: '#f3f4f6', border: '1px solid #d1d5db', cursor: 'pointer', color: '#6b7280',
+                  fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}
               >
                 ×
@@ -645,16 +651,32 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
             </div>
           </div>
 
-          <div style={{ padding: '8px 12px', display: 'grid', gridTemplateColumns: '40px 140px 120px 1fr 90px', gap: '8px', alignItems: 'center', fontSize: '12px', color: '#6b7280' }}>
-            <div>#</div>
-            <div>Modul</div>
-            <div>Typ</div>
-            <div>Frage</div>
-            <div>Optionen</div>
+          <div style={{ 
+            padding: '10px 20px', 
+            display: 'grid', 
+            gridTemplateColumns: '50px 150px 110px 1fr 160px', 
+            gap: '12px', 
+            alignItems: 'center', 
+            fontSize: '12px', 
+            color: '#6b7280',
+            background: '#f9fafb',
+            borderBottom: '1px solid #f3f4f6'
+          }}>
+            <div style={{ fontWeight: 600 }}>#</div>
+            <div style={{ fontWeight: 600 }}>Modul</div>
+            <div style={{ fontWeight: 600 }}>Typ</div>
+            <div style={{ fontWeight: 600 }}>Frage</div>
+            <div style={{ fontWeight: 600 }}>Features</div>
           </div>
 
-          <div style={{ flex: 1, overflowY: 'auto', padding: '4px 12px 12px 12px', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="category-scroll">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ 
+            flex: 1, 
+            overflowY: 'auto', 
+            padding: '8px 20px 20px 20px', 
+            scrollbarWidth: 'none', 
+            msOverflowStyle: 'none' 
+          }} className="category-scroll">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {helpQuestions
                 .filter(q => {
                   const s = helpSearchQuery.trim().toLowerCase()
@@ -666,32 +688,140 @@ export default function GebietsmanagementFragebogen({ onBack }: Gebietsmanagemen
                   )
                 })
                 .map((q) => (
-                <div key={q.id} style={{
-                  display: 'grid', gridTemplateColumns: '40px 140px 120px 1fr 90px', gap: '8px',
-                  alignItems: 'center',
-                  background: '#ffffff',
-                  border: '1px solid #f3f4f6',
-                  borderRadius: '8px',
-                  padding: '8px 10px'
-                }}>
-                  <div style={{ fontWeight: 700, color: '#dc2626', textAlign: 'center' }}>{q.id}</div>
+                <div 
+                  key={q.id} 
+                  style={{
+                    display: 'grid', 
+                    gridTemplateColumns: '50px 150px 110px 1fr 160px', 
+                    gap: '12px',
+                    alignItems: 'flex-start',
+                    background: '#ffffff',
+                    border: '1px solid #f3f4f6',
+                    borderRadius: '10px',
+                    padding: '12px 14px',
+                    transition: 'all 0.2s ease',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#fafafa'
+                    e.currentTarget.style.borderColor = '#e5e7eb'
+                    e.currentTarget.style.transform = 'translateY(-1px)'
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.06)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#ffffff'
+                    e.currentTarget.style.borderColor = '#f3f4f6'
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = 'none'
+                  }}
+                >
+                  <div style={{ fontWeight: 700, color: '#dc2626', textAlign: 'center', fontSize: '14px' }}>{q.id}</div>
+                  
+                  <div>
+                    <span 
+                      style={{
+                        padding: '6px 10px', 
+                        borderRadius: '999px', 
+                        fontSize: '11px', 
+                        fontWeight: 600,
+                        background: '#f3f4f6', 
+                        color: '#374151', 
+                        display: 'inline-block',
+                        maxWidth: '130px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}
+                      title={q.module}
+                    >
+                      {q.module}
+                    </span>
+                  </div>
+                  
                   <div>
                     <span style={{
-                      padding: '4px 8px', borderRadius: '999px', fontSize: '11px', fontWeight: 600,
-                      background: '#f3f4f6', color: '#374151', whiteSpace: 'nowrap'
-                    }}>{q.module}</span>
+                      padding: '6px 10px', 
+                      borderRadius: '999px', 
+                      fontSize: '11px', 
+                      fontWeight: 600,
+                      background: q.type === 'yes-no' ? '#ecfdf5' : q.type === 'scale' ? '#eff6ff' : q.type === 'text' ? '#fef3c7' : '#f5f3ff',
+                      color: q.type === 'yes-no' ? '#065f46' : q.type === 'scale' ? '#1d4ed8' : q.type === 'text' ? '#d97706' : '#6b21a8'
+                    }}>
+                      {questionTypeLabel[q.type]}
+                    </span>
                   </div>
-                  <div>
-                    <span style={{
-                      padding: '4px 8px', borderRadius: '999px', fontSize: '11px', fontWeight: 600,
-                      background: q.type === 'yes-no' ? '#ecfdf5' : q.type === 'scale' ? '#eff6ff' : q.type === 'text' ? '#f3f4f6' : '#f5f3ff',
-                      color: q.type === 'yes-no' ? '#065f46' : q.type === 'scale' ? '#1d4ed8' : q.type === 'text' ? '#374151' : '#6b21a8'
-                    }}>{questionTypeLabel[q.type]}</span>
+                  
+                  <div 
+                    style={{ 
+                      color: '#111827', 
+                      fontSize: '13px', 
+                      lineHeight: '1.4',
+                      overflow: 'hidden',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      wordWrap: 'break-word'
+                    }}
+                    title={q.title}
+                  >
+                    {q.title}
                   </div>
-                  <div style={{ color: '#111827' }}>{q.title}</div>
-                  <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                  
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', alignItems: 'flex-start' }}>
                     {q.requiresPhoto && (
-                      <span style={{ padding: '4px 8px', borderRadius: '999px', fontSize: '11px', fontWeight: 700, background: '#dbeafe', color: '#1d4ed8' }}>+ Foto</span>
+                      <span style={{ 
+                        padding: '4px 8px', 
+                        borderRadius: '999px', 
+                        fontSize: '10px', 
+                        fontWeight: 600, 
+                        background: '#dbeafe', 
+                        color: '#1d4ed8',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        + Foto
+                      </span>
+                    )}
+                    {q.requiresComment && (
+                      <span style={{ 
+                        padding: '4px 8px', 
+                        borderRadius: '999px', 
+                        fontSize: '10px', 
+                        fontWeight: 600, 
+                        background: '#dcfce7', 
+                        color: '#166534',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        + Kommentar
+                      </span>
+                    )}
+                    {q.requiresSKU && (
+                      <span style={{ 
+                        padding: '4px 8px', 
+                        borderRadius: '999px', 
+                        fontSize: '10px', 
+                        fontWeight: 600, 
+                        background: '#fef3c7', 
+                        color: '#d97706',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        SKU ({q.skuCount || 0})
+                      </span>
+                    )}
+                    {q.options && q.options.length > 0 && (
+                      <span 
+                        style={{ 
+                          padding: '4px 8px', 
+                          borderRadius: '999px', 
+                          fontSize: '10px', 
+                          fontWeight: 600, 
+                          background: '#f5f3ff', 
+                          color: '#6b21a8',
+                          whiteSpace: 'nowrap'
+                        }}
+                        title={q.options.join(', ')}
+                      >
+                        {q.options.length} Optionen
+                      </span>
                     )}
                   </div>
                 </div>
