@@ -19,29 +19,79 @@ interface AustriaMapSecondaryProps {
   pins: PinSecondary[]
 }
 
-// Generate different data for the secondary map - 60 pins spread across Austria
+// Generate different data for the secondary map - 60 pins spread across Austria using actual market names
 const generateSecondaryPins = (): PinSecondary[] => {
-  const chains = ['HOFER', 'LIDL', 'PENNY', 'NETTO', 'NORMA']
-  const cities = [
-    // Vienna area (15 pins)
-    { city: 'Wien', lat: 48.2082, lng: 16.3738, codes: ['1010', '1020', '1030', '1040', '1050', '1060', '1070', '1080', '1090', '1100', '1110', '1120', '1130', '1140', '1150'] },
-    // Lower Austria (10 pins)  
-    { city: 'Korneuburg', lat: 48.3477, lng: 16.3307, codes: ['2100', '2110', '2120', '2130', '2140'] },
-    { city: 'St. Pölten', lat: 48.2066, lng: 15.6254, codes: ['3100', '3110', '3120', '3130', '3140'] },
-    // Upper Austria (8 pins)
-    { city: 'Linz', lat: 48.3069, lng: 14.2858, codes: ['4010', '4020', '4030', '4040'] },
-    { city: 'Wels', lat: 48.1597, lng: 14.0289, codes: ['4600', '4610', '4620', '4630'] },
-    // Salzburg (6 pins)
-    { city: 'Salzburg', lat: 47.8095, lng: 13.0550, codes: ['5010', '5020', '5030', '5040', '5050', '5060'] },
-    // Styria (8 pins)
-    { city: 'Graz', lat: 47.0707, lng: 15.4395, codes: ['8010', '8020', '8030', '8040'] },
-    { city: 'Leoben', lat: 47.3772, lng: 15.0946, codes: ['8700', '8710', '8720', '8730'] },
-    // Carinthia (6 pins)
-    { city: 'Klagenfurt', lat: 46.6244, lng: 14.3055, codes: ['9010', '9020', '9030', '9040', '9050', '9060'] },
-    // Tyrol (4 pins)
-    { city: 'Innsbruck', lat: 47.2692, lng: 11.4041, codes: ['6010', '6020', '6030', '6040'] },
-    // Vorarlberg (3 pins)
-    { city: 'Bregenz', lat: 47.5058, lng: 9.7490, codes: ['6900', '6910', '6920'] }
+  // Use actual market names from Universumsmärkte - spread across Austria
+  const actualMarkets = [
+    // Vienna area - 12 pins
+    { name: 'BILLA 1010', lat: 48.2082, lng: 16.3738 },
+    { name: 'BILLA 1020', lat: 48.2169, lng: 16.3959 },
+    { name: 'BILLA 1030', lat: 48.1951, lng: 16.3870 },
+    { name: 'BILLA 1040', lat: 48.1936, lng: 16.3669 },
+    { name: 'BILLA Plus 1090', lat: 48.2236, lng: 16.3545 },
+    { name: 'BILLA Plus 1100', lat: 48.1741, lng: 16.3767 },
+    { name: 'BILLA Plus 1110', lat: 48.1853, lng: 16.4215 },
+    { name: 'BILLA Plus 1160', lat: 48.2142, lng: 16.3004 },
+    { name: 'Spar 1210', lat: 48.2797, lng: 16.3962 },
+    { name: 'Spar 1220', lat: 48.2388, lng: 16.4475 },
+    { name: 'Spar 1230', lat: 48.1364, lng: 16.2993 },
+    { name: 'Eurospar 2220', lat: 48.2005, lng: 16.5612 },
+    // Lower Austria - 10 pins
+    { name: 'BILLA 1050', lat: 48.4089, lng: 15.8233 },
+    { name: 'BILLA 1060', lat: 47.9336, lng: 15.5956 },
+    { name: 'Spar 2100', lat: 48.3479, lng: 16.3336 },
+    { name: 'Spar 2140', lat: 48.5879, lng: 16.4983 },
+    { name: 'Interspar 3100', lat: 48.2062, lng: 15.6256 },
+    { name: 'Interspar 3110', lat: 48.2956, lng: 15.6689 },
+    { name: 'Interspar 3150', lat: 47.9669, lng: 15.8089 },
+    { name: 'Interspar 3180', lat: 48.0089, lng: 15.6669 },
+    { name: 'Eurospar 2170', lat: 48.6789, lng: 16.6336 },
+    { name: 'Eurospar 2200', lat: 48.1478, lng: 16.8974 },
+    // Upper Austria - 8 pins  
+    { name: 'Maxi Markt 4010', lat: 48.3064, lng: 14.2858 },
+    { name: 'Maxi Markt 4020', lat: 48.3269, lng: 14.3189 },
+    { name: 'Maxi Markt 4070', lat: 48.3169, lng: 13.9589 },
+    { name: 'Maxi Markt 4080', lat: 48.2336, lng: 13.8256 },
+    { name: 'Maxi Markt 4090', lat: 48.4556, lng: 13.7789 },
+    { name: 'Maxi Markt 4100', lat: 48.3789, lng: 14.1336 },
+    { name: 'BILLA 1070', lat: 48.1597, lng: 14.0289 },
+    { name: 'BILLA Plus 1120', lat: 47.9556, lng: 14.1889 },
+    // Styria - 8 pins
+    { name: 'BILLA 1080', lat: 47.0707, lng: 15.4395 },
+    { name: 'BILLA Plus 1130', lat: 47.1924, lng: 15.2869 },
+    { name: 'BILLA Plus 1140', lat: 47.3772, lng: 15.0946 },
+    { name: 'Spar 2110', lat: 46.9236, lng: 15.5574 },
+    { name: 'Spar 2120', lat: 47.2669, lng: 15.1096 },
+    { name: 'Interspar 3120', lat: 47.0669, lng: 15.6589 },
+    { name: 'Interspar 3160', lat: 46.8956, lng: 15.7336 },
+    { name: 'Eurospar 2180', lat: 47.1436, lng: 15.3782 },
+    // Salzburg - 6 pins
+    { name: 'ADEG 5010', lat: 47.8095, lng: 13.0550 },
+    { name: 'ADEG 5020', lat: 47.7889, lng: 13.0669 },
+    { name: 'ADEG 5030', lat: 47.8236, lng: 13.0336 },
+    { name: 'ADEG 5040', lat: 47.7669, lng: 13.0789 },
+    { name: 'Spar 2150', lat: 47.5879, lng: 13.2983 },
+    { name: 'Eurospar 2190', lat: 47.9089, lng: 12.8233 },
+    // Tyrol - 6 pins
+    { name: 'BILLA Plus 1150', lat: 47.2692, lng: 11.4041 },
+    { name: 'BILLA Plus 1170', lat: 47.3244, lng: 11.3249 },
+    { name: 'BILLA Plus 1180', lat: 47.2315, lng: 11.4824 },
+    { name: 'Interspar 3130', lat: 47.1589, lng: 11.2089 },
+    { name: 'Interspar 3140', lat: 47.3789, lng: 11.5336 },
+    { name: 'Eurospar 2210', lat: 47.0447, lng: 11.6589 },
+    // Carinthia - 5 pins
+    { name: 'BILLA Plus 1190', lat: 46.6244, lng: 14.3055 },
+    { name: 'Spar 2130', lat: 46.5708, lng: 14.1767 },
+    { name: 'Spar 2160', lat: 46.7951, lng: 14.0426 },
+    { name: 'Eurospar 2230', lat: 46.5367, lng: 14.4089 },
+    { name: 'Eurospar 2240', lat: 46.7869, lng: 13.9547 },
+    // Vorarlberg - 3 pins
+    { name: 'BILLA Plus 1200', lat: 47.5058, lng: 9.7490 },
+    { name: 'ADEG 5050', lat: 47.4089, lng: 9.8089 },
+    { name: 'Eurospar 2250', lat: 47.3669, lng: 9.6589 },
+    // Burgenland - 2 pins
+    { name: 'ADEG 5060', lat: 47.8456, lng: 16.5256 },
+    { name: 'Eurospar 2260', lat: 47.0956, lng: 16.2547 }
   ]
 
   const glNames = [
@@ -52,25 +102,20 @@ const generateSecondaryPins = (): PinSecondary[] => {
 
   let allMarkets: any[] = []
   
-  // Generate markets for each city
-  cities.forEach((cityData) => {
-    cityData.codes.forEach((code, idx) => {
-      const chainIndex = Math.abs((code.charCodeAt(0) + idx) % chains.length)
-      const chain = chains[chainIndex]
-      
-      // Add significant geographic variation within city to spread pins out
-      const seed1 = parseInt(code) * 0.0123
-      const seed2 = parseInt(code) * 0.0456  
-      const seed3 = parseInt(code) * 0.0789
-      const latVariation = (Math.sin(seed1) * 0.08) + (Math.cos(seed3) * 0.05) // Much larger spread
-      const lngVariation = (Math.cos(seed2) * 0.12) + (Math.sin(seed1 * 1.7) * 0.07) // Much larger spread
-      
-      allMarkets.push({
-        name: `${chain} ${code}`,
-        lat: cityData.lat + latVariation,
-        lng: cityData.lng + lngVariation,
-        category: 'Discount'
-      })
+  // Take 60 markets and spread them with geographic diversity
+  actualMarkets.slice(0, 60).forEach((market, idx) => {
+    // Add significant geographic variation to spread pins out
+    const seed1 = (market.name.charCodeAt(0) + idx) * 0.0123
+    const seed2 = (market.name.charCodeAt(0) + idx) * 0.0456  
+    const seed3 = (market.name.charCodeAt(0) + idx) * 0.0789
+    const latVariation = (Math.sin(seed1) * 0.08) + (Math.cos(seed3) * 0.05) // Much larger spread
+    const lngVariation = (Math.cos(seed2) * 0.12) + (Math.sin(seed1 * 1.7) * 0.07) // Much larger spread
+    
+    allMarkets.push({
+      name: market.name,
+      lat: market.lat + latVariation,
+      lng: market.lng + lngVariation,
+      category: 'Discount'
     })
   })
 
@@ -290,7 +335,7 @@ export default function AustriaMapSecondary({ pins }: AustriaMapSecondaryProps) 
                       fontSize: '10px',
                       fontWeight: '600'
                     }}>
-                      {oosFixed ? 'JA' : 'NEIN'}
+                         {oosFixed ? 'Ja' : 'NEIN'}
                     </span>
                   </div>
                 )

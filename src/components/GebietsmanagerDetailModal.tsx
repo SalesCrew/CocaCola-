@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import AustriaMap from './AustriaMap'
 
 interface GebietsmanagerDetailModalProps {
   isOpen: boolean
@@ -134,14 +133,36 @@ const getGLMarkets = (glName: string) => {
 }
 
 export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: GebietsmanagerDetailModalProps) {
-  const [selectedTab, setSelectedTab] = useState<'goals' | 'markets' | 'mhd' | 'weltkarte'>('goals')
+  const [selectedTab, setSelectedTab] = useState<'goals' | 'markets' | 'mhd'>('goals')
   const [goals] = useState(generateGoalsData())
   const bonusAverage = Math.round((goals.schuetteDisplays + goals.distributionsziel + goals.flexziel + goals.qualitaetsziele) / 4)
   const praemie = Math.round((bonusAverage / 100) * 1050)
-  const [mhdData] = useState(() => Array.from({ length: 7 }, (_, i) => ({
-    label: `MHD ${i + 1}`,
-    value: Math.floor(Math.random() * 40) + 60
-  })))
+  const [mhdData] = useState(() => {
+    const markets = getGLMarkets(gmData?.name || 'Default')
+    const additionalMarkets = [
+      { name: 'BILLA 2300', address: 'Teststraße 1, 2300 Gänserndorf' },
+      { name: 'Spar 3400', address: 'Hauptplatz 5, 3400 Klosterneuburg' }
+    ]
+    
+    // Combine markets for MHD testing
+    const allAvailableMarkets = [...markets, ...additionalMarkets]
+    
+    return Array.from({ length: 7 }, (_, i) => {
+      const market = allAvailableMarkets[i % allAvailableMarkets.length]
+      const isFinished = i < 6 // 6 out of 7 are finished
+      const finishedDate = isFinished ? 
+        new Date(2025, 8, Math.floor(Math.random() * 25) + 1).toLocaleDateString('de-DE') : null
+      
+      return {
+        id: i + 1,
+        marketName: market.name,
+        marketAddress: market.address,
+        isFinished,
+        finishedDate,
+        testType: `Mindesthaltbarkeitstest ${i + 1}`
+      }
+    })
+  })
   const [glMarkets] = useState(() => getGLMarkets(gmData?.name || 'Default'))
   const modalRef = useRef<HTMLDivElement>(null)
 
@@ -372,7 +393,7 @@ export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: G
                 MHD
                 </span>
               <span style={{ fontSize: '12px', fontWeight: '700', color: '#007bff' }}>
-                  {Math.round(mhdData.reduce((sum, item) => sum + item.value, 0) / mhdData.length)}%
+                  {Math.round((mhdData.filter(item => item.isFinished).length / mhdData.length) * 100)}%
                 </span>
               </div>
               <div style={{
@@ -383,7 +404,7 @@ export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: G
                 overflow: 'hidden'
               }}>
                 <div style={{
-                width: `${Math.round(mhdData.reduce((sum, item) => sum + item.value, 0) / mhdData.length)}%`,
+                width: `${Math.round((mhdData.filter(item => item.isFinished).length / mhdData.length) * 100)}%`,
                   height: '100%',
                 background: 'linear-gradient(90deg, #a3c7ff 0%, #007bff 100%)',
                 borderRadius: '4px'
@@ -398,7 +419,7 @@ export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: G
           borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
           background: 'rgba(0, 0, 0, 0.01)'
         }}>
-          {(['goals', 'mhd', 'markets', 'weltkarte'] as const).map((tab) => (
+          {(['goals', 'mhd', 'markets'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setSelectedTab(tab)}
@@ -417,7 +438,7 @@ export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: G
                 letterSpacing: '0.4px'
               }}
             >
-              {tab === 'goals' ? 'Meine Bonus Ziele' : tab === 'markets' ? 'Meine Märkte' : tab === 'mhd' ? 'MHD' : 'Weltkarte'}
+              {tab === 'goals' ? 'Meine Bonus Ziele' : tab === 'markets' ? 'Meine Märkte' : 'MHD'}
               {selectedTab === tab && (
                 <div style={{
                   position: 'absolute',
@@ -435,11 +456,11 @@ export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: G
 
         {/* Tab Content */}
         <div className="modal-tab-content" style={{
-          padding: selectedTab === 'weltkarte' ? '0' : '20px 24px',
+          padding: '20px 24px',
           flex: '1',
           minHeight: 0,
-          overflowY: selectedTab === 'weltkarte' ? 'visible' : 'scroll',
-          overflowX: selectedTab === 'weltkarte' ? 'visible' : 'auto',
+          overflowY: 'scroll',
+          overflowX: 'auto',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
           position: 'relative',
@@ -564,70 +585,95 @@ export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: G
               {mhdData.map((mhd, index) => (
                 <div key={index} style={{ 
                   background: 'rgba(0, 0, 0, 0.02)',
-                  border: '1px solid rgba(0, 0, 0, 0.04)',
+                  border: `1px solid ${mhd.isFinished ? 'rgba(40, 167, 69, 0.2)' : 'rgba(0, 0, 0, 0.04)'}`,
                   borderRadius: '8px',
-                  padding: '12px'
+                  padding: '16px',
+                  position: 'relative'
                 }}>
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                    marginBottom: '6px'
-                      }}>
-                        <span style={{
-                      fontSize: '13px', 
-                          fontWeight: '500',
-                          color: 'rgba(51, 51, 51, 0.8)'
-                        }}>
-                          {mhd.label}
-                        </span>
-                        <span style={{
-                      fontSize: '13px', 
-                      fontWeight: '700',
-                      color: mhd.value >= 90 ? '#28a745' : mhd.value >= 75 ? '#fd7e14' : '#dc3545'
-                        }}>
-                          {mhd.value}%
-                        </span>
-                      </div>
-                      <div style={{
-                    width: '100%',
-                    height: '8px',
-                    background: 'rgba(0, 0, 0, 0.06)',
-                    borderRadius: '4px',
-                        overflow: 'hidden'
-                      }}>
-                        <div style={{
-                          width: `${mhd.value}%`,
-                          height: '100%',
-                      background: getProgressColor(mhd.value),
-                      borderRadius: '4px',
-                      transition: 'width 0.3s ease'
-                        }} />
+                  {/* Status Badge */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '12px',
+                    right: '12px',
+                    background: mhd.isFinished ? '#28a745' : '#6c757d',
+                    color: 'white',
+                    padding: '4px 8px',
+                    borderRadius: '12px',
+                    fontSize: '10px',
+                    fontWeight: '600'
+                  }}>
+                    {mhd.isFinished ? 'ABGESCHLOSSEN' : 'AUSSTEHEND'}
                   </div>
+
+                  {/* Test Type */}
+                  <div style={{
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: 'rgba(51, 51, 51, 0.9)',
+                    marginBottom: '8px',
+                    paddingRight: '100px'
+                  }}>
+                    {mhd.testType}
+                  </div>
+
+                  {/* Market Info */}
+                  <div style={{
+                    fontSize: '13px',
+                    fontWeight: '500',
+                    color: 'rgba(51, 51, 51, 0.8)',
+                    marginBottom: '4px'
+                  }}>
+                    {mhd.marketName}
+                  </div>
+                  <div style={{
+                    fontSize: '12px',
+                    color: 'rgba(51, 51, 51, 0.6)',
+                    marginBottom: '12px'
+                  }}>
+                    {mhd.marketAddress}
+                  </div>
+
+                  {/* Finished Date */}
+                  {mhd.isFinished && mhd.finishedDate && (
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      fontSize: '12px',
+                      color: '#28a745',
+                      fontWeight: '500'
+                    }}>
+                      <div style={{
+                        width: '6px',
+                        height: '6px',
+                        borderRadius: '50%',
+                        background: '#28a745'
+                      }} />
+                      Abgeschlossen am {mhd.finishedDate}
+                    </div>
+                  )}
+
+                  {/* Pending Status */}
+                  {!mhd.isFinished && (
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      fontSize: '12px',
+                      color: '#6c757d',
+                      fontWeight: '500'
+                    }}>
+                      <div style={{
+                        width: '6px',
+                        height: '6px',
+                        borderRadius: '50%',
+                        background: '#6c757d'
+                      }} />
+                      Test ausstehend
+                    </div>
+                  )}
                 </div>
               ))}
-            </div>
-          ) : selectedTab === 'weltkarte' ? (
-            <div style={{
-              flex: 1,
-              width: '100%',
-              position: 'relative',
-              overflow: 'visible',
-              margin: '-50px 0'
-            }}>
-              <AustriaMap 
-                pins={generateAll35Pins().map((market, index) => ({
-                  id: `market-${index}`,
-                  name: market.name,
-                  lat: market.lat,
-                  lng: market.lng,
-                  manager: market.manager,
-                  visitDate: market.visitDate,
-                  travelMin: market.travelMin,
-                  durationMin: market.durationMin,
-                  status: market.status
-                }))}
-              />
             </div>
           ) : null}
         </div>
