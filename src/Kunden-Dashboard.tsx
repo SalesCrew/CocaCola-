@@ -10,10 +10,25 @@ import GebietsmanagerFilter from './components/GebietsmanagerFilter'
 import GebietsmanagerModal from './components/GebietsmanagerModal'
 import GebietsmanagerDetailModal from './components/GebietsmanagerDetailModal'
 import MarketDetailModal from './components/MarketDetailModal'
+import { gmData } from './components/GebietsmanagerGMFilter'
 
 interface KundenDashboardProps {
   onSwitchPage?: () => void
   onSettingsPage?: () => void
+}
+
+// Find which GM manages this market
+const findMarketGM = (marketName: string, marketChain: string) => {
+  // Extract chain from market name if it contains chain info
+  const chain = marketChain || marketName.split(' ')[0]
+  
+  // Find all GMs that manage this chain
+  const gms = gmData.filter(gm => 
+    gm.name !== 'Alle' && gm.markets.includes(chain)
+  )
+  
+  // Return the first GM found (in real app, this would be more specific)
+  return gms.length > 0 ? gms[0] : null
 }
 
 export default function KundenDashboard({ onSwitchPage, onSettingsPage }: KundenDashboardProps) {
@@ -463,6 +478,8 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
                 return 'linear-gradient(90deg, #f8a8a8 0%, #dc3545 100%)'
               }
 
+              const marketGM = findMarketGM(market.name, market.chain)
+
               return (
                 <div
                   key={market.name}
@@ -538,7 +555,7 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
                     padding: '12px',
                     border: '1px solid rgba(0, 0, 0, 0.04)'
                   }}>
-                    {/* Markt Ziele Progress */}
+                    {/* Besuchsfrequenz Progress */}
                     <div style={{ marginBottom: '16px' }}>
                       <div style={{ 
                         display: 'flex', 
@@ -553,7 +570,7 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
                           textTransform: 'uppercase',
                           letterSpacing: '0.3px'
                         }}>
-                          Markt Ziele
+                          Besuchsfrequenz {marketGM ? marketGM.name : 'Thomas Nobis'}
                         </span>
                         <span style={{ 
                           fontSize: '11px', 
