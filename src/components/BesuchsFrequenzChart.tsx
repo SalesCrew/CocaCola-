@@ -50,14 +50,14 @@ export default function BesuchsFrequenzChart() {
   })()
 
   const weeklyData: DataPoint[] = useMemo(() => {
-    return weeklyOOS.map((oos, idx) => {
-      // Target visits 230-270 with seasonal variation (deterministic jitter)
-      const week = (idx % 52) + 1
+    return weeklyOOS.slice(0, 40).map((oos, idx) => {
+      // Target visits 230-270 with seasonal variation (deterministic jitter) - ending at KW40
+      const week = idx + 1 // KW 1-40
       const detJitter = ((idx * 97) % 21) - 10 // -10..10 stable per idx
       let baseVisits = 250
       if (week >= 26 && week <= 36) { // summer
         baseVisits = 260 + detJitter // 250-270
-      } else if (week <= 8 || week >= 47) { // winter
+      } else if (week <= 8) { // early winter only (since we end at week 40)
         baseVisits = 240 + detJitter // 230-250
       } else { // spring/fall
         baseVisits = 250 + detJitter // 240-260
@@ -68,14 +68,14 @@ export default function BesuchsFrequenzChart() {
   }, [])
   
   const dailyData: DataPoint[] = Array.from({ length: 100 }, (_, i) => {
-    // Every 7th day is Sunday (0 visits)
+    // Every 7th day is Sunday (0 visits) - ending around mid-September
     const dayOfWeek = i % 7
     const isSunday = dayOfWeek === 0
     
     if (isSunday) {
-      const startDate = new Date(2024, 2, 1)
-      const currentDate = new Date(startDate)
-      currentDate.setDate(startDate.getDate() + i)
+      const endDate = new Date(2025, 8, 15) // September 15, 2025
+      const currentDate = new Date(endDate)
+      currentDate.setDate(endDate.getDate() - (99 - i))
       const day = currentDate.getDate().toString().padStart(2, '0')
       const month = (currentDate.getMonth() + 1).toString().padStart(2, '0')
       
@@ -87,9 +87,9 @@ export default function BesuchsFrequenzChart() {
     }
     
     // Calculate based on seasonal patterns and daily OOS (roughly 1/7 of weekly OOS)
-    const startDate = new Date(2024, 2, 1) // March 1, 2024
-    const currentDate = new Date(startDate)
-    currentDate.setDate(startDate.getDate() + i)
+    const endDate = new Date(2025, 8, 15) // September 15, 2025
+    const currentDate = new Date(endDate)
+    currentDate.setDate(endDate.getDate() - (99 - i))
     const month = currentDate.getMonth() + 1 // 1-12
     const day = currentDate.getDate().toString().padStart(2, '0')
     const monthStr = month.toString().padStart(2, '0')
@@ -140,10 +140,7 @@ export default function BesuchsFrequenzChart() {
     { date: 'Jun', visits: 1035, oos: 420 },
     { date: 'Jul', visits: 1050, oos: 490 },
     { date: 'Aug', visits: 1045, oos: 500 },
-    { date: 'Sep', visits: 1010, oos: 460 },
-    { date: 'Okt', visits: 990, oos: 360 },
-    { date: 'Nov', visits: 965, oos: 330 },
-    { date: 'Dez', visits: 950, oos: 310 },
+    { date: 'Sep', visits: 1010, oos: 460 }
   ]
   
   const allData = interval === 'daily' ? dailyData : interval === 'weekly' ? weeklyData : monthlyData

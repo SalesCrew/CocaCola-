@@ -30,9 +30,9 @@ export default function ChartModal({ isOpen, onClose, selectedHaFi, onHaFiChange
       const targets = {
         arbeitsstunden: 530,
         besuche: 295,
-        oosAufgefunden: 310,
-        oosBehoben: 286,
-        oosBehobenPercent: 92.3
+        oosAufgefunden: 400,
+        oosBehoben: 370,
+        oosBehobenPercent: 92.5
       }
 
       // Animation duration

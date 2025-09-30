@@ -60,6 +60,52 @@ const generateMarketsData = () => {
   return weeks
 }
 
+// Market assignment function - assigns 10 specific markets to each GL
+const getGLMarkets = (glName: string) => {
+  const allMarkets = [
+    { name: 'BILLA 1010', chain: 'BILLA', region: 'Nord', address: 'Stephansplatz 1, 1010 Wien' },
+    { name: 'BILLA 1020', chain: 'BILLA', region: 'Nord', address: 'Praterstraße 25, 1020 Wien' },
+    { name: 'BILLA 1030', chain: 'BILLA', region: 'West', address: 'Landstraßer Hauptstraße 50, 1030 Wien' },
+    { name: 'BILLA 1040', chain: 'BILLA', region: 'West', address: 'Wiedner Hauptstraße 23, 1040 Wien' },
+    { name: 'BILLA 1050', chain: 'BILLA', region: 'Süd', address: 'Margaretenstraße 77, 1050 Wien' },
+    { name: 'BILLA 1060', chain: 'BILLA', region: 'Süd', address: 'Mariahilfer Straße 85, 1060 Wien' },
+    { name: 'BILLA 1070', chain: 'BILLA', region: 'West', address: 'Neubaugasse 17, 1070 Wien' },
+    { name: 'BILLA 1080', chain: 'BILLA', region: 'West', address: 'Josefstädter Straße 42, 1080 Wien' },
+    { name: 'BILLA 1090', chain: 'BILLA', region: 'Nord', address: 'Alser Straße 28, 1090 Wien' },
+    { name: 'BILLA 1100', chain: 'BILLA', region: 'Süd', address: 'Favoritenstraße 115, 1100 Wien' },
+    { name: 'BILLA Plus 1110', chain: 'BILLA Plus', region: 'Nord', address: 'Simmeringer Hauptstraße 96, 1110 Wien' },
+    { name: 'BILLA Plus 1120', chain: 'BILLA Plus', region: 'Ost', address: 'Meidlinger Hauptstraße 73, 1120 Wien' },
+    { name: 'BILLA Plus 1130', chain: 'BILLA Plus', region: 'Ost', address: 'Hietzinger Hauptstraße 22, 1130 Wien' },
+    { name: 'BILLA Plus 1140', chain: 'BILLA Plus', region: 'West', address: 'Hütteldorfer Straße 81, 1140 Wien' },
+    { name: 'BILLA Plus 1150', chain: 'BILLA Plus', region: 'West', address: 'Mariahilfer Straße 163, 1150 Wien' },
+    { name: 'Spar 1210', chain: 'Spar', region: 'Nord', address: 'Floridsdorfer Hauptstraße 28, 1210 Wien' },
+    { name: 'Spar 1220', chain: 'Spar', region: 'Ost', address: 'Donaufelder Straße 101, 1220 Wien' },
+    { name: 'Spar 1230', chain: 'Spar', region: 'Süd', address: 'Liesinger Platz 3, 1230 Wien' },
+    { name: 'Spar 2100', chain: 'Spar', region: 'West', address: 'Hauptstraße 42, 2100 Korneuburg' },
+    { name: 'Spar 2110', chain: 'Spar', region: 'Ost', address: 'Bahnhofstraße 15, 2110 Bisamberg' },
+    { name: 'Eurospar 2170', chain: 'Eurospar', region: 'Nord', address: 'Hauptstraße 89, 2170 Poysdorf' },
+    { name: 'Eurospar 2180', chain: 'Eurospar', region: 'West', address: 'Stadtplatz 14, 2180 Pernersdorf' },
+    { name: 'Eurospar 2190', chain: 'Eurospar', region: 'Nord', address: 'Wiener Straße 66, 2190 Gaweinstal' },
+    { name: 'Eurospar 2200', chain: 'Eurospar', region: 'Ost', address: 'Bahnhofstraße 31, 2200 Groß Ebersdorf' },
+    { name: 'Interspar 3100', chain: 'Interspar', region: 'Nord', address: 'Kremser Landstraße 84, 3100 St. Pölten' },
+    { name: 'Interspar 3110', chain: 'Interspar', region: 'Süd', address: 'Wiener Straße 119, 3110 Herzogenburg' },
+    { name: 'Interspar 3120', chain: 'Interspar', region: 'West', address: 'Hauptplatz 23, 3120 Wolfsgraben' },
+    { name: 'ADEG 5010', chain: 'ADEG', region: 'West', address: 'Getreidegasse 39, 5010 Salzburg' },
+    { name: 'ADEG 5020', chain: 'ADEG', region: 'Süd', address: 'Alpenstraße 107, 5020 Salzburg' },
+    { name: 'ADEG 5030', chain: 'ADEG', region: 'West', address: 'Ignaz-Harrer-Straße 32, 5030 Salzburg' }
+  ]
+
+  // Create deterministic assignment based on GL name hash
+  const glHash = glName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+  const startIndex = glHash % (allMarkets.length - 10)
+  const frequencies = [6, 8, 10, 12, 24] // per year options
+  
+  return allMarkets.slice(startIndex, startIndex + 10).map((market, idx) => ({
+    ...market,
+    frequency: frequencies[(glHash + idx) % frequencies.length]
+  }))
+}
+
 export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: GebietsmanagerDetailModalProps) {
   const [selectedTab, setSelectedTab] = useState<'goals' | 'markets' | 'mhd'>('goals')
   const [goals] = useState(generateGoalsData())
@@ -70,6 +116,7 @@ export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: G
     label: `MHD ${i + 1}`,
     value: Math.floor(Math.random() * 40) + 60
   })))
+  const [glMarkets] = useState(() => getGLMarkets(gmData?.name || 'Default'))
   const modalRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -414,49 +461,66 @@ export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: G
               ))}
             </div>
           ) : selectedTab === 'markets' ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {markets.slice(0, 8).map((week, index) => (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ fontSize: '13px', fontWeight: '600', color: 'rgba(51, 51, 51, 0.8)', marginBottom: '8px' }}>
+                Zugewiesene Märkte ({glMarkets.length})
+              </div>
+              {glMarkets.map((market, index) => (
                 <div key={index} style={{
-                    border: '1px solid rgba(0, 0, 0, 0.06)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 12px',
+                  border: '1px solid rgba(0, 0, 0, 0.06)',
                   borderRadius: '8px',
-                  padding: '12px',
-                  background: 'rgba(0, 0, 0, 0.01)'
-                }}>
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '8px'
-                  }}>
-                    <span style={{ fontSize: '13px', fontWeight: '600', color: 'rgba(51, 51, 51, 0.8)' }}>
-                      {week.week}
-                    </span>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <span style={{ fontSize: '11px', color: '#007bff' }}>
-                        {week.totalVisits} Besuche
-                      </span>
-                      <span style={{ fontSize: '11px', color: '#dc3545' }}>
-                        {week.totalOOS} OOS
-                    </span>
+                  background: 'rgba(0, 0, 0, 0.01)',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(0, 0, 0, 0.02)'
+                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(0, 0, 0, 0.01)'
+                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.06)'
+                }}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                    <div style={{ 
+                      fontSize: '13px', 
+                      fontWeight: '600', 
+                      color: 'rgba(51, 51, 51, 0.9)',
+                      marginBottom: '2px'
+                    }}>
+                      {market.name}
+                    </div>
+                    <div style={{ 
+                      fontSize: '11px', 
+                      color: 'rgba(51, 51, 51, 0.6)',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      maxWidth: '200px'
+                    }}>
+                      {market.address}
                     </div>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    {week.markets.slice(0, 3).map((market, mIndex) => (
-                      <div key={mIndex} style={{
-                        fontSize: '11px',
-                        color: 'rgba(51, 51, 51, 0.6)',
-                        display: 'flex',
-                        justifyContent: 'space-between'
-                      }}>
-                        <span>{market.name}</span>
-                        <span>{market.visits}x Besuche</span>
-                      </div>
-                    ))}
-                    {week.markets.length > 3 && (
-                      <div style={{ fontSize: '10px', color: 'rgba(51, 51, 51, 0.4)' }}>
-                        +{week.markets.length - 3} weitere Märkte
-                      </div>
-                    )}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <span style={{
+                      padding: '4px 8px',
+                      background: 'rgba(40, 167, 69, 0.08)',
+                      border: '1px solid rgba(40, 167, 69, 0.2)',
+                      borderRadius: '12px',
+                      fontSize: '11px',
+                      fontWeight: '600',
+                      color: '#28a745'
+                    }}>
+                      {market.frequency}/Jahr
+                    </span>
                   </div>
                 </div>
               ))}

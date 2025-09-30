@@ -31,6 +31,40 @@ const findMarketGM = (marketName: string, marketChain: string) => {
   return gms.length > 0 ? gms[0] : null
 }
 
+// Generate realistic visit dates based on frequency
+const generateVisitDates = (frequency: number, glName: string) => {
+  const visits = []
+  const currentDate = new Date(2025, 8, 23) // September 23, 2025
+  const daysPerVisit = Math.round(365 / frequency)
+  
+  // Generate last 5 visits working backwards  
+  for (let i = 0; i < 5; i++) {
+    const visitDate = new Date(currentDate)
+    visitDate.setDate(currentDate.getDate() - (i * daysPerVisit))
+    
+    const dateStr = `${visitDate.getDate().toString().padStart(2, '0')}.${(visitDate.getMonth() + 1).toString().padStart(2, '0')}.${visitDate.getFullYear()}`
+    
+    // Deterministic but varied activity data
+    const seed = visitDate.getTime() + glName.length
+    const rand = (min: number, max: number) => min + (seed % (max - min + 1))
+    
+    visits.push({
+      date: dateStr,
+      gl: glName,
+      anfahrtszeit: rand(15, 35),
+      arbeitszeit: rand(35, 60),
+      activities: {
+        schuetten: rand(0, 3),
+        displays: rand(0, 2),
+        distributionsziel: rand(0, 2),
+        flexziel: rand(0, 2)
+      }
+    })
+  }
+  
+  return visits.reverse() // Show chronologically (oldest first)
+}
+
 export default function MarketDetailModal({ isOpen, onClose, marketData }: MarketDetailModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
 
@@ -278,7 +312,11 @@ export default function MarketDetailModal({ isOpen, onClose, marketData }: Marke
                   fontWeight: '700', 
                   color: '#fd7e14'
                 }}>
-                  {[6, 8, 10, 12, 24][Math.floor(Math.random() * 5)]}/Jahr
+                  {(() => {
+                    // Use same frequency logic as einzelne besuche
+                    const seed = (marketData.name + marketData.chain).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+                    return [6, 8, 10, 12, 24][seed % 5]
+                  })()}/Jahr
                 </span>
               </div>
             )}
@@ -362,13 +400,12 @@ export default function MarketDetailModal({ isOpen, onClose, marketData }: Marke
             padding: '14px',
             border: '1px solid rgba(0, 0, 0, 0.04)'
           }}>
-            {/* Besuchsfrequenz */}
+            {/* Besuchsfrequenz / Marktbesuche YTD */}
             <div style={{ marginBottom: '14px' }}>
               <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '6px'
+                alignItems: 'center'
               }}>
                 <span style={{
                   fontSize: '11px',
@@ -377,30 +414,44 @@ export default function MarketDetailModal({ isOpen, onClose, marketData }: Marke
                   textTransform: 'uppercase',
                   letterSpacing: '0.3px'
                 }}>
-                  Besuchsfrequenz {marketGM ? marketGM.name : 'Thomas Nobis'}
+                  {(marketData as any).isFlexMarket ? 'Marktbesuche YTD' : `Besuchsfrequenz ${marketGM ? marketGM.name : 'Thomas Nobis'}`}
                 </span>
-                <span style={{
-                  fontSize: '11px',
-                  fontWeight: '600',
-                  color: getGoalColor(marketData.marktZiele)
-                }}>
-                  {marketData.marktZiele}%
-                </span>
+                {(marketData as any).isFlexMarket ? (
+                  <span style={{
+                    fontSize: '16px',
+                    fontWeight: '700',
+                    color: '#28a745',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif'
+                  }}>
+                    {Math.floor(Math.random() * 21)}
+                  </span>
+                ) : (
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: '600',
+                    color: getGoalColor(marketData.marktZiele)
+                  }}>
+                    {marketData.marktZiele}%
+                  </span>
+                )}
               </div>
-              <div style={{
-                height: '8px',
-                backgroundColor: 'rgba(0, 0, 0, 0.06)',
-                borderRadius: '4px',
-                overflow: 'hidden'
-              }}>
+              {!(marketData as any).isFlexMarket && (
                 <div style={{
-                  width: `${marketData.marktZiele}%`,
-                  height: '100%',
-                  background: getGoalGradient(marketData.marktZiele),
+                  height: '8px',
+                  backgroundColor: 'rgba(0, 0, 0, 0.06)',
                   borderRadius: '4px',
-                  transition: 'width 0.8s ease'
-                }} />
-              </div>
+                  overflow: 'hidden',
+                  marginTop: '6px'
+                }}>
+                  <div style={{
+                    width: `${marketData.marktZiele}%`,
+                    height: '100%',
+                    background: getGoalGradient(marketData.marktZiele),
+                    borderRadius: '4px',
+                    transition: 'width 0.8s ease'
+                  }} />
+                </div>
+              )}
             </div>
 
             {/* Kühlerinventur - Only for Flex markets */}
@@ -471,43 +522,18 @@ export default function MarketDetailModal({ isOpen, onClose, marketData }: Marke
           </h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {[
-              { 
-                date: '23.09.2025', 
-                gl: 'Thomas Nobis',
-                anfahrtszeit: 23, 
-                arbeitszeit: 45, 
-                activities: { schuetten: 1, displays: 2, distributionsziel: 1, flexziel: 0 }
-              },
-              { 
-                date: '20.09.2025', 
-                gl: 'Alexander Felsberger',
-                anfahrtszeit: 18, 
-                arbeitszeit: 52, 
-                activities: { schuetten: 0, displays: 1, distributionsziel: 2, flexziel: 1 }
-              },
-              { 
-                date: '17.09.2025', 
-                gl: 'Thomas Nobis',
-                anfahrtszeit: 31, 
-                arbeitszeit: 38, 
-                activities: { schuetten: 2, displays: 0, distributionsziel: 1, flexziel: 1 }
-              },
-              { 
-                date: '14.09.2025', 
-                gl: 'Alexander Felsberger',
-                anfahrtszeit: 25, 
-                arbeitszeit: 41, 
-                activities: { schuetten: 1, displays: 1, distributionsziel: 0, flexziel: 2 }
-              },
-              { 
-                date: '11.09.2025', 
-                gl: 'Thomas Nobis',
-                anfahrtszeit: 22, 
-                arbeitszeit: 48, 
-                activities: { schuetten: 3, displays: 1, distributionsziel: 1, flexziel: 0 }
-              }
-            ].map((visit, index) => (
+            {(() => {
+              // Get consistent frequency for this market (deterministic)
+              const seed = (marketData.name + marketData.chain).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+              const frequency = marketData.kuehlInventur === null 
+                ? [6, 8, 10, 12, 24][seed % 5]  // Same deterministic frequency as badge
+                : 12
+              
+              // Use the GM name from the GM pill, or Thomas Nobis as fallback
+              const glName = marketGM ? marketGM.name : 'Thomas Nobis'
+              
+              return generateVisitDates(frequency, glName)
+            })().map((visit, index) => (
               <div
                 key={index}
                 style={{

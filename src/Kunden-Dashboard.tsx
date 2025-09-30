@@ -730,13 +730,12 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
                     padding: '12px',
                     border: '1px solid rgba(0, 0, 0, 0.04)'
                   }}>
-                    {/* Markt Ziele Progress */}
+                    {/* Marktbesuche YTD - Clean count display */}
                     <div>
                       <div style={{ 
                         display: 'flex', 
                         justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '8px'
+                        alignItems: 'center'
                       }}>
                         <span style={{ 
                           fontSize: '11px', 
@@ -745,29 +744,16 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
                           textTransform: 'uppercase',
                           letterSpacing: '0.3px'
                         }}>
-                          Markt Ziele
+                          Marktbesuche YTD
                         </span>
                         <span style={{ 
-                          fontSize: '11px', 
-                          fontWeight: '600',
-                          color: getGoalColor(market.marktZiele)
+                          fontSize: '16px', 
+                          fontWeight: '700',
+                          color: '#28a745',
+                          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif'
                         }}>
-                          {market.marktZiele}%
+                          {Math.floor(Math.random() * 21)}
                         </span>
-                      </div>
-                      <div style={{
-                        height: '6px',
-                        backgroundColor: 'rgba(0, 0, 0, 0.06)',
-                        borderRadius: '3px',
-                        overflow: 'hidden'
-                      }}>
-                        <div style={{
-                          width: `${market.marktZiele}%`,
-                          height: '100%',
-                          background: getGoalGradient(market.marktZiele),
-                          borderRadius: '3px',
-                          transition: 'width 0.8s ease'
-                        }} />
                       </div>
                     </div>
 

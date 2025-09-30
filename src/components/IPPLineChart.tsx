@@ -51,16 +51,15 @@ export default function IPPLineChart() {
 
   const generateWeeklyData = (): DataPoint[] => {
     const result: DataPoint[] = []
-    for (let w = 1; w <= 53; w++) {
+    for (let w = 1; w <= 40; w++) {
       const isPrevYear = w <= 19 // 2024 weeks
       let ippMin: number, ippMax: number
       if (isPrevYear) {
         // 2024: 4.7–5.1, winter (KW 1–8) slightly higher within range
         if (w <= 8) { ippMin = 5.0; ippMax = 5.1 } else { ippMin = 4.7; ippMax = 5.0 }
       } else {
-        // 2025+: 5.1–5.5, winter (KW 46–53) higher
-        if (w >= 46) { ippMin = 5.4; ippMax = 5.5 }
-        else if (w >= 26 && w <= 35) { ippMin = 5.1; ippMax = 5.2 } // summer lower
+        // 2025+: 5.1–5.5, only goes to week 40 (end of September)
+        if (w >= 26 && w <= 35) { ippMin = 5.1; ippMax = 5.2 } // summer lower
         else { ippMin = 5.2; ippMax = 5.4 }
       }
       const ipp = round1(lerp(ippMin, ippMax, noise(w * 1.37)))
@@ -92,10 +91,10 @@ export default function IPPLineChart() {
       const promotions = round1(Math.max(0, ipp - zweit - cooler))
       out.push({ date: `${m} -1`, ipp, zweitplatzierung: zweit, cooler, promotions })
     })
-    // Current year (2025): 5.1–5.5, winter higher
-    months.forEach((m, idx) => {
-      const isWinter = [0, 1, 10, 11].includes(idx)
-      const isSummer = [5, 6, 7].includes(idx)
+    // Current year (2025): 5.1–5.5, only up to September
+    months.slice(0, 9).forEach((m, idx) => {
+      const isWinter = [0, 1].includes(idx) // Jan, Feb
+      const isSummer = [5, 6, 7].includes(idx) // Jun, Jul, Aug
       let min = 5.2, max = 5.4
       if (isWinter) { min = 5.4; max = 5.5 }
       else if (isSummer) { min = 5.1; max = 5.2 }
@@ -112,12 +111,12 @@ export default function IPPLineChart() {
 
   const monthlyData: DataPoint[] = useMemo(generateMonthlyData, [])
   
-  // Daily data (100 days) - Deterministic seasonal values
+  // Daily data (100 days ending around mid-September) - Deterministic seasonal values
   const generateDailyData = (): DataPoint[] => {
     const data: DataPoint[] = []
-    const today = new Date()
+    const endDate = new Date(2025, 8, 15) // September 15, 2025
     for (let i = 99; i >= 0; i--) {
-      const date = new Date(today)
+      const date = new Date(endDate)
       date.setDate(date.getDate() - i)
       const year = date.getFullYear()
       const month = date.getMonth() // 0-11

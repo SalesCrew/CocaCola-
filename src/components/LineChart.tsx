@@ -51,163 +51,158 @@ export default function LineChart() {
   // Current week index (KW 40 is "this week" - centered in data)
   const currentWeekIndex = 39 // KW 40 is now at index 39 (after adding previous year)
   
-  // Realistic seasonal weekly data (KW = Kalenderwoche) - 2 years of data (base values)
+  // Smooth seasonal weekly data - Realistic climb/decline pattern (divided by 4)
   const weeklyBaseData: DataPoint[] = [
-    // Previous year
-    { date: 'KW 1', found: 28, resolved: 27, percentage: 96.4 },
-    { date: 'KW 2', found: 30, resolved: 29, percentage: 96.7 },
-    { date: 'KW 3', found: 26, resolved: 25, percentage: 96.2 },
-    { date: 'KW 4', found: 32, resolved: 31, percentage: 96.9 },
-    { date: 'KW 5', found: 29, resolved: 28, percentage: 96.6 },
-    { date: 'KW 6', found: 35, resolved: 34, percentage: 97.1 },
-    { date: 'KW 7', found: 38, resolved: 36, percentage: 94.7 },
-    { date: 'KW 8', found: 42, resolved: 40, percentage: 95.2 },
-    { date: 'KW 9', found: 41, resolved: 39, percentage: 95.1 },
-    { date: 'KW 10', found: 45, resolved: 43, percentage: 95.6 },
-    { date: 'KW 11', found: 48, resolved: 46, percentage: 95.8 },
-    { date: 'KW 12', found: 44, resolved: 42, percentage: 95.5 },
-    { date: 'KW 13', found: 51, resolved: 48, percentage: 94.1 },
-    { date: 'KW 14', found: 49, resolved: 46, percentage: 93.9 },
-    { date: 'KW 15', found: 46, resolved: 44, percentage: 95.7 },
-    { date: 'KW 16', found: 52, resolved: 49, percentage: 94.2 },
-    { date: 'KW 17', found: 48, resolved: 45, percentage: 93.8 },
-    { date: 'KW 18', found: 43, resolved: 41, percentage: 95.3 },
-    { date: 'KW 19', found: 47, resolved: 45, percentage: 95.7 },
-    // Current year - Winter/Spring - Better performance
-    { date: 'KW 20', found: 41, resolved: 39, percentage: 95.1 },
-    { date: 'KW 21', found: 36, resolved: 34, percentage: 94.4 },
-    { date: 'KW 22', found: 49, resolved: 46, percentage: 93.9 },
-    { date: 'KW 23', found: 44, resolved: 42, percentage: 95.5 },
-    { date: 'KW 24', found: 53, resolved: 50, percentage: 94.3 },
-    { date: 'KW 25', found: 47, resolved: 44, percentage: 93.6 },
-    // Summer start - Performance degrades
-    { date: 'KW 26', found: 58, resolved: 51, percentage: 87.9 },
-    { date: 'KW 27', found: 64, resolved: 55, percentage: 85.9 },
-    { date: 'KW 28', found: 72, resolved: 62, percentage: 86.1 },
-    { date: 'KW 29', found: 68, resolved: 59, percentage: 86.8 },
-     { date: 'KW 30', found: 75, resolved: 68, percentage: 90.7 }, // Good summer week
-    { date: 'KW 31', found: 71, resolved: 64, percentage: 90.1 },
-    { date: 'KW 32', found: 69, resolved: 63, percentage: 91.3 },
-    { date: 'KW 33', found: 74, resolved: 67, percentage: 90.5 },
-    { date: 'KW 34', found: 67, resolved: 61, percentage: 91.0 },
-     { date: 'KW 35', found: 73, resolved: 66, percentage: 90.4 }, // Good summer week
-    // Peak summer - Worst performance
-    { date: 'KW 36', found: 78, resolved: 66, percentage: 84.6 },
-    { date: 'KW 37', found: 76, resolved: 63, percentage: 82.9 },
-    { date: 'KW 38', found: 81, resolved: 67, percentage: 82.7 },
-    { date: 'KW 39', found: 79, resolved: 65, percentage: 82.3 },
-    { date: 'KW 40', found: 77, resolved: 64, percentage: 83.1 }, // This week
-    { date: 'KW 41', found: 62, resolved: 55, percentage: 88.7 },
-    // Fall recovery
-    { date: 'KW 42', found: 55, resolved: 50, percentage: 90.9 },
-    { date: 'KW 43', found: 48, resolved: 44, percentage: 91.7 },
-    { date: 'KW 44', found: 52, resolved: 48, percentage: 92.3 },
-    { date: 'KW 45', found: 46, resolved: 43, percentage: 93.5 },
-    { date: 'KW 46', found: 41, resolved: 39, percentage: 95.1 },
-    // Winter - Best performance
-    { date: 'KW 47', found: 38, resolved: 36, percentage: 94.7 },
-    { date: 'KW 48', found: 35, resolved: 34, percentage: 97.1 },
-    { date: 'KW 49', found: 32, resolved: 31, percentage: 96.9 },
-    { date: 'KW 50', found: 29, resolved: 28, percentage: 96.6 },
-    { date: 'KW 51', found: 27, resolved: 26, percentage: 96.3 },
-    { date: 'KW 52', found: 25, resolved: 24, percentage: 96.0 },
-    // Next year projection
-    { date: 'KW 1', found: 26, resolved: 25, percentage: 96.2 },
-    { date: 'KW 2', found: 28, resolved: 27, percentage: 96.4 },
-    { date: 'KW 3', found: 31, resolved: 30, percentage: 96.8 },
-    { date: 'KW 4', found: 30, resolved: 29, percentage: 96.7 },
-    { date: 'KW 5', found: 33, resolved: 32, percentage: 97.0 },
-    { date: 'KW 6', found: 36, resolved: 35, percentage: 97.2 },
-    { date: 'KW 7', found: 39, resolved: 37, percentage: 94.9 },
-    { date: 'KW 8', found: 43, resolved: 41, percentage: 95.3 },
-    { date: 'KW 9', found: 40, resolved: 38, percentage: 95.0 },
-    { date: 'KW 10', found: 46, resolved: 44, percentage: 95.7 },
-    { date: 'KW 11', found: 47, resolved: 45, percentage: 95.7 },
-    { date: 'KW 12', found: 42, resolved: 40, percentage: 95.2 },
-    { date: 'KW 13', found: 50, resolved: 47, percentage: 94.0 },
-    { date: 'KW 14', found: 48, resolved: 45, percentage: 93.8 },
-    { date: 'KW 15', found: 45, resolved: 43, percentage: 95.6 },
-    { date: 'KW 16', found: 53, resolved: 50, percentage: 94.3 },
-    { date: 'KW 17', found: 49, resolved: 46, percentage: 93.9 },
-    { date: 'KW 18', found: 44, resolved: 42, percentage: 95.5 },
-    { date: 'KW 19', found: 46, resolved: 44, percentage: 95.7 },
-    { date: 'KW 20', found: 42, resolved: 40, percentage: 95.2 },
-    { date: 'KW 21', found: 38, resolved: 36, percentage: 94.7 },
-    { date: 'KW 22', found: 51, resolved: 48, percentage: 94.1 },
-    { date: 'KW 23', found: 45, resolved: 43, percentage: 95.6 },
-    { date: 'KW 24', found: 55, resolved: 52, percentage: 94.5 },
-    { date: 'KW 25', found: 49, resolved: 46, percentage: 93.9 },
-    { date: 'KW 26', found: 61, resolved: 53, percentage: 86.9 },
+    // 2024 Winter - Low baseline (45-75 range)
+    { date: 'KW 1', found: 49, resolved: 47, percentage: 96.4 },
+    { date: 'KW 2', found: 53, resolved: 51, percentage: 96.7 },
+    { date: 'KW 3', found: 46, resolved: 45, percentage: 96.2 },
+    { date: 'KW 4', found: 56, resolved: 55, percentage: 96.9 },
+    { date: 'KW 5', found: 50, resolved: 48, percentage: 96.5 },
+    { date: 'KW 6', found: 60, resolved: 58, percentage: 97.1 },
+    { date: 'KW 7', found: 55, resolved: 52, percentage: 94.5 },
+    { date: 'KW 8', found: 59, resolved: 56, percentage: 95.3 },
+    // 2024 Spring - Gradual climb to summer spike
+    { date: 'KW 9', found: 64, resolved: 61, percentage: 95.3 },
+    { date: 'KW 10', found: 69, resolved: 66, percentage: 95.3 },
+    { date: 'KW 11', found: 74, resolved: 70, percentage: 95.3 },
+    { date: 'KW 12', found: 79, resolved: 75, percentage: 94.9 },
+    { date: 'KW 13', found: 83, resolved: 78, percentage: 94.2 },
+    { date: 'KW 14', found: 86, resolved: 81, percentage: 93.9 },
+    { date: 'KW 15', found: 90, resolved: 85, percentage: 93.9 },
+    { date: 'KW 16', found: 94, resolved: 88, percentage: 93.9 },
+    { date: 'KW 17', found: 96, resolved: 90, percentage: 93.8 },
+    { date: 'KW 18', found: 99, resolved: 93, percentage: 93.9 },
+    { date: 'KW 19', found: 101, resolved: 95, percentage: 93.8 },
+    // Flatter transition - minimal dip
+    { date: 'KW 20', found: 98, resolved: 93, percentage: 94.9 },
+    { date: 'KW 21', found: 95, resolved: 90, percentage: 94.7 },
+    { date: 'KW 22', found: 92, resolved: 88, percentage: 95.7 },
+    { date: 'KW 23', found: 89, resolved: 86, percentage: 96.6 },
+    { date: 'KW 24', found: 85, resolved: 82, percentage: 96.5 },
+    { date: 'KW 25', found: 82, resolved: 79, percentage: 96.3 },
+    // Last 15 weeks: Only 5 red, 10 green - 2024 Summer with better recovery
+    { date: 'KW 26', found: 105, resolved: 93, percentage: 88.6 }, // Red 1
+    { date: 'KW 27', found: 110, resolved: 96, percentage: 87.3 }, // Red 2
+    { date: 'KW 28', found: 113, resolved: 99, percentage: 87.6 }, // Red 3
+    { date: 'KW 29', found: 108, resolved: 96, percentage: 88.9 }, // Red 4
+    { date: 'KW 30', found: 112, resolved: 98, percentage: 87.5 }, // Red 5 (last red week)
+    { date: 'KW 31', found: 109, resolved: 99, percentage: 90.8 }, // Green 1
+    { date: 'KW 32', found: 106, resolved: 97, percentage: 91.5 }, // Green 2
+    { date: 'KW 33', found: 104, resolved: 95, percentage: 91.3 }, // Green 3
+    { date: 'KW 34', found: 101, resolved: 92, percentage: 91.1 }, // Green 4
+    { date: 'KW 35', found: 98, resolved: 90, percentage: 91.8 }, // Green 5
+    // 2025 Summer - All green (90%+)
+    { date: 'KW 36', found: 95, resolved: 87, percentage: 91.6 }, // Green 6
+    { date: 'KW 37', found: 100, resolved: 92, percentage: 92.0 }, // Green 7
+    { date: 'KW 38', found: 105, resolved: 97, percentage: 92.4 }, // Green 8
+    { date: 'KW 39', found: 103, resolved: 95, percentage: 92.2 }, // Green 9
+    { date: 'KW 40', found: 96, resolved: 89, percentage: 92.7 } // Green 10 - September strong finish
   ]
-
-  // Scale weekly data to align with monthly totals (found between ~300-500 per month ⇒ ~70-130 per week)
-  // Add seasonal variety + slight randomness while preserving original percentages
-  const weeklyData: DataPoint[] = useMemo(() => {
-    const minBase = Math.min(...weeklyBaseData.map(d => d.found))
-    const maxBase = Math.max(...weeklyBaseData.map(d => d.found))
-    return weeklyBaseData.map((d, i) => {
-      const norm = (d.found - minBase) / Math.max(1, (maxBase - minBase)) // 0..1 seasonal index
-      const sineBump = Math.sin(i * 0.35) * 6 // smooth oscillation
-      const jitter = ((i * 137) % 11) - 5 // deterministic small jitter -5..5
-      const targetFoundRaw = 70 + norm * 60 + sineBump + jitter
-      const targetFound = Math.max(65, Math.min(140, Math.round(targetFoundRaw)))
-      const resolved = Math.round(targetFound * (d.percentage / 100))
-      return { date: d.date, found: targetFound, resolved, percentage: d.percentage }
-    })
-  }, [])
   
-  const dailyData: DataPoint[] = Array.from({ length: 100 }, (_, i) => {
-    const baseFound = 8 + Math.round(Math.random() * 12) // 8-20 range
-    const variance = 0.85 + Math.random() * 0.15 // 85-100% range
-    const resolved = Math.round(baseFound * variance)
-    const percentage = (resolved / baseFound) * 100
-    
-    // Generate realistic dates starting from March 1st
-    const startDate = new Date(2024, 2, 1) // March 1, 2024
-    const currentDate = new Date(startDate)
-    currentDate.setDate(startDate.getDate() + i)
-    const day = currentDate.getDate().toString().padStart(2, '0')
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0')
-    
-    return {
-      date: `${day}.${month}`,
-      found: baseFound,
-      resolved: resolved,
-      percentage: Math.round(percentage * 10) / 10
-    }
-  })
+  const weeklyData: DataPoint[] = useMemo(() => weeklyBaseData, [])
   
+  // Fixed monthly data - Aligned with weekly seasonal pattern (divided by 4)
   const monthlyData: DataPoint[] = [
-    // Previous year (scaled to 300-500 with same seasonal pattern)
-    { date: 'Jan -1', found: 320, resolved: Math.round(320 * 0.961), percentage: 96.1 },
-    { date: 'Feb -1', found: 315, resolved: Math.round(315 * 0.967), percentage: 96.7 },
-    { date: 'Mar -1', found: 340, resolved: Math.round(340 * 0.959), percentage: 95.9 },
-    { date: 'Apr -1', found: 360, resolved: Math.round(360 * 0.948), percentage: 94.8 },
-    { date: 'Mai -1', found: 370, resolved: Math.round(370 * 0.931), percentage: 93.1 },
-    { date: 'Jun -1', found: 420, resolved: Math.round(420 * 0.894), percentage: 89.4 },
-    { date: 'Jul -1', found: 480, resolved: Math.round(480 * 0.849), percentage: 84.9 },
-    { date: 'Aug -1', found: 500, resolved: Math.round(500 * 0.879), percentage: 87.9 },
-    { date: 'Sep -1', found: 450, resolved: Math.round(450 * 0.848), percentage: 84.8 },
-    { date: 'Okt -1', found: 360, resolved: Math.round(360 * 0.906), percentage: 90.6 },
-    { date: 'Nov -1', found: 330, resolved: Math.round(330 * 0.932), percentage: 93.2 },
-    { date: 'Dez -1', found: 310, resolved: Math.round(310 * 0.962), percentage: 96.2 },
-    // Current year - Winter - Best performance (scaled)
-    { date: 'Jan', found: 325, resolved: Math.round(325 * 0.960), percentage: 96.0 },
-    { date: 'Feb', found: 315, resolved: Math.round(315 * 0.966), percentage: 96.6 },
-    { date: 'Mär', found: 340, resolved: Math.round(340 * 0.958), percentage: 95.8 },
-    // Spring - Good performance with occasional dips
-    { date: 'Apr', found: 360, resolved: Math.round(360 * 0.946), percentage: 94.6 },
-    { date: 'Mai', found: 380, resolved: Math.round(380 * 0.930), percentage: 93.0 },
-    { date: 'Jun', found: 420, resolved: Math.round(420 * 0.897), percentage: 89.7 },
-    // Summer - Worst performance
-    { date: 'Jul', found: 490, resolved: Math.round(490 * 0.849), percentage: 84.9 },
-    { date: 'Aug', found: 500, resolved: Math.round(500 * 0.913), percentage: 91.3 },
-    { date: 'Sep', found: 460, resolved: Math.round(460 * 0.902), percentage: 90.2 },
-    // Fall - Recovery
-    { date: 'Okt', found: 360, resolved: Math.round(360 * 0.904), percentage: 90.4 },
-    { date: 'Nov', found: 330, resolved: Math.round(330 * 0.930), percentage: 93.0 },
-    { date: 'Dez', found: 310, resolved: Math.round(310 * 0.961), percentage: 96.1 },
+    // Previous year (2024) - Aggregated from weekly totals
+    { date: 'Jan -1', found: 208, resolved: 200, percentage: 96.4 },
+    { date: 'Feb -1', found: 223, resolved: 215, percentage: 96.5 },
+    { date: 'Mär -1', found: 275, resolved: 262, percentage: 95.2 },
+    { date: 'Apr -1', found: 320, resolved: 301, percentage: 94.1 },
+    { date: 'Mai -1', found: 346, resolved: 325, percentage: 94.0 },
+    // 2024 RED SUMMER - Summer spike to 350-450 range
+    { date: 'Jun -1', found: 408, resolved: 352, percentage: 86.5 },
+    { date: 'Jul -1', found: 430, resolved: 372, percentage: 86.5 },
+    { date: 'Aug -1', found: 421, resolved: 371, percentage: 88.1 },
+    { date: 'Sep -1', found: 390, resolved: 347, percentage: 89.0 },
+    { date: 'Okt -1', found: 305, resolved: 283, percentage: 92.8 },
+    { date: 'Nov -1', found: 230, resolved: 219, percentage: 95.3 },
+    { date: 'Dez -1', found: 203, resolved: 196, percentage: 96.5 },
+    // Current year (2025) - Back to winter baseline, then better summer handling
+    { date: 'Jan', found: 195, resolved: 189, percentage: 97.1 },
+    { date: 'Feb', found: 205, resolved: 199, percentage: 97.1 },
+    { date: 'Mär', found: 263, resolved: 252, percentage: 96.0 },
+    { date: 'Apr', found: 295, resolved: 282, percentage: 95.5 },
+    { date: 'Mai', found: 310, resolved: 295, percentage: 95.2 },
+    // 2025 BETTER SUMMER - Same spike pattern but much better resolution
+    { date: 'Jun', found: 388, resolved: 353, percentage: 91.2 },
+    { date: 'Jul', found: 408, resolved: 373, percentage: 91.5 },
+    { date: 'Aug', found: 404, resolved: 371, percentage: 91.9 },
+    { date: 'Sep', found: 398, resolved: 365, percentage: 91.9 } // Fading out from summer
   ]
+  
+  // Generate daily data ending around mid-September
+  const generateDailyData = (): DataPoint[] => {
+    const data: DataPoint[] = []
+    const endDate = new Date(2025, 8, 15) // September 15, 2025
+    
+    for (let i = 99; i >= 0; i--) {
+      const date = new Date(endDate)
+      date.setDate(date.getDate() - i)
+      
+      const dayOfWeek = date.getDay()
+      const isSunday = dayOfWeek === 0
+      
+      if (isSunday) {
+        data.push({
+          date: `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}`,
+          found: 0,
+          resolved: 0,
+          percentage: 0
+        })
+        continue
+      }
+      
+      const month = date.getMonth() + 1 // 1-12
+      const year = date.getFullYear()
+      const dayOfYear = Math.floor((date.getTime() - new Date(year, 0, 0).getTime()) / (1000 * 60 * 60 * 24))
+      
+      // Use deterministic values based on day of year to ensure consistency
+      const seed = (dayOfYear * 137) % 1000
+      const deterministic = seed / 1000 // 0-1
+      
+      let foundBase: number, resolvedRate: number
+      if (month >= 6 && month <= 8) { // Summer
+        if (year === 2024) {
+          // 2024 RED SUMMER - High spike (350-450 weekly)
+          foundBase = 12 + deterministic * 6 // 12-18 daily
+          resolvedRate = 0.85 + deterministic * 0.04 // 85-89%
+        } else {
+          // 2025 BETTER SUMMER - Same spike but better handled
+          foundBase = 11 + deterministic * 5 // 11-16 daily  
+          resolvedRate = 0.91 + deterministic * 0.02 // 91-93%
+        }
+      } else if (month === 1 || month === 2) { // Winter months (180-300 weekly)
+        foundBase = 4 + deterministic * 3 // 4-7 daily
+        resolvedRate = 0.96 + deterministic * 0.02 // 96-98%
+      } else if (month === 9) { // September - fading out from summer
+        foundBase = 9 + deterministic * 4 // 9-13 daily (trending down)
+        if (year === 2024) {
+          resolvedRate = 0.89 + deterministic * 0.02 // 89-91%
+        } else {
+          resolvedRate = 0.91 + deterministic * 0.02 // 91-93%
+        }
+      } else { // Spring/Autumn (gradual climb/decline)
+        foundBase = 7 + deterministic * 4 // 7-11 daily
+        resolvedRate = 0.93 + deterministic * 0.03 // 93-96%
+      }
+      
+      const found = Math.round(foundBase)
+      const resolved = Math.round(found * resolvedRate)
+      const percentage = found > 0 ? Math.round((resolved / found) * 1000) / 10 : 0
+      
+      data.push({
+        date: `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}`,
+        found,
+        resolved,
+        percentage
+      })
+    }
+    
+    return data
+  }
+  
+  const dailyData: DataPoint[] = useMemo(() => generateDailyData(), [])
   
   const allData = interval === 'daily' ? dailyData : interval === 'weekly' ? weeklyData : monthlyData
   
