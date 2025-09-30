@@ -75,7 +75,33 @@ export default function AustriaMap({ pins }: AustriaMapProps) {
           z-index: 10001 !important;
         }
       `}</style>
-      <div style={{ height: '100%', width: '115%', marginLeft: '-7.5%' }}>
+      <div style={{ height: '100%', width: '115%', marginLeft: '-7.5%', position: 'relative' }}>
+        {/* Top right interval switcher - matches chart tabs exactly */}
+        <div style={{
+          position: 'absolute',
+          top: '-2px',
+          right: '36px',
+          zIndex: 1000
+        }}>
+          {/* Grey background container */}
+          <div style={{
+            position: 'absolute',
+            top: '-1px',
+            left: '-1px',
+            right: '-1px',
+            bottom: '-1px',
+            background: 'rgba(128, 128, 128, 0.4)',
+            borderRadius: '6px',
+            zIndex: -1
+          }}></div>
+          
+          <div className="interval-switcher">
+            <button className="interval-btn active">
+              heute
+            </button>
+          </div>
+        </div>
+
         <MapContainer
           center={austriaCenter}
           zoom={7}

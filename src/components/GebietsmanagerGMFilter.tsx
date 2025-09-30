@@ -1,23 +1,23 @@
 import { useState, useRef, useEffect } from 'react'
 import { DropdownPortal } from './DropdownPortal'
 
-// GM data with their regions and markets - moved outside component for export
+// GM data with their regions and markets - using real GL names from cards
 export const gmData = [
   { name: 'Alle', regions: [], markets: [] },
-  { name: 'Thomas Müller', regions: ['Nord'], markets: ['BILLA', 'BILLA Plus'] },
-  { name: 'Anna Schmidt', regions: ['Nord', 'Ost'], markets: ['Spar', 'Eurospar'] },
-  { name: 'Michael Wagner', regions: ['Süd'], markets: ['Interspar', 'Maxi Markt'] },
-  { name: 'Julia Fischer', regions: ['West'], markets: ['BILLA', 'ADEG'] },
-  { name: 'Stefan Bauer', regions: ['Ost'], markets: ['Spar', 'BILLA Plus'] },
-  { name: 'Maria Weber', regions: ['Nord', 'West'], markets: ['Eurospar', 'Interspar'] },
-  { name: 'Christian Meyer', regions: ['Süd', 'Ost'], markets: ['ADEG', 'Maxi Markt'] },
-  { name: 'Sandra Huber', regions: ['West'], markets: ['BILLA', 'Spar'] },
-  { name: 'Martin Gruber', regions: ['Nord'], markets: ['Interspar', 'BILLA Plus'] },
-  { name: 'Lisa Zimmermann', regions: ['Süd', 'West'], markets: ['Eurospar', 'ADEG'] },
-  { name: 'Daniel Hoffmann', regions: ['Ost'], markets: ['Maxi Markt', 'Spar'] },
-  { name: 'Eva Schwarz', regions: ['Nord', 'Süd'], markets: ['BILLA', 'Interspar'] },
-  { name: 'Robert König', regions: ['West', 'Ost'], markets: ['BILLA Plus', 'Eurospar'] },
-  { name: 'Nina Braun', regions: ['Süd'], markets: ['ADEG', 'Spar'] }
+  { name: 'Christoph Leitner', regions: ['Nord'], markets: ['BILLA', 'BILLA Plus'] },
+  { name: 'Christoph Zauner', regions: ['Nord'], markets: ['Spar', 'Eurospar'] },
+  { name: 'Irene Traxler', regions: ['Nord'], markets: ['Interspar', 'ADEG'] },
+  { name: 'Doris Stockinger', regions: ['Ost'], markets: ['BILLA', 'Spar'] },
+  { name: 'Rainer Perzl', regions: ['Ost'], markets: ['BILLA Plus', 'Eurospar'] },
+  { name: 'Georg Stockreiter', regions: ['Ost'], markets: ['Interspar', 'Maxi Markt'] },
+  { name: 'Arthur Neuhold', regions: ['Ost'], markets: ['ADEG', 'Spar'] },
+  { name: 'Alexander Felsberger', regions: ['Süd'], markets: ['BILLA', 'BILLA Plus'] },
+  { name: 'Mario Riedenbauer', regions: ['Süd'], markets: ['Spar', 'Eurospar'] },
+  { name: 'Michael Wilhelmi', regions: ['Süd'], markets: ['Interspar', 'ADEG'] },
+  { name: 'Eva Zausinger', regions: ['Süd'], markets: ['Maxi Markt', 'BILLA'] },
+  { name: 'Thomas Nobis', regions: ['West'], markets: ['BILLA', 'BILLA Plus'] },
+  { name: 'Josef Schellhorn', regions: ['West'], markets: ['Spar', 'Eurospar'] },
+  { name: 'Benjamin Spiegel', regions: ['West'], markets: ['Interspar', 'ADEG'] }
 ]
 
 interface GebietsmanagerGMFilterProps {

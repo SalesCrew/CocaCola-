@@ -4,9 +4,15 @@ import { createPortal } from 'react-dom'
 interface DataPoint {
   date: string
   ipp: number
-  zweitplatzierung: number
-  cooler: number
-  promotions: number
+  schuetten: number
+  displays: number
+  platzierungenOhneMaterial: number
+  platzierungenMitMaterial: number
+  grossplatzierungen: number
+  permanentRacks: number
+  flexziel: number
+  zweitplatzierungen: number
+  e3: number
 }
 
 export default function IPPLineChart() {
@@ -36,10 +42,16 @@ export default function IPPLineChart() {
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   
-  // Legend visibility state
-  const [showZweitplatzierung, setShowZweitplatzierung] = useState(false)
-  const [showCooler, setShowCooler] = useState(false)
-  const [showPromotions, setShowPromotions] = useState(false)
+  // Legend visibility state for all lines
+  const [showSchuetten, setShowSchuetten] = useState(false)
+  const [showDisplays, setShowDisplays] = useState(false)
+  const [showPlatzierungenOhneMaterial, setShowPlatzierungenOhneMaterial] = useState(false)
+  const [showPlatzierungenMitMaterial, setShowPlatzierungenMitMaterial] = useState(false)
+  const [showGrossplatzierungen, setShowGrossplatzierungen] = useState(false)
+  const [showPermanentRacks, setShowPermanentRacks] = useState(false)
+  const [showFlexziel, setShowFlexziel] = useState(false)
+  const [showZweitplatzierungen, setShowZweitplatzierungen] = useState(false)
+  const [showE3, setShowE3] = useState(false)
   
   // Deterministic helpers
   const round1 = (n: number) => Math.round(n * 10) / 10
@@ -55,21 +67,52 @@ export default function IPPLineChart() {
       const isPrevYear = w <= 19 // 2024 weeks
       let ippMin: number, ippMax: number
       if (isPrevYear) {
-        // 2024: 4.7–5.1, winter (KW 1–8) slightly higher within range
-        if (w <= 8) { ippMin = 5.0; ippMax = 5.1 } else { ippMin = 4.7; ippMax = 5.0 }
+        // 2024: 4.5–5.2, winter (KW 1–8) slightly higher within range
+        if (w <= 8) { ippMin = 4.9; ippMax = 5.2 } else { ippMin = 4.5; ippMax = 5.0 }
       } else {
-        // 2025+: 5.1–5.5, only goes to week 40 (end of September)
-        if (w >= 26 && w <= 35) { ippMin = 5.1; ippMax = 5.2 } // summer lower
-        else { ippMin = 5.2; ippMax = 5.4 }
+        // 2025: steadily climb from 5.2 to 6.1 with slight pullbacks (weeks 20-40)
+        const progressInYear = (w - 20) / 20 // 0 to 1 over weeks 20-40
+        const baseMin = 5.2 + (progressInYear * 0.7) // Climb from 5.2 to 5.9
+        const baseMax = 5.2 + (progressInYear * 0.9) // Climb from 5.2 to 6.1
+        
+        // Add slight pullbacks (every ~6 weeks)
+        const pullbackFactor = Math.sin((w - 20) * 0.3) * 0.1 // Slight dips
+        ippMin = Math.max(5.2, baseMin + pullbackFactor - 0.1)
+        ippMax = Math.min(6.1, baseMax + pullbackFactor + 0.1)
       }
-      const ipp = round1(lerp(ippMin, ippMax, noise(w * 1.37)))
-      // Zweitplatzierung and Cooler under IPP; Promotions = residual
-      const zweitBase = Math.min(3.8, Math.max(2.4, round1(lerp(0.55 * ipp, 0.7 * ipp, noise(w * 2.11)))))
-      const coolerMax = Math.min(2.4, ipp - zweitBase - 0.1)
-      const coolerMin = Math.max(1.6, ipp - zweitBase - 0.8)
-      const cooler = round1(Math.min(Math.max(lerp(coolerMin, coolerMax, noise(w * 3.03)), 1.6), 2.4))
-      const promotions = round1(Math.max(0, ipp - zweitBase - cooler))
-      result.push({ date: `KW ${w}`, ipp, zweitplatzierung: zweitBase, cooler, promotions })
+      // Add more variation for small gains and losses
+      const baseIpp = lerp(ippMin, ippMax, noise(w * 1.37))
+      const volatility = (noise(w * 3.47) - 0.5) * 0.3 // ±0.15 variation
+      const ipp = round1(Math.max(ippMin - 0.1, Math.min(ippMax + 0.1, baseIpp + volatility)))
+      
+      // All components add up to IPP - distribute proportionally
+      const schuetten = round1(ipp * 0.15 + noise(w * 2.11) * 0.1) // ~15% of IPP
+      const displays = round1(ipp * 0.12 + noise(w * 2.22) * 0.08) // ~12% of IPP
+      const platzierungenOhneMaterial = round1(ipp * 0.08 + noise(w * 2.33) * 0.05) // ~8% of IPP
+      const platzierungenMitMaterial = round1(ipp * 0.10 + noise(w * 2.44) * 0.06) // ~10% of IPP
+      const grossplatzierungen = round1(ipp * 0.06 + noise(w * 2.55) * 0.04) // ~6% of IPP
+      const permanentRacks = round1(ipp * 0.05 + noise(w * 2.66) * 0.03) // ~5% of IPP
+      const flexziel = round1(ipp * 0.07 + noise(w * 2.77) * 0.04) // ~7% of IPP
+      const zweitplatzierungen = round1(ipp * 0.25 + noise(w * 2.88) * 0.15) // ~25% of IPP
+      const e3 = round1(ipp * 0.04 + noise(w * 2.99) * 0.02) // ~4% of IPP
+      
+      // Ensure they don't exceed IPP total (adjust proportionally if needed)
+      const total = schuetten + displays + platzierungenOhneMaterial + platzierungenMitMaterial + grossplatzierungen + permanentRacks + flexziel + zweitplatzierungen + e3
+      const factor = total > ipp ? ipp / total : 1
+      
+      result.push({ 
+        date: `KW ${w}`, 
+        ipp, 
+        schuetten: round1(schuetten * factor),
+        displays: round1(displays * factor),
+        platzierungenOhneMaterial: round1(platzierungenOhneMaterial * factor),
+        platzierungenMitMaterial: round1(platzierungenMitMaterial * factor),
+        grossplatzierungen: round1(grossplatzierungen * factor),
+        permanentRacks: round1(permanentRacks * factor),
+        flexziel: round1(flexziel * factor),
+        zweitplatzierungen: round1(zweitplatzierungen * factor),
+        e3: round1(e3 * factor)
+      })
     }
     return result
   }
@@ -79,32 +122,86 @@ export default function IPPLineChart() {
   const generateMonthlyData = (): DataPoint[] => {
     const months = ['Jän', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez']
     const out: DataPoint[] = []
-    // Previous year (2024): 4.7–5.1, winter higher
+    // Previous year (2024): 4.5–5.2, winter higher
     months.forEach((m, idx) => {
       const isWinter = [0, 1, 10, 11].includes(idx) // Jan, Feb, Nov, Dez
-      const [min, max] = isWinter ? [5.0, 5.1] : [4.7, 5.0]
-      const ipp = round1(lerp(min, max, noise((idx + 1) * 4.17)))
-      const zweit = round1(Math.min(3.8, Math.max(2.4, lerp(0.55 * ipp, 0.7 * ipp, noise((idx + 1) * 5.01)))))
-      const coolMax = Math.min(2.4, ipp - zweit - 0.1)
-      const coolMin = Math.max(1.6, ipp - zweit - 0.8)
-      const cooler = round1(Math.min(Math.max(lerp(coolMin, coolMax, noise((idx + 1) * 5.77)), 1.6), 2.4))
-      const promotions = round1(Math.max(0, ipp - zweit - cooler))
-      out.push({ date: `${m} -1`, ipp, zweitplatzierung: zweit, cooler, promotions })
+      const [min, max] = isWinter ? [4.9, 5.2] : [4.5, 5.0]
+      // Add more variation for small gains and losses
+      const baseIpp = lerp(min, max, noise((idx + 1) * 4.17))
+      const volatility = (noise((idx + 1) * 6.23) - 0.5) * 0.3 // ±0.15 variation
+      const ipp = round1(Math.max(min - 0.1, Math.min(max + 0.1, baseIpp + volatility)))
+      
+      // Generate all components that add up to IPP
+      const schuetten = round1(ipp * 0.15 + noise((idx + 1) * 3.11) * 0.1)
+      const displays = round1(ipp * 0.12 + noise((idx + 1) * 3.22) * 0.08)
+      const platzierungenOhneMaterial = round1(ipp * 0.08 + noise((idx + 1) * 3.33) * 0.05)
+      const platzierungenMitMaterial = round1(ipp * 0.10 + noise((idx + 1) * 3.44) * 0.06)
+      const grossplatzierungen = round1(ipp * 0.06 + noise((idx + 1) * 3.55) * 0.04)
+      const permanentRacks = round1(ipp * 0.05 + noise((idx + 1) * 3.66) * 0.03)
+      const flexziel = round1(ipp * 0.07 + noise((idx + 1) * 3.77) * 0.04)
+      const zweitplatzierungen = round1(ipp * 0.25 + noise((idx + 1) * 3.88) * 0.15)
+      const e3 = round1(ipp * 0.04 + noise((idx + 1) * 3.99) * 0.02)
+      
+      const total = schuetten + displays + platzierungenOhneMaterial + platzierungenMitMaterial + grossplatzierungen + permanentRacks + flexziel + zweitplatzierungen + e3
+      const factor = total > ipp ? ipp / total : 1
+      
+      out.push({ 
+        date: `${m} -1`, 
+        ipp, 
+        schuetten: round1(schuetten * factor),
+        displays: round1(displays * factor),
+        platzierungenOhneMaterial: round1(platzierungenOhneMaterial * factor),
+        platzierungenMitMaterial: round1(platzierungenMitMaterial * factor),
+        grossplatzierungen: round1(grossplatzierungen * factor),
+        permanentRacks: round1(permanentRacks * factor),
+        flexziel: round1(flexziel * factor),
+        zweitplatzierungen: round1(zweitplatzierungen * factor),
+        e3: round1(e3 * factor)
+      })
     })
-    // Current year (2025): 5.1–5.5, only up to September
+    // Current year (2025): steadily climb from 5.2 to 6.1, only up to September
     months.slice(0, 9).forEach((m, idx) => {
-      const isWinter = [0, 1].includes(idx) // Jan, Feb
-      const isSummer = [5, 6, 7].includes(idx) // Jun, Jul, Aug
-      let min = 5.2, max = 5.4
-      if (isWinter) { min = 5.4; max = 5.5 }
-      else if (isSummer) { min = 5.1; max = 5.2 }
-      const ipp = round1(lerp(min, max, noise((idx + 13) * 4.17)))
-      const zweit = round1(Math.min(3.8, Math.max(2.4, lerp(0.55 * ipp, 0.7 * ipp, noise((idx + 13) * 5.01)))))
-      const coolMax = Math.min(2.4, ipp - zweit - 0.1)
-      const coolMin = Math.max(1.6, ipp - zweit - 0.8)
-      const cooler = round1(Math.min(Math.max(lerp(coolMin, coolMax, noise((idx + 13) * 5.77)), 1.6), 2.4))
-      const promotions = round1(Math.max(0, ipp - zweit - cooler))
-      out.push({ date: `${m}`, ipp, zweitplatzierung: zweit, cooler, promotions })
+      // Progressive climb from 5.2 (Jan) to 6.1 (Sep) with slight pullbacks
+      const progressInYear = idx / 8 // 0 to 1 over Jan-Sep (9 months)
+      const baseMin = 5.2 + (progressInYear * 0.7) // Climb from 5.2 to 5.9
+      const baseMax = 5.2 + (progressInYear * 0.9) // Climb from 5.2 to 6.1
+      
+      // Add slight pullbacks (every ~3 months)
+      const pullbackFactor = Math.sin(idx * 0.8) * 0.08 // Slight monthly dips
+      let min = Math.max(5.2, baseMin + pullbackFactor - 0.05)
+      let max = Math.min(6.1, baseMax + pullbackFactor + 0.05)
+      // Add more variation for small gains and losses
+      const baseIpp = lerp(min, max, noise((idx + 13) * 4.17))
+      const volatility = (noise((idx + 13) * 7.41) - 0.5) * 0.3 // ±0.15 variation
+      const ipp = round1(Math.max(min - 0.1, Math.min(max + 0.1, baseIpp + volatility)))
+      
+      // Generate all components that add up to IPP for 2025
+      const schuetten = round1(ipp * 0.15 + noise((idx + 13) * 4.11) * 0.1)
+      const displays = round1(ipp * 0.12 + noise((idx + 13) * 4.22) * 0.08)
+      const platzierungenOhneMaterial = round1(ipp * 0.08 + noise((idx + 13) * 4.33) * 0.05)
+      const platzierungenMitMaterial = round1(ipp * 0.10 + noise((idx + 13) * 4.44) * 0.06)
+      const grossplatzierungen = round1(ipp * 0.06 + noise((idx + 13) * 4.55) * 0.04)
+      const permanentRacks = round1(ipp * 0.05 + noise((idx + 13) * 4.66) * 0.03)
+      const flexziel = round1(ipp * 0.07 + noise((idx + 13) * 4.77) * 0.04)
+      const zweitplatzierungen = round1(ipp * 0.25 + noise((idx + 13) * 4.88) * 0.15)
+      const e3 = round1(ipp * 0.04 + noise((idx + 13) * 4.99) * 0.02)
+      
+      const total = schuetten + displays + platzierungenOhneMaterial + platzierungenMitMaterial + grossplatzierungen + permanentRacks + flexziel + zweitplatzierungen + e3
+      const factor = total > ipp ? ipp / total : 1
+      
+      out.push({ 
+        date: `${m}`, 
+        ipp, 
+        schuetten: round1(schuetten * factor),
+        displays: round1(displays * factor),
+        platzierungenOhneMaterial: round1(platzierungenOhneMaterial * factor),
+        platzierungenMitMaterial: round1(platzierungenMitMaterial * factor),
+        grossplatzierungen: round1(grossplatzierungen * factor),
+        permanentRacks: round1(permanentRacks * factor),
+        flexziel: round1(flexziel * factor),
+        zweitplatzierungen: round1(zweitplatzierungen * factor),
+        e3: round1(e3 * factor)
+      })
     })
     return out
   }
@@ -124,27 +221,50 @@ export default function IPPLineChart() {
       // 2024 window (if included)
       if (year === 2024) {
         const isWinter = [0,1,10,11].includes(month)
-        ;[min, max] = isWinter ? [5.0, 5.1] : [4.7, 5.0]
+        ;[min, max] = isWinter ? [4.9, 5.2] : [4.5, 5.0]
       } else {
-        const isWinter = [0,1,10,11].includes(month)
-        const isSummer = [5,6,7].includes(month)
-        if (isWinter) { [min, max] = [5.4, 5.5] }
-        else if (isSummer) { [min, max] = [5.1, 5.3] }
-        else { [min, max] = [5.2, 5.4] }
+        // 2025: steadily climb from 5.2 to 6.1 with slight pullbacks
+        const progressInYear = month / 8 // 0 to 1 over Jan-Sep
+        const baseMin = 5.2 + (progressInYear * 0.7) // Climb from 5.2 to 5.9
+        const baseMax = 5.2 + (progressInYear * 0.9) // Climb from 5.2 to 6.1
+        
+        // Add slight pullbacks
+        const pullbackFactor = Math.sin(month * 0.8) * 0.08
+        min = Math.max(5.2, baseMin + pullbackFactor - 0.05)
+        max = Math.min(6.1, baseMax + pullbackFactor + 0.05)
       }
       const seed = date.getTime() / (24*60*60*1000)
-      const ipp = round1(lerp(min, max, noise(seed)))
-      const zweit = round1(Math.min(3.8, Math.max(2.2, lerp(0.55 * ipp, 0.7 * ipp, noise(seed * 1.7)))))
-      const coolMax = Math.min(2.4, ipp - zweit - 0.1)
-      const coolMin = Math.max(1.6, ipp - zweit - 0.8)
-      const cooler = round1(Math.min(Math.max(lerp(coolMin, coolMax, noise(seed * 2.3)), 1.6), 2.4))
-      const promotions = round1(Math.max(0, ipp - zweit - cooler))
+      // Add more variation for small gains and losses
+      const baseIpp = lerp(min, max, noise(seed))
+      const volatility = (noise(seed * 8.91) - 0.5) * 0.3 // ±0.15 variation
+      const ipp = round1(Math.max(min - 0.1, Math.min(max + 0.1, baseIpp + volatility)))
+      
+      // Generate all components for daily data
+      const schuetten = round1(ipp * 0.15 + noise(seed * 5.11) * 0.1)
+      const displays = round1(ipp * 0.12 + noise(seed * 5.22) * 0.08)
+      const platzierungenOhneMaterial = round1(ipp * 0.08 + noise(seed * 5.33) * 0.05)
+      const platzierungenMitMaterial = round1(ipp * 0.10 + noise(seed * 5.44) * 0.06)
+      const grossplatzierungen = round1(ipp * 0.06 + noise(seed * 5.55) * 0.04)
+      const permanentRacks = round1(ipp * 0.05 + noise(seed * 5.66) * 0.03)
+      const flexziel = round1(ipp * 0.07 + noise(seed * 5.77) * 0.04)
+      const zweitplatzierungen = round1(ipp * 0.25 + noise(seed * 5.88) * 0.15)
+      const e3 = round1(ipp * 0.04 + noise(seed * 5.99) * 0.02)
+      
+      const total = schuetten + displays + platzierungenOhneMaterial + platzierungenMitMaterial + grossplatzierungen + permanentRacks + flexziel + zweitplatzierungen + e3
+      const factor = total > ipp ? ipp / total : 1
+      
       data.push({
         date: `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`,
         ipp,
-        zweitplatzierung: zweit,
-        cooler,
-        promotions
+        schuetten: round1(schuetten * factor),
+        displays: round1(displays * factor),
+        platzierungenOhneMaterial: round1(platzierungenOhneMaterial * factor),
+        platzierungenMitMaterial: round1(platzierungenMitMaterial * factor),
+        grossplatzierungen: round1(grossplatzierungen * factor),
+        permanentRacks: round1(permanentRacks * factor),
+        flexziel: round1(flexziel * factor),
+        zweitplatzierungen: round1(zweitplatzierungen * factor),
+        e3: round1(e3 * factor)
       })
     }
     return data
@@ -192,18 +312,58 @@ export default function IPPLineChart() {
   const visibleEndIndex = Math.min(visibleStartIndex + maxVisiblePoints, allData.length)
   const data = allData.slice(visibleStartIndex, visibleEndIndex)
   
-  const maxValue = Math.max(...data.map(d => d.ipp))
-  const minValue = Math.min(...data.map(d => {
-    const values = [d.ipp]
-    if (showZweitplatzierung) values.push(d.zweitplatzierung)
-    if (showCooler) values.push(d.cooler)
-    if (showPromotions) values.push(d.promotions)
-    return Math.min(...values)
-  }))
+  // Calculate cumulative data for display
+  const cumulativeData = data.map(point => {
+    const activeComponents: { key: keyof DataPoint; show: boolean; value: number }[] = [
+      { key: 'schuetten', show: showSchuetten, value: point.schuetten },
+      { key: 'displays', show: showDisplays, value: point.displays },
+      { key: 'platzierungenOhneMaterial', show: showPlatzierungenOhneMaterial, value: point.platzierungenOhneMaterial },
+      { key: 'platzierungenMitMaterial', show: showPlatzierungenMitMaterial, value: point.platzierungenMitMaterial },
+      { key: 'grossplatzierungen', show: showGrossplatzierungen, value: point.grossplatzierungen },
+      { key: 'permanentRacks', show: showPermanentRacks, value: point.permanentRacks },
+      { key: 'flexziel', show: showFlexziel, value: point.flexziel },
+      { key: 'zweitplatzierungen', show: showZweitplatzierungen, value: point.zweitplatzierungen },
+      { key: 'e3', show: showE3, value: point.e3 }
+    ]
+    
+    // Calculate cumulative values for active components
+    let cumulative = 0
+    const cumulativeValues: { [key: string]: number } = {}
+    
+    activeComponents.forEach(comp => {
+      if (comp.show) {
+        cumulative += comp.value
+        cumulativeValues[comp.key] = cumulative
+      }
+    })
+    
+    return {
+      ...point,
+      cumulative: cumulativeValues
+    }
+  })
   
-  // Add buffer of 0.5 to min/max for better visualization
-  const yMin = Math.max(0, minValue - 0.5)
-  const yMax = maxValue + 0.5
+  // Calculate actual min/max from all visible data including cumulative values
+  const allValues = data.flatMap(d => {
+    const values = [d.ipp]
+    if (showSchuetten) values.push(cumulativeData[data.indexOf(d)]?.cumulative?.schuetten || 0)
+    if (showDisplays) values.push(cumulativeData[data.indexOf(d)]?.cumulative?.displays || 0)
+    if (showPlatzierungenOhneMaterial) values.push(cumulativeData[data.indexOf(d)]?.cumulative?.platzierungenOhneMaterial || 0)
+    if (showPlatzierungenMitMaterial) values.push(cumulativeData[data.indexOf(d)]?.cumulative?.platzierungenMitMaterial || 0)
+    if (showGrossplatzierungen) values.push(cumulativeData[data.indexOf(d)]?.cumulative?.grossplatzierungen || 0)
+    if (showPermanentRacks) values.push(cumulativeData[data.indexOf(d)]?.cumulative?.permanentRacks || 0)
+    if (showFlexziel) values.push(cumulativeData[data.indexOf(d)]?.cumulative?.flexziel || 0)
+    if (showZweitplatzierungen) values.push(cumulativeData[data.indexOf(d)]?.cumulative?.zweitplatzierungen || 0)
+    if (showE3) values.push(cumulativeData[data.indexOf(d)]?.cumulative?.e3 || 0)
+    return values
+  })
+  
+  const maxValue = Math.max(...allValues)
+  const minValue = Math.min(...allValues)
+  
+  // Add buffer of 0.6 to min/max for better visualization, never go below 0
+  const yMin = Math.max(0, minValue - 0.6)
+  const yMax = maxValue + 0.6
   const yRange = yMax - yMin
   
   const chartHeight = 240
@@ -221,21 +381,58 @@ export default function IPPLineChart() {
     return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`
   }).join(' ')
   
-  const zweitplatzierungPath = data.map((point, i) => {
+  // Generate cumulative paths for all lines
+  const schuettenPath = cumulativeData.map((point, i) => {
     const x = padding + i * xStep + centerOffset
-    const y = chartHeight - ((point.zweitplatzierung - yMin) * yScale) - 40
+    const y = chartHeight - ((point.cumulative.schuetten || 0 - yMin) * yScale) - 40
     return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`
   }).join(' ')
   
-  const coolerPath = data.map((point, i) => {
+  const displaysPath = cumulativeData.map((point, i) => {
     const x = padding + i * xStep + centerOffset
-    const y = chartHeight - ((point.cooler - yMin) * yScale) - 40
+    const y = chartHeight - ((point.cumulative.displays || 0 - yMin) * yScale) - 40
     return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`
   }).join(' ')
   
-  const promotionsPath = data.map((point, i) => {
+  const platzierungenOhneMaterialPath = cumulativeData.map((point, i) => {
     const x = padding + i * xStep + centerOffset
-    const y = chartHeight - ((point.promotions - yMin) * yScale) - 40
+    const y = chartHeight - ((point.cumulative.platzierungenOhneMaterial || 0 - yMin) * yScale) - 40
+    return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`
+  }).join(' ')
+  
+  const platzierungenMitMaterialPath = cumulativeData.map((point, i) => {
+    const x = padding + i * xStep + centerOffset
+    const y = chartHeight - ((point.cumulative.platzierungenMitMaterial || 0 - yMin) * yScale) - 40
+    return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`
+  }).join(' ')
+  
+  const grossplatzierungenPath = cumulativeData.map((point, i) => {
+    const x = padding + i * xStep + centerOffset
+    const y = chartHeight - ((point.cumulative.grossplatzierungen || 0 - yMin) * yScale) - 40
+    return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`
+  }).join(' ')
+  
+  const permanentRacksPath = cumulativeData.map((point, i) => {
+    const x = padding + i * xStep + centerOffset
+    const y = chartHeight - ((point.cumulative.permanentRacks || 0 - yMin) * yScale) - 40
+    return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`
+  }).join(' ')
+  
+  const flexzielPath = cumulativeData.map((point, i) => {
+    const x = padding + i * xStep + centerOffset
+    const y = chartHeight - ((point.cumulative.flexziel || 0 - yMin) * yScale) - 40
+    return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`
+  }).join(' ')
+  
+  const zweitplatzierungenPath = cumulativeData.map((point, i) => {
+    const x = padding + i * xStep + centerOffset
+    const y = chartHeight - ((point.cumulative.zweitplatzierungen || 0 - yMin) * yScale) - 40
+    return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`
+  }).join(' ')
+  
+  const e3Path = cumulativeData.map((point, i) => {
+    const x = padding + i * xStep + centerOffset
+    const y = chartHeight - ((point.cumulative.e3 || 0 - yMin) * yScale) - 40
     return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`
   }).join(' ')
   
@@ -359,17 +556,41 @@ export default function IPPLineChart() {
               <stop offset="0%" stopColor="#28a745" stopOpacity="0.3" />
               <stop offset="100%" stopColor="#28a745" stopOpacity="0.1" />
             </linearGradient>
-            <linearGradient id="zweitplatzierungFillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#2196F3" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#2196F3" stopOpacity="0.1" />
-            </linearGradient>
-            <linearGradient id="coolerFillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <linearGradient id="schuettenFillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#dc3545" stopOpacity="0.3" />
               <stop offset="100%" stopColor="#dc3545" stopOpacity="0.1" />
             </linearGradient>
-            <linearGradient id="promotionsFillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <linearGradient id="displaysFillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#6f42c1" stopOpacity="0.3" />
               <stop offset="100%" stopColor="#6f42c1" stopOpacity="0.1" />
+            </linearGradient>
+            <linearGradient id="platzierungenOhneMaterialFillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#ff6b35" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#ff6b35" stopOpacity="0.1" />
+            </linearGradient>
+            <linearGradient id="platzierungenMitMaterialFillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#17a2b8" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#17a2b8" stopOpacity="0.1" />
+            </linearGradient>
+            <linearGradient id="grossplatzierungenFillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#ffc107" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#ffc107" stopOpacity="0.1" />
+            </linearGradient>
+            <linearGradient id="permanentRacksFillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#6c757d" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#6c757d" stopOpacity="0.1" />
+            </linearGradient>
+            <linearGradient id="flexzielFillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#20c997" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#20c997" stopOpacity="0.1" />
+            </linearGradient>
+            <linearGradient id="zweitplatzierungenFillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#2196F3" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#2196F3" stopOpacity="0.1" />
+            </linearGradient>
+            <linearGradient id="e3FillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#e83e8c" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#e83e8c" stopOpacity="0.1" />
             </linearGradient>
           </defs>
           
@@ -400,29 +621,35 @@ export default function IPPLineChart() {
             )
           })}
           
-          {/* Dynamic fill areas based on active lines */}
+          {/* Dynamic fill areas for cumulative chart */}
           {(() => {
-            const activeLines: { path: string; data: number[]; gradient: string }[] = []
-            if (true) activeLines.push({ path: ippPath, data: data.map(d => d.ipp), gradient: 'ippFillGradient' }) // IPP always active
-            if (showZweitplatzierung) activeLines.push({ path: zweitplatzierungPath, data: data.map(d => d.zweitplatzierung), gradient: 'zweitplatzierungFillGradient' })
-            if (showCooler) activeLines.push({ path: coolerPath, data: data.map(d => d.cooler), gradient: 'coolerFillGradient' })
-            if (showPromotions) activeLines.push({ path: promotionsPath, data: data.map(d => d.promotions), gradient: 'promotionsFillGradient' })
+            const activeLines: { path: string; cumulativeData: number[]; gradient: string }[] = []
+            if (true) activeLines.push({ path: ippPath, cumulativeData: data.map(d => d.ipp), gradient: 'ippFillGradient' }) // IPP always active
+            if (showSchuetten) activeLines.push({ path: schuettenPath, cumulativeData: cumulativeData.map(d => d.cumulative.schuetten || 0), gradient: 'schuettenFillGradient' })
+            if (showDisplays) activeLines.push({ path: displaysPath, cumulativeData: cumulativeData.map(d => d.cumulative.displays || 0), gradient: 'displaysFillGradient' })
+            if (showPlatzierungenOhneMaterial) activeLines.push({ path: platzierungenOhneMaterialPath, cumulativeData: cumulativeData.map(d => d.cumulative.platzierungenOhneMaterial || 0), gradient: 'platzierungenOhneMaterialFillGradient' })
+            if (showPlatzierungenMitMaterial) activeLines.push({ path: platzierungenMitMaterialPath, cumulativeData: cumulativeData.map(d => d.cumulative.platzierungenMitMaterial || 0), gradient: 'platzierungenMitMaterialFillGradient' })
+            if (showGrossplatzierungen) activeLines.push({ path: grossplatzierungenPath, cumulativeData: cumulativeData.map(d => d.cumulative.grossplatzierungen || 0), gradient: 'grossplatzierungenFillGradient' })
+            if (showPermanentRacks) activeLines.push({ path: permanentRacksPath, cumulativeData: cumulativeData.map(d => d.cumulative.permanentRacks || 0), gradient: 'permanentRacksFillGradient' })
+            if (showFlexziel) activeLines.push({ path: flexzielPath, cumulativeData: cumulativeData.map(d => d.cumulative.flexziel || 0), gradient: 'flexzielFillGradient' })
+            if (showZweitplatzierungen) activeLines.push({ path: zweitplatzierungenPath, cumulativeData: cumulativeData.map(d => d.cumulative.zweitplatzierungen || 0), gradient: 'zweitplatzierungenFillGradient' })
+            if (showE3) activeLines.push({ path: e3Path, cumulativeData: cumulativeData.map(d => d.cumulative.e3 || 0), gradient: 'e3FillGradient' })
             
-            // Sort by highest values to determine stacking order
-            activeLines.sort((a, b) => Math.max(...b.data) - Math.max(...a.data))
+            // Sort by highest cumulative values (reverse order for stacking)
+            activeLines.sort((a, b) => Math.max(...a.cumulativeData) - Math.max(...b.cumulativeData))
             
             return activeLines.map((line, index) => {
               let fillPath
-              if (index === activeLines.length - 1) {
-                // Bottom line fills to ground
+              if (index === 0) {
+                // First (lowest) line fills to ground
                 fillPath = `${line.path} L ${padding + (data.length - 1) * xStep + centerOffset} ${chartHeight - 40} L ${padding + centerOffset} ${chartHeight - 40} Z`
               } else {
-                // Fill to next line below
-                const nextLine = activeLines[index + 1]
-                const reversePath = data.slice().reverse().map((_point, i) => {
+                // Fill to previous (lower) line
+                const prevLine = activeLines[index - 1]
+                const reversePath = cumulativeData.slice().reverse().map((_point, i) => {
                   const originalIndex = data.length - 1 - i
                   const x = padding + originalIndex * xStep + centerOffset
-                  const y = chartHeight - ((nextLine.data[originalIndex] - yMin) * yScale) - 40
+                  const y = chartHeight - ((prevLine.cumulativeData[originalIndex] - yMin) * yScale) - 40
                   return `L ${x} ${y}`
                 }).join(' ')
                 fillPath = `${line.path} ${reversePath} Z`
@@ -438,43 +665,72 @@ export default function IPPLineChart() {
             })
           })()}
           
-          {/* IPP line */}
+          {/* IPP line - always visible */}
           <path d={ippPath} stroke="#28a745" strokeWidth="2" fill="none" />
           
-          {/* Zweitplatzierung line (optional) */}
-          {showZweitplatzierung && (
-            <path d={zweitplatzierungPath} stroke="#2196F3" strokeWidth="2" fill="none" />
+          {/* All optional lines */}
+          {showSchuetten && (
+            <path d={schuettenPath} stroke="#dc3545" strokeWidth="2" fill="none" />
+          )}
+          {showDisplays && (
+            <path d={displaysPath} stroke="#6f42c1" strokeWidth="2" fill="none" />
+          )}
+          {showPlatzierungenOhneMaterial && (
+            <path d={platzierungenOhneMaterialPath} stroke="#ff6b35" strokeWidth="2" fill="none" />
+          )}
+          {showPlatzierungenMitMaterial && (
+            <path d={platzierungenMitMaterialPath} stroke="#17a2b8" strokeWidth="2" fill="none" />
+          )}
+          {showGrossplatzierungen && (
+            <path d={grossplatzierungenPath} stroke="#ffc107" strokeWidth="2" fill="none" />
+          )}
+          {showPermanentRacks && (
+            <path d={permanentRacksPath} stroke="#6c757d" strokeWidth="2" fill="none" />
+          )}
+          {showFlexziel && (
+            <path d={flexzielPath} stroke="#20c997" strokeWidth="2" fill="none" />
+          )}
+          {showZweitplatzierungen && (
+            <path d={zweitplatzierungenPath} stroke="#2196F3" strokeWidth="2" fill="none" />
+          )}
+          {showE3 && (
+            <path d={e3Path} stroke="#e83e8c" strokeWidth="2" fill="none" />
           )}
           
-          {/* Cooler line (optional) */}
-          {showCooler && (
-            <path d={coolerPath} stroke="#dc3545" strokeWidth="2" fill="none" />
-          )}
-          
-          {/* Promotions line (optional) */}
-          {showPromotions && (
-            <path d={promotionsPath} stroke="#6f42c1" strokeWidth="2" fill="none" />
-          )}
-          
-          {/* Data points */}
-          {data.map((point, i) => {
+          {/* Data points - using cumulative positions */}
+          {cumulativeData.map((point, i) => {
             const x = padding + i * xStep + centerOffset
             const yIPP = chartHeight - ((point.ipp - yMin) * yScale) - 40
-            const yZweitplatzierung = chartHeight - ((point.zweitplatzierung - yMin) * yScale) - 40
-            const yCooler = chartHeight - ((point.cooler - yMin) * yScale) - 40
-            const yPromotions = chartHeight - ((point.promotions - yMin) * yScale) - 40
             
             return (
               <g key={i}>
                 <circle cx={x} cy={yIPP} r="3" fill="#28a745" />
-                {showZweitplatzierung && (
-                  <circle cx={x} cy={yZweitplatzierung} r="3" fill="#2196F3" />
+                {showSchuetten && (
+                  <circle cx={x} cy={chartHeight - ((point.cumulative.schuetten || 0 - yMin) * yScale) - 40} r="3" fill="#dc3545" />
                 )}
-                {showCooler && (
-                  <circle cx={x} cy={yCooler} r="3" fill="#dc3545" />
+                {showDisplays && (
+                  <circle cx={x} cy={chartHeight - ((point.cumulative.displays || 0 - yMin) * yScale) - 40} r="3" fill="#6f42c1" />
                 )}
-                {showPromotions && (
-                  <circle cx={x} cy={yPromotions} r="3" fill="#6f42c1" />
+                {showPlatzierungenOhneMaterial && (
+                  <circle cx={x} cy={chartHeight - ((point.cumulative.platzierungenOhneMaterial || 0 - yMin) * yScale) - 40} r="3" fill="#ff6b35" />
+                )}
+                {showPlatzierungenMitMaterial && (
+                  <circle cx={x} cy={chartHeight - ((point.cumulative.platzierungenMitMaterial || 0 - yMin) * yScale) - 40} r="3" fill="#17a2b8" />
+                )}
+                {showGrossplatzierungen && (
+                  <circle cx={x} cy={chartHeight - ((point.cumulative.grossplatzierungen || 0 - yMin) * yScale) - 40} r="3" fill="#ffc107" />
+                )}
+                {showPermanentRacks && (
+                  <circle cx={x} cy={chartHeight - ((point.cumulative.permanentRacks || 0 - yMin) * yScale) - 40} r="3" fill="#6c757d" />
+                )}
+                {showFlexziel && (
+                  <circle cx={x} cy={chartHeight - ((point.cumulative.flexziel || 0 - yMin) * yScale) - 40} r="3" fill="#20c997" />
+                )}
+                {showZweitplatzierungen && (
+                  <circle cx={x} cy={chartHeight - ((point.cumulative.zweitplatzierungen || 0 - yMin) * yScale) - 40} r="3" fill="#2196F3" />
+                )}
+                {showE3 && (
+                  <circle cx={x} cy={chartHeight - ((point.cumulative.e3 || 0 - yMin) * yScale) - 40} r="3" fill="#e83e8c" />
                 )}
                 <text 
                   x={x} 
@@ -504,7 +760,7 @@ export default function IPPLineChart() {
           )}
         </svg>
         
-        {/* Tooltip */}
+        {/* Tooltip - shows original individual values, not cumulative */}
         {hoveredIndex !== null && data[hoveredIndex] && svgRef.current && createPortal(
           (() => {
             // Calculate exact position of the data point
@@ -557,27 +813,75 @@ export default function IPPLineChart() {
                       {data[hoveredIndex].ipp.toFixed(1)}
                     </span>
                   </div>
-                  {showZweitplatzierung && (
+                  {showSchuetten && (
                     <div className="tooltip-row">
-                      <span className="tooltip-label">Zweitplatzierung:</span>
-                      <span className="tooltip-value" style={{ color: '#2196F3' }}>
-                        {data[hoveredIndex].zweitplatzierung.toFixed(1)}
-                      </span>
-                    </div>
-                  )}
-                  {showCooler && (
-                    <div className="tooltip-row">
-                      <span className="tooltip-label">Schütte:</span>
+                      <span className="tooltip-label">Schütten:</span>
                       <span className="tooltip-value" style={{ color: '#dc3545' }}>
-                        {data[hoveredIndex].cooler.toFixed(1)}
+                        {data[hoveredIndex].schuetten.toFixed(1)}
                       </span>
                     </div>
                   )}
-                  {showPromotions && (
+                  {showDisplays && (
                     <div className="tooltip-row">
-                      <span className="tooltip-label">Display:</span>
+                      <span className="tooltip-label">Displays:</span>
                       <span className="tooltip-value" style={{ color: '#6f42c1' }}>
-                        {data[hoveredIndex].promotions.toFixed(1)}
+                        {data[hoveredIndex].displays.toFixed(1)}
+                      </span>
+                    </div>
+                  )}
+                  {showPlatzierungenOhneMaterial && (
+                    <div className="tooltip-row">
+                      <span className="tooltip-label">Platzierungen ohne Material:</span>
+                      <span className="tooltip-value" style={{ color: '#ff6b35' }}>
+                        {data[hoveredIndex].platzierungenOhneMaterial.toFixed(1)}
+                      </span>
+                    </div>
+                  )}
+                  {showPlatzierungenMitMaterial && (
+                    <div className="tooltip-row">
+                      <span className="tooltip-label">Platzierungen mit Material:</span>
+                      <span className="tooltip-value" style={{ color: '#17a2b8' }}>
+                        {data[hoveredIndex].platzierungenMitMaterial.toFixed(1)}
+                      </span>
+                    </div>
+                  )}
+                  {showGrossplatzierungen && (
+                    <div className="tooltip-row">
+                      <span className="tooltip-label">Großplatzierungen:</span>
+                      <span className="tooltip-value" style={{ color: '#ffc107' }}>
+                        {data[hoveredIndex].grossplatzierungen.toFixed(1)}
+                      </span>
+                    </div>
+                  )}
+                  {showPermanentRacks && (
+                    <div className="tooltip-row">
+                      <span className="tooltip-label">permanent Racks:</span>
+                      <span className="tooltip-value" style={{ color: '#6c757d' }}>
+                        {data[hoveredIndex].permanentRacks.toFixed(1)}
+                      </span>
+                    </div>
+                  )}
+                  {showFlexziel && (
+                    <div className="tooltip-row">
+                      <span className="tooltip-label">Flexziel:</span>
+                      <span className="tooltip-value" style={{ color: '#20c997' }}>
+                        {data[hoveredIndex].flexziel.toFixed(1)}
+                      </span>
+                    </div>
+                  )}
+                  {showZweitplatzierungen && (
+                    <div className="tooltip-row">
+                      <span className="tooltip-label">Zweitplatzierungen:</span>
+                      <span className="tooltip-value" style={{ color: '#2196F3' }}>
+                        {data[hoveredIndex].zweitplatzierungen.toFixed(1)}
+                      </span>
+                    </div>
+                  )}
+                  {showE3 && (
+                    <div className="tooltip-row">
+                      <span className="tooltip-label">E3:</span>
+                      <span className="tooltip-value" style={{ color: '#e83e8c' }}>
+                        {data[hoveredIndex].e3.toFixed(1)}
                       </span>
                     </div>
                   )}
@@ -608,105 +912,118 @@ export default function IPPLineChart() {
         )}
         
         <div className="line-chart-legend">
+          {/* IPP-Werte - always active */}
           <div className="legend-item">
             <div className="legend-line" style={{ backgroundColor: '#28a745' }}></div>
             <span className="legend-text">IPP-Werte</span>
           </div>
-          <div className="legend-item" onClick={() => setShowZweitplatzierung(!showZweitplatzierung)} style={{ cursor: 'pointer' }}>
-            <div 
-              className="legend-line" 
-              style={{ 
-                backgroundColor: showZweitplatzierung ? '#2196F3' : 'transparent',
-                border: showZweitplatzierung ? 'none' : '1.5px solid #2196F3',
-                textDecoration: showZweitplatzierung ? 'none' : 'line-through',
-                position: 'relative'
-              }}
-            >
-              {!showZweitplatzierung && (
-                <div style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: 0,
-                  right: 0,
-                  height: '1px',
-                  backgroundColor: '#2196F3',
-                  transform: 'translateY(-50%)'
-                }} />
-              )}
+          
+          {/* Schütten */}
+          <div className="legend-item" onClick={() => setShowSchuetten(!showSchuetten)} style={{ cursor: 'pointer' }}>
+            <div className="legend-line" style={{ 
+              backgroundColor: showSchuetten ? '#dc3545' : 'transparent',
+              border: showSchuetten ? 'none' : '1.5px solid #dc3545',
+              position: 'relative'
+            }}>
+              {!showSchuetten && <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', backgroundColor: '#dc3545', transform: 'translateY(-50%)' }} />}
             </div>
-            <span 
-              className="legend-text" 
-              style={{ 
-                textDecoration: showZweitplatzierung ? 'none' : 'line-through',
-                opacity: showZweitplatzierung ? 1 : 0.6
-              }}
-            >
-              Zweitplatzierung
-            </span>
+            <span className="legend-text" style={{ textDecoration: showSchuetten ? 'none' : 'line-through', opacity: showSchuetten ? 1 : 0.6 }}>Schütten</span>
           </div>
-          <div className="legend-item" onClick={() => setShowCooler(!showCooler)} style={{ cursor: 'pointer' }}>
-            <div 
-              className="legend-line" 
-              style={{ 
-                backgroundColor: showCooler ? '#dc3545' : 'transparent',
-                border: showCooler ? 'none' : '1.5px solid #dc3545',
-                textDecoration: showCooler ? 'none' : 'line-through',
-                position: 'relative'
-              }}
-            >
-              {!showCooler && (
-                <div style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: 0,
-                  right: 0,
-                  height: '1px',
-                  backgroundColor: '#dc3545',
-                  transform: 'translateY(-50%)'
-                }} />
-              )}
+          
+          {/* Displays */}
+          <div className="legend-item" onClick={() => setShowDisplays(!showDisplays)} style={{ cursor: 'pointer' }}>
+            <div className="legend-line" style={{ 
+              backgroundColor: showDisplays ? '#6f42c1' : 'transparent',
+              border: showDisplays ? 'none' : '1.5px solid #6f42c1',
+              position: 'relative'
+            }}>
+              {!showDisplays && <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', backgroundColor: '#6f42c1', transform: 'translateY(-50%)' }} />}
             </div>
-            <span 
-              className="legend-text" 
-              style={{ 
-                textDecoration: showCooler ? 'none' : 'line-through',
-                opacity: showCooler ? 1 : 0.6
-              }}
-            >
-              Schütte
-            </span>
+            <span className="legend-text" style={{ textDecoration: showDisplays ? 'none' : 'line-through', opacity: showDisplays ? 1 : 0.6 }}>Displays</span>
           </div>
-          <div className="legend-item" onClick={() => setShowPromotions(!showPromotions)} style={{ cursor: 'pointer' }}>
-            <div 
-              className="legend-line" 
-              style={{ 
-                backgroundColor: showPromotions ? '#6f42c1' : 'transparent',
-                border: showPromotions ? 'none' : '1.5px solid #6f42c1',
-                textDecoration: showPromotions ? 'none' : 'line-through',
-                position: 'relative'
-              }}
-            >
-              {!showPromotions && (
-                <div style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: 0,
-                  right: 0,
-                  height: '1px',
-                  backgroundColor: '#6f42c1',
-                  transform: 'translateY(-50%)'
-                }} />
-              )}
+          
+          {/* Platzierungen ohne Material */}
+          <div className="legend-item" onClick={() => setShowPlatzierungenOhneMaterial(!showPlatzierungenOhneMaterial)} style={{ cursor: 'pointer' }}>
+            <div className="legend-line" style={{ 
+              backgroundColor: showPlatzierungenOhneMaterial ? '#ff6b35' : 'transparent',
+              border: showPlatzierungenOhneMaterial ? 'none' : '1.5px solid #ff6b35',
+              position: 'relative'
+            }}>
+              {!showPlatzierungenOhneMaterial && <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', backgroundColor: '#ff6b35', transform: 'translateY(-50%)' }} />}
             </div>
-            <span 
-              className="legend-text" 
-              style={{ 
-                textDecoration: showPromotions ? 'none' : 'line-through',
-                opacity: showPromotions ? 1 : 0.6
-              }}
-            >
-              Display
-            </span>
+            <span className="legend-text" style={{ textDecoration: showPlatzierungenOhneMaterial ? 'none' : 'line-through', opacity: showPlatzierungenOhneMaterial ? 1 : 0.6 }}>Platzierungen ohne Material</span>
+          </div>
+          
+          {/* Platzierungen mit Material */}
+          <div className="legend-item" onClick={() => setShowPlatzierungenMitMaterial(!showPlatzierungenMitMaterial)} style={{ cursor: 'pointer' }}>
+            <div className="legend-line" style={{ 
+              backgroundColor: showPlatzierungenMitMaterial ? '#17a2b8' : 'transparent',
+              border: showPlatzierungenMitMaterial ? 'none' : '1.5px solid #17a2b8',
+              position: 'relative'
+            }}>
+              {!showPlatzierungenMitMaterial && <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', backgroundColor: '#17a2b8', transform: 'translateY(-50%)' }} />}
+            </div>
+            <span className="legend-text" style={{ textDecoration: showPlatzierungenMitMaterial ? 'none' : 'line-through', opacity: showPlatzierungenMitMaterial ? 1 : 0.6 }}>Platzierungen mit Material</span>
+          </div>
+          
+          {/* Großplatzierungen */}
+          <div className="legend-item" onClick={() => setShowGrossplatzierungen(!showGrossplatzierungen)} style={{ cursor: 'pointer' }}>
+            <div className="legend-line" style={{ 
+              backgroundColor: showGrossplatzierungen ? '#ffc107' : 'transparent',
+              border: showGrossplatzierungen ? 'none' : '1.5px solid #ffc107',
+              position: 'relative'
+            }}>
+              {!showGrossplatzierungen && <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', backgroundColor: '#ffc107', transform: 'translateY(-50%)' }} />}
+            </div>
+            <span className="legend-text" style={{ textDecoration: showGrossplatzierungen ? 'none' : 'line-through', opacity: showGrossplatzierungen ? 1 : 0.6 }}>Großplatzierungen</span>
+          </div>
+          
+          {/* permanent Racks */}
+          <div className="legend-item" onClick={() => setShowPermanentRacks(!showPermanentRacks)} style={{ cursor: 'pointer' }}>
+            <div className="legend-line" style={{ 
+              backgroundColor: showPermanentRacks ? '#6c757d' : 'transparent',
+              border: showPermanentRacks ? 'none' : '1.5px solid #6c757d',
+              position: 'relative'
+            }}>
+              {!showPermanentRacks && <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', backgroundColor: '#6c757d', transform: 'translateY(-50%)' }} />}
+            </div>
+            <span className="legend-text" style={{ textDecoration: showPermanentRacks ? 'none' : 'line-through', opacity: showPermanentRacks ? 1 : 0.6 }}>permanent Racks</span>
+          </div>
+          
+          {/* Flexziel */}
+          <div className="legend-item" onClick={() => setShowFlexziel(!showFlexziel)} style={{ cursor: 'pointer' }}>
+            <div className="legend-line" style={{ 
+              backgroundColor: showFlexziel ? '#20c997' : 'transparent',
+              border: showFlexziel ? 'none' : '1.5px solid #20c997',
+              position: 'relative'
+            }}>
+              {!showFlexziel && <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', backgroundColor: '#20c997', transform: 'translateY(-50%)' }} />}
+            </div>
+            <span className="legend-text" style={{ textDecoration: showFlexziel ? 'none' : 'line-through', opacity: showFlexziel ? 1 : 0.6 }}>Flexziel</span>
+          </div>
+          
+          {/* Zweitplatzierungen */}
+          <div className="legend-item" onClick={() => setShowZweitplatzierungen(!showZweitplatzierungen)} style={{ cursor: 'pointer' }}>
+            <div className="legend-line" style={{ 
+              backgroundColor: showZweitplatzierungen ? '#2196F3' : 'transparent',
+              border: showZweitplatzierungen ? 'none' : '1.5px solid #2196F3',
+              position: 'relative'
+            }}>
+              {!showZweitplatzierungen && <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', backgroundColor: '#2196F3', transform: 'translateY(-50%)' }} />}
+            </div>
+            <span className="legend-text" style={{ textDecoration: showZweitplatzierungen ? 'none' : 'line-through', opacity: showZweitplatzierungen ? 1 : 0.6 }}>Zweitplatzierungen</span>
+          </div>
+          
+          {/* E3 */}
+          <div className="legend-item" onClick={() => setShowE3(!showE3)} style={{ cursor: 'pointer' }}>
+            <div className="legend-line" style={{ 
+              backgroundColor: showE3 ? '#e83e8c' : 'transparent',
+              border: showE3 ? 'none' : '1.5px solid #e83e8c',
+              position: 'relative'
+            }}>
+              {!showE3 && <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', backgroundColor: '#e83e8c', transform: 'translateY(-50%)' }} />}
+            </div>
+            <span className="legend-text" style={{ textDecoration: showE3 ? 'none' : 'line-through', opacity: showE3 ? 1 : 0.6 }}>E3</span>
           </div>
         </div>
       </div>
