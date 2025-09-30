@@ -44,12 +44,17 @@ export default function Header({ onSwitchPage, onSettingsPage }: HeaderProps) {
         maxWidth: '100%'
       }}>
         <div style={{
-          fontSize: '24px',
-          fontWeight: '600',
-          color: '#333333',
-          letterSpacing: '-0.02em'
+          display: 'flex',
+          alignItems: 'center'
         }}>
-          Coca Cola Dashboard
+          <img 
+            src="/coca-cola-logo.png" 
+            alt="Coca-Cola Logo"
+            style={{
+              height: '86px',
+              width: 'auto'
+            }}
+          />
         </div>
         
         <div style={{
@@ -84,16 +89,6 @@ export default function Header({ onSwitchPage, onSettingsPage }: HeaderProps) {
           title="Seite wechseln"
         >
           Wechseln
-        </button>
-      )}
-      {onSettingsPage && (
-        <button
-          className="page-switch-btn settings-btn"
-          onClick={onSettingsPage}
-          aria-label="Einstellungen"
-          title="Einstellungen"
-        >
-          ⚙️
         </button>
       )}
     </header>
