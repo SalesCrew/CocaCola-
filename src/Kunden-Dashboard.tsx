@@ -14,7 +14,6 @@ import { gmData } from './components/GebietsmanagerGMFilter'
 
 interface KundenDashboardProps {
   onSwitchPage?: () => void
-  onSettingsPage?: () => void
 }
 
 // Find which GM manages this market
@@ -31,7 +30,7 @@ const findMarketGM = (marketName: string, marketChain: string) => {
   return gms.length > 0 ? gms[0] : null
 }
 
-export default function KundenDashboard({ onSwitchPage, onSettingsPage }: KundenDashboardProps) {
+export default function KundenDashboard({ onSwitchPage }: KundenDashboardProps) {
   const [selectedHaFi, setSelectedHaFi] = useState('Alle')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isGmModalOpen, setIsGmModalOpen] = useState(false)
@@ -43,7 +42,7 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
 
   return (
     <div className="dashboard">
-      <Header onSwitchPage={onSwitchPage} onSettingsPage={onSettingsPage} />
+      <Header onSwitchPage={onSwitchPage} />
       <main className="main-content">
         <div className="top-cards">
           <div className="card">

@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react'
 
 interface HeaderProps {
   onSwitchPage?: () => void
-  onSettingsPage?: () => void
 }
 
-export default function Header({ onSwitchPage, onSettingsPage }: HeaderProps) {
+export default function Header({ onSwitchPage }: HeaderProps) {
   const [currentTime, setCurrentTime] = useState(new Date())
 
   useEffect(() => {

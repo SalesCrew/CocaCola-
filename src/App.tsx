@@ -25,7 +25,7 @@ export default function App() {
   }
 
   return activePage === 'kunden' ? (
-    <KundenDashboard onSwitchPage={handleSwitchPage} onSettingsPage={handleSettingsPage} />
+    <KundenDashboard onSwitchPage={handleSwitchPage} />
   ) : (
     <GebietsleiterDashboard onSwitchPage={handleSwitchPage} onSettingsPage={handleSettingsPage} />
   )
