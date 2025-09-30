@@ -5,6 +5,7 @@ import GebietsmanagerLegendPanel from './GebietsmanagerLegendPanel'
 import IPPLineChart from './IPPLineChart'
 import CategoryFillChart from './CategoryFillChart'
 import AustriaMap from './AustriaMap'
+import { generateAll35Pins } from './GebietsmanagerDetailModal'
 
 interface GebietsmanagerModalProps {
   isOpen: boolean
@@ -134,18 +135,17 @@ export default function GebietsmanagerModal({ isOpen, onClose }: GebietsmanagerM
             </div>
             <div className="modal-bottom-chart-container" style={{ flex: 0.5, overflow: 'hidden' }}>
               <AustriaMap 
-                pins={[
-                  { id: '1', name: 'Billa+ Sägestraße 22-96', lat: 47.0707, lng: 15.4395, manager: 'Mario Riedenbauer', visitDate: '2025-09-30', travelMin: 25, durationMin: 36, status: 'Halb voll' },
-                  { id: '2', name: 'BILLA 1010', lat: 48.2084, lng: 16.3721, manager: 'Thomas Nobis', visitDate: '2025-09-28', travelMin: 15, durationMin: 45, status: 'Sehr voll' },
-                  { id: '3', name: 'Spar Salzburg', lat: 47.8095, lng: 13.0550, manager: 'Josef Schellhorn', visitDate: '2025-09-27', travelMin: 35, durationMin: 50, status: 'Leer' },
-                  { id: '4', name: 'BILLA 1020', lat: 48.2164, lng: 16.3838, manager: 'Eva Zausinger', visitDate: '2025-09-25', travelMin: 20, durationMin: 40, status: 'Sehr voll' },
-                  { id: '5', name: 'Interspar Linz', lat: 48.3069, lng: 14.2858, manager: 'Michael Wilhelmi', visitDate: '2025-09-24', travelMin: 30, durationMin: 55, status: 'Halb voll' },
-                  { id: '6', name: 'ADEG Innsbruck', lat: 47.2692, lng: 11.4041, manager: 'Benjamin Spiegel', visitDate: '2025-09-23', travelMin: 45, durationMin: 60, status: 'Leer' },
-                  { id: '7', name: 'Eurospar Graz', lat: 47.0707, lng: 15.4395, manager: 'Mario Riedenbauer', visitDate: '2025-09-22', travelMin: 25, durationMin: 35, status: 'Sehr voll' },
-                  { id: '8', name: 'BILLA Plus Wien', lat: 48.1851, lng: 16.4242, manager: 'Thomas Nobis', visitDate: '2025-09-21', travelMin: 18, durationMin: 42, status: 'Halb voll' },
-                  { id: '9', name: 'Spar Klagenfurt', lat: 46.6244, lng: 14.3055, manager: 'Josef Schellhorn', visitDate: '2025-09-20', travelMin: 40, durationMin: 48, status: 'Sehr voll' },
-                  { id: '10', name: 'BILLA Steyr', lat: 48.0458, lng: 14.4189, manager: 'Eva Zausinger', visitDate: '2025-09-19', travelMin: 28, durationMin: 38, status: 'Leer' }
-                ]}
+                pins={generateAll35Pins().map((market, index) => ({
+                  id: `market-${index}`,
+                  name: market.name,
+                  lat: market.lat,
+                  lng: market.lng,
+                  manager: market.manager,
+                  visitDate: market.visitDate,
+                  travelMin: market.travelMin,
+                  durationMin: market.durationMin,
+                  status: market.status
+                }))}
                 fitToPins={true}
               />
             </div>

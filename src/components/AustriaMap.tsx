@@ -149,13 +149,13 @@ export default function AustriaMap({ pins }: AustriaMapProps) {
               {hoveredPin.name}
             </div>
             <div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>
-              Georg Stockreiter
+              {hoveredPin.manager || 'Gebietsleiter'}
             </div>
             <div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>
-              Anfahrtszeit: 40 Minuten
+              Anfahrtszeit: {hoveredPin.travelMin || 40} Minuten
             </div>
             <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
-              Einsatz Dauer: 48 Minuten
+              Einsatz Dauer: {hoveredPin.durationMin || 48} Minuten
             </div>
             <div style={{ borderTop: '1px solid #eee', paddingTop: '8px', marginBottom: '8px' }}>
               <div style={{ fontSize: '12px', fontWeight: '500', marginBottom: '4px' }}>Einsatz Info</div>
@@ -168,8 +168,13 @@ export default function AustriaMap({ pins }: AustriaMapProps) {
             </div>
             <div>
               <div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>Cooler:</div>
-              <div style={{ fontSize: '14px', fontWeight: '600', color: '#28a745' }}>
-                Sehr voll
+              <div style={{ 
+                fontSize: '14px', 
+                fontWeight: '600', 
+                color: hoveredPin.status === 'Sehr voll' ? '#28a745' : 
+                       hoveredPin.status === 'Halb voll' ? '#fd7e14' : '#dc3545'
+              }}>
+                {hoveredPin.status || 'Sehr voll'}
               </div>
             </div>
           </div>,

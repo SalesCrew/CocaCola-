@@ -1,57 +1,17 @@
 import AustriaMap from '../components/AustriaMap'
+import { generateAll35Pins } from '../components/GebietsmanagerDetailModal'
 
-const pins = [
-  { 
-    id: '1', 
-    name: 'Billa+ Sägestraße 22-96', 
-    lat: 47.0707, 
-    lng: 15.4395, 
-    manager: 'Mario Riedenbauer', 
-    visitDate: '2025-09-30', 
-    travelMin: 25, 
-    durationMin: 36, 
-    status: 'Halb voll' 
-  },
-  { 
-    id: '2', 
-    name: 'Salzburg Store', 
-    lat: 47.8095, 
-    lng: 13.0550 
-  },
-  {
-    id: '3',
-    name: 'Vienna Center',
-    lat: 48.2082,
-    lng: 16.3738,
-    manager: 'Thomas Nobis',
-    visitDate: '2025-09-28',
-    travelMin: 15,
-    durationMin: 45,
-    status: 'Sehr voll'
-  },
-  {
-    id: '4',
-    name: 'Linz Market',
-    lat: 48.3069,
-    lng: 14.2858,
-    manager: 'Eva Zausinger',
-    visitDate: '2025-09-25',
-    travelMin: 30,
-    durationMin: 40,
-    status: 'Leer'
-  },
-  {
-    id: '5',
-    name: 'Innsbruck Store',
-    lat: 47.2692,
-    lng: 11.4041,
-    manager: 'Josef Schellhorn',
-    visitDate: '2025-09-27',
-    travelMin: 35,
-    durationMin: 50,
-    status: 'Halb voll'
-  }
-]
+const pins = generateAll35Pins().map((market, index) => ({
+  id: `market-${index}`,
+  name: market.name,
+  lat: market.lat,
+  lng: market.lng,
+  manager: market.manager,
+  visitDate: market.visitDate,
+  travelMin: market.travelMin,
+  durationMin: market.durationMin,
+  status: market.status
+}))
 
 export default function MapPage() {
   return (

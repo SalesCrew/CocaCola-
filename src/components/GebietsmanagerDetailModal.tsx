@@ -25,40 +25,102 @@ const generateGoalsData = () => {
 }
 
 
+// All available markets
+export const getAllMarkets = () => [
+  { name: 'BILLA 1010', chain: 'BILLA', region: 'Nord', address: 'Stephansplatz 1, 1010 Wien', lat: 48.2084, lng: 16.3721 },
+  { name: 'BILLA 1020', chain: 'BILLA', region: 'Nord', address: 'Praterstraße 25, 1020 Wien', lat: 48.2164, lng: 16.3838 },
+  { name: 'BILLA 1030', chain: 'BILLA', region: 'West', address: 'Landstraßer Hauptstraße 50, 1030 Wien', lat: 48.2043, lng: 16.3941 },
+  { name: 'BILLA 1040', chain: 'BILLA', region: 'West', address: 'Wiedner Hauptstraße 23, 1040 Wien', lat: 48.1952, lng: 16.3657 },
+  { name: 'BILLA 1050', chain: 'BILLA', region: 'Süd', address: 'Margaretenstraße 77, 1050 Wien', lat: 48.1856, lng: 16.3572 },
+  { name: 'BILLA 1060', chain: 'BILLA', region: 'Süd', address: 'Mariahilfer Straße 85, 1060 Wien', lat: 48.2001, lng: 16.3458 },
+  { name: 'BILLA 1070', chain: 'BILLA', region: 'West', address: 'Neubaugasse 17, 1070 Wien', lat: 48.2052, lng: 16.3524 },
+  { name: 'BILLA 1080', chain: 'BILLA', region: 'West', address: 'Josefstädter Straße 42, 1080 Wien', lat: 48.2133, lng: 16.3452 },
+  { name: 'BILLA 1090', chain: 'BILLA', region: 'Nord', address: 'Alser Straße 28, 1090 Wien', lat: 48.2188, lng: 16.3542 },
+  { name: 'BILLA 1100', chain: 'BILLA', region: 'Süd', address: 'Favoritenstraße 115, 1100 Wien', lat: 48.1756, lng: 16.3821 },
+  { name: 'BILLA Plus 1110', chain: 'BILLA Plus', region: 'Nord', address: 'Simmeringer Hauptstraße 96, 1110 Wien', lat: 48.1851, lng: 16.4242 },
+  { name: 'BILLA Plus 1120', chain: 'BILLA Plus', region: 'Ost', address: 'Meidlinger Hauptstraße 73, 1120 Wien', lat: 48.1756, lng: 16.3345 },
+  { name: 'BILLA Plus 1130', chain: 'BILLA Plus', region: 'Ost', address: 'Hietzinger Hauptstraße 22, 1130 Wien', lat: 48.1856, lng: 16.3011 },
+  { name: 'BILLA Plus 1140', chain: 'BILLA Plus', region: 'West', address: 'Hütteldorfer Straße 81, 1140 Wien', lat: 48.2042, lng: 16.2841 },
+  { name: 'BILLA Plus 1150', chain: 'BILLA Plus', region: 'West', address: 'Mariahilfer Straße 163, 1150 Wien', lat: 48.1954, lng: 16.3211 },
+  { name: 'Spar 1210', chain: 'Spar', region: 'Nord', address: 'Floridsdorfer Hauptstraße 28, 1210 Wien', lat: 48.2564, lng: 16.3951 },
+  { name: 'Spar 1220', chain: 'Spar', region: 'Ost', address: 'Donaufelder Straße 101, 1220 Wien', lat: 48.2434, lng: 16.4156 },
+  { name: 'Spar 1230', chain: 'Spar', region: 'Süd', address: 'Liesinger Platz 3, 1230 Wien', lat: 48.1356, lng: 16.2975 },
+  { name: 'Spar 2100', chain: 'Spar', region: 'West', address: 'Hauptstraße 42, 2100 Korneuburg', lat: 48.3477, lng: 16.3307 },
+  { name: 'Spar 2110', chain: 'Spar', region: 'Ost', address: 'Bahnhofstraße 15, 2110 Bisamberg', lat: 48.3156, lng: 16.3654 },
+  { name: 'Eurospar 2170', chain: 'Eurospar', region: 'Nord', address: 'Hauptstraße 89, 2170 Poysdorf', lat: 48.6789, lng: 16.6321 },
+  { name: 'Eurospar 2180', chain: 'Eurospar', region: 'West', address: 'Stadtplatz 14, 2180 Pernersdorf', lat: 48.5234, lng: 16.2987 },
+  { name: 'Eurospar 2190', chain: 'Eurospar', region: 'Nord', address: 'Wiener Straße 66, 2190 Gaweinstal', lat: 48.6543, lng: 16.7898 },
+  { name: 'Eurospar 2200', chain: 'Eurospar', region: 'Ost', address: 'Bahnhofstraße 31, 2200 Groß Ebersdorf', lat: 48.0987, lng: 16.5432 },
+  { name: 'Interspar 3100', chain: 'Interspar', region: 'Nord', address: 'Kremser Landstraße 84, 3100 St. Pölten', lat: 48.2066, lng: 15.6254 },
+  { name: 'Interspar 3110', chain: 'Interspar', region: 'Süd', address: 'Wiener Straße 119, 3110 Herzogenburg', lat: 48.2845, lng: 15.7123 },
+  { name: 'Interspar 3120', chain: 'Interspar', region: 'West', address: 'Hauptplatz 23, 3120 Wolfsgraben', lat: 48.1234, lng: 16.1345 },
+  { name: 'ADEG 5010', chain: 'ADEG', region: 'West', address: 'Getreidegasse 39, 5010 Salzburg', lat: 47.8025, lng: 13.0445 },
+  { name: 'ADEG 5020', chain: 'ADEG', region: 'Süd', address: 'Alpenstraße 107, 5020 Salzburg', lat: 47.8156, lng: 13.0345 },
+  { name: 'ADEG 5030', chain: 'ADEG', region: 'West', address: 'Ignaz-Harrer-Straße 32, 5030 Salzburg', lat: 47.7945, lng: 13.0556 },
+  { name: 'BILLA 4010', chain: 'BILLA', region: 'Ost', address: 'Hauptplatz 15, 4010 Linz', lat: 48.3069, lng: 14.2858 },
+  { name: 'Spar 6010', chain: 'Spar', region: 'West', address: 'Maria-Theresien-Straße 78, 6010 Innsbruck', lat: 47.2692, lng: 11.4041 },
+  { name: 'BILLA Plus 8010', chain: 'BILLA Plus', region: 'Süd', address: 'Herrengasse 16, 8010 Graz', lat: 47.0707, lng: 15.4395 },
+  { name: 'Interspar 9010', chain: 'Interspar', region: 'Süd', address: 'Hauptplatz 8, 9010 Klagenfurt', lat: 46.6244, lng: 14.3055 },
+  { name: 'Eurospar 9020', chain: 'Eurospar', region: 'Süd', address: 'Bahnhofstraße 45, 9020 Klagenfurt', lat: 46.6200, lng: 14.3200 },
+  // Additional 5 pins for central Austria
+  { name: 'BILLA 3600', chain: 'BILLA', region: 'Ost', address: 'Stadtplatz 12, 3600 Stockerau', lat: 48.3833, lng: 16.2167 },
+  { name: 'Spar 3340', chain: 'Spar', region: 'West', address: 'Hauptstraße 45, 3340 Waidhofen an der Ybbs', lat: 47.9597, lng: 14.7831 },
+  { name: 'ADEG 4400', chain: 'ADEG', region: 'Ost', address: 'Kirchenplatz 8, 4400 Steyr', lat: 48.0458, lng: 14.4189 },
+  { name: 'Interspar 3500', chain: 'Interspar', region: 'West', address: 'Wiener Straße 78, 3500 Krems an der Donau', lat: 48.4167, lng: 15.6167 },
+  { name: 'BILLA Plus 4600', chain: 'BILLA Plus', region: 'Ost', address: 'Stadtplatz 23, 4600 Wels', lat: 48.1597, lng: 14.0289 }
+]
+
+// Generate 40 pins total (approximately 2 per GL) - distributed across Austria
+export const generateAll35Pins = () => {
+  const allMarkets = getAllMarkets()
+  const glNames = [
+    'Mario Riedenbauer', 'Michael Wilhelmi', 'Eva Zausinger', 'Thomas Nobis', 
+    'Josef Schellhorn', 'Benjamin Spiegel', 'Christoph Leitner', 'Christoph Zauner', 
+    'Irene Traxler', 'Doris Stockinger', 'Rainer Perzl', 'Georg Stockreiter', 
+    'Arthur Neuhold', 'Alexander Felsberger', 'Stefan Bauer', 'Maria Weber', 
+    'Christian Meyer', 'Sandra Huber', 'Markus Hofer', 'Andreas Müller'
+  ]
+  
+  // Select markets distributed across Austria - exactly 10 in Vienna, 30 spread across country
+  const selectedIndices = [
+    // Vienna area (exactly 10 pins)
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    // Lower Austria spread (8 pins) 
+    18, 19, 20, 21, 22, 23, 24, 25, // Korneuburg, Bisamberg, Poysdorf, Pernersdorf, Gaweinstal, Groß Ebersdorf, St. Pölten, Herzogenburg
+    // Western Austria - Salzburg area (3 pins)
+    27, 28, 29, // All Salzburg markets
+    // Upper Austria - Linz (1 pin)
+    30, // Linz  
+    // Western Austria - Tyrol (1 pin)
+    31, // Innsbruck
+    // Southern Austria - Styria (1 pin)
+    32, // Graz
+    // Southern Austria - Carinthia (2 pins) 
+    33, 34, // Both Klagenfurt markets
+    // Central Austria - new 5 pins (5 pins)
+    35, 36, 37, 38, 39, // Stockerau, Waidhofen, Steyr, Krems, Wels
+    // Fill remaining spread with other Vienna-area markets treated as regional (10 pins)
+    10, 11, 12, 13, 14, 15, 16, 17, 26 // These represent broader Vienna metropolitan region
+  ]
+  
+  const result = selectedIndices.slice(0, 40).map((marketIndex, index) => {
+    const market = allMarkets[marketIndex]
+    return {
+      ...market,
+      manager: glNames[Math.floor(index / 2) % glNames.length],
+      travelMin: 15 + (index % 8) * 5, // 15-50 minutes range
+      durationMin: 30 + (index % 6) * 8, // 30-70 minutes range
+      visitDate: '2025-09-30',
+      status: ['Sehr voll', 'Halb voll', 'Leer'][index % 3],
+      frequency: [6, 8, 10, 12, 24][index % 5] // per year options
+    }
+  })
+  return result
+}
+
 // Market assignment function - assigns 10 specific markets to each GL
 const getGLMarkets = (glName: string) => {
-  const allMarkets = [
-    { name: 'BILLA 1010', chain: 'BILLA', region: 'Nord', address: 'Stephansplatz 1, 1010 Wien', lat: 48.2084, lng: 16.3721 },
-    { name: 'BILLA 1020', chain: 'BILLA', region: 'Nord', address: 'Praterstraße 25, 1020 Wien', lat: 48.2164, lng: 16.3838 },
-    { name: 'BILLA 1030', chain: 'BILLA', region: 'West', address: 'Landstraßer Hauptstraße 50, 1030 Wien', lat: 48.2043, lng: 16.3941 },
-    { name: 'BILLA 1040', chain: 'BILLA', region: 'West', address: 'Wiedner Hauptstraße 23, 1040 Wien', lat: 48.1952, lng: 16.3657 },
-    { name: 'BILLA 1050', chain: 'BILLA', region: 'Süd', address: 'Margaretenstraße 77, 1050 Wien', lat: 48.1856, lng: 16.3572 },
-    { name: 'BILLA 1060', chain: 'BILLA', region: 'Süd', address: 'Mariahilfer Straße 85, 1060 Wien', lat: 48.2001, lng: 16.3458 },
-    { name: 'BILLA 1070', chain: 'BILLA', region: 'West', address: 'Neubaugasse 17, 1070 Wien', lat: 48.2052, lng: 16.3524 },
-    { name: 'BILLA 1080', chain: 'BILLA', region: 'West', address: 'Josefstädter Straße 42, 1080 Wien', lat: 48.2133, lng: 16.3452 },
-    { name: 'BILLA 1090', chain: 'BILLA', region: 'Nord', address: 'Alser Straße 28, 1090 Wien', lat: 48.2188, lng: 16.3542 },
-    { name: 'BILLA 1100', chain: 'BILLA', region: 'Süd', address: 'Favoritenstraße 115, 1100 Wien', lat: 48.1756, lng: 16.3821 },
-    { name: 'BILLA Plus 1110', chain: 'BILLA Plus', region: 'Nord', address: 'Simmeringer Hauptstraße 96, 1110 Wien', lat: 48.1851, lng: 16.4242 },
-    { name: 'BILLA Plus 1120', chain: 'BILLA Plus', region: 'Ost', address: 'Meidlinger Hauptstraße 73, 1120 Wien', lat: 48.1756, lng: 16.3345 },
-    { name: 'BILLA Plus 1130', chain: 'BILLA Plus', region: 'Ost', address: 'Hietzinger Hauptstraße 22, 1130 Wien', lat: 48.1856, lng: 16.3011 },
-    { name: 'BILLA Plus 1140', chain: 'BILLA Plus', region: 'West', address: 'Hütteldorfer Straße 81, 1140 Wien', lat: 48.2042, lng: 16.2841 },
-    { name: 'BILLA Plus 1150', chain: 'BILLA Plus', region: 'West', address: 'Mariahilfer Straße 163, 1150 Wien', lat: 48.1954, lng: 16.3211 },
-    { name: 'Spar 1210', chain: 'Spar', region: 'Nord', address: 'Floridsdorfer Hauptstraße 28, 1210 Wien', lat: 48.2564, lng: 16.3951 },
-    { name: 'Spar 1220', chain: 'Spar', region: 'Ost', address: 'Donaufelder Straße 101, 1220 Wien', lat: 48.2434, lng: 16.4156 },
-    { name: 'Spar 1230', chain: 'Spar', region: 'Süd', address: 'Liesinger Platz 3, 1230 Wien', lat: 48.1356, lng: 16.2975 },
-    { name: 'Spar 2100', chain: 'Spar', region: 'West', address: 'Hauptstraße 42, 2100 Korneuburg', lat: 48.3477, lng: 16.3307 },
-    { name: 'Spar 2110', chain: 'Spar', region: 'Ost', address: 'Bahnhofstraße 15, 2110 Bisamberg', lat: 48.3156, lng: 16.3654 },
-    { name: 'Eurospar 2170', chain: 'Eurospar', region: 'Nord', address: 'Hauptstraße 89, 2170 Poysdorf', lat: 48.6789, lng: 16.6321 },
-    { name: 'Eurospar 2180', chain: 'Eurospar', region: 'West', address: 'Stadtplatz 14, 2180 Pernersdorf', lat: 48.5234, lng: 16.2987 },
-    { name: 'Eurospar 2190', chain: 'Eurospar', region: 'Nord', address: 'Wiener Straße 66, 2190 Gaweinstal', lat: 48.6543, lng: 16.7898 },
-    { name: 'Eurospar 2200', chain: 'Eurospar', region: 'Ost', address: 'Bahnhofstraße 31, 2200 Groß Ebersdorf', lat: 48.0987, lng: 16.5432 },
-    { name: 'Interspar 3100', chain: 'Interspar', region: 'Nord', address: 'Kremser Landstraße 84, 3100 St. Pölten', lat: 48.2066, lng: 15.6254 },
-    { name: 'Interspar 3110', chain: 'Interspar', region: 'Süd', address: 'Wiener Straße 119, 3110 Herzogenburg', lat: 48.2845, lng: 15.7123 },
-    { name: 'Interspar 3120', chain: 'Interspar', region: 'West', address: 'Hauptplatz 23, 3120 Wolfsgraben', lat: 48.1234, lng: 16.1345 },
-    { name: 'ADEG 5010', chain: 'ADEG', region: 'West', address: 'Getreidegasse 39, 5010 Salzburg', lat: 47.8025, lng: 13.0445 },
-    { name: 'ADEG 5020', chain: 'ADEG', region: 'Süd', address: 'Alpenstraße 107, 5020 Salzburg', lat: 47.8156, lng: 13.0345 },
-    { name: 'ADEG 5030', chain: 'ADEG', region: 'West', address: 'Ignaz-Harrer-Straße 32, 5030 Salzburg', lat: 47.7945, lng: 13.0556 }
-  ]
+  const allMarkets = getAllMarkets()
 
   // Create deterministic assignment based on GL name hash
   const glHash = glName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
@@ -201,20 +263,20 @@ export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: G
           <div className="stat-item" style={{ 
             background: 'rgba(16, 185, 129, 0.08)',
             border: '2px solid #10b981',
-            borderRadius: '12px',
+              borderRadius: '12px',
             padding: '16px 12px',
             boxShadow: '0 4px 12px rgba(16, 185, 129, 0.15)'
-          }}>
+            }}>
             <div className="stat-value" style={{ color: '#10b981' }}>{gmData.ipp}</div>
             <div className="stat-label" style={{ color: '#10b981' }}>IPP</div>
-          </div>
+            </div>
           <div className="stat-item" style={{ 
             background: 'rgba(0, 123, 255, 0.08)',
             border: '2px solid #007bff',
-            borderRadius: '12px',
+              borderRadius: '12px',
             padding: '16px 12px',
             boxShadow: '0 4px 12px rgba(0, 123, 255, 0.15)'
-          }}>
+            }}>
             <div className="stat-value" style={{ color: '#007bff' }}>{praemie}€</div>
             <div className="stat-label" style={{ color: '#007bff' }}>
               Prämie <span style={{ fontSize: '7px', opacity: '0.6' }}>QTD</span>
@@ -223,7 +285,7 @@ export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: G
           <div className="stat-item" style={{ 
             background: 'rgba(108, 117, 125, 0.08)',
             border: '2px solid #6c757d',
-            borderRadius: '12px',
+              borderRadius: '12px',
             padding: '16px 12px',
             boxShadow: '0 4px 12px rgba(108, 117, 125, 0.15)'
           }}>
@@ -231,8 +293,8 @@ export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: G
             <div className="stat-label" style={{ color: '#6c757d' }}>
               Märkte <span style={{ fontSize: '7px', opacity: '0.6' }}>QTD</span>
             </div>
+            </div>
           </div>
-        </div>
 
         {/* Progress Bars */}
         <div style={{ padding: '16px 24px' }}>
@@ -443,7 +505,7 @@ export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: G
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   padding: '10px 12px',
-                  border: '1px solid rgba(0, 0, 0, 0.06)',
+                    border: '1px solid rgba(0, 0, 0, 0.06)',
                   borderRadius: '8px',
                   background: 'rgba(0, 0, 0, 0.01)',
                   transition: 'all 0.2s ease'
@@ -493,8 +555,8 @@ export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: G
                     }}>
                       {market.frequency}/Jahr
                     </span>
+                    </div>
                   </div>
-                </div>
               ))}
             </div>
           ) : selectedTab === 'mhd' ? (
@@ -541,8 +603,8 @@ export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: G
                       borderRadius: '4px',
                       transition: 'width 0.3s ease'
                         }} />
-                      </div>
-                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           ) : selectedTab === 'weltkarte' ? (
@@ -554,14 +616,16 @@ export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: G
               margin: '-50px 0'
             }}>
               <AustriaMap 
-                pins={glMarkets.map((market, index) => ({
+                pins={generateAll35Pins().map((market, index) => ({
                   id: `market-${index}`,
                   name: market.name,
                   lat: market.lat,
                   lng: market.lng,
-                  manager: gmData?.name || 'Gebietsleiter',
-                  visitDate: '2025-09-30',
-                  status: ['Sehr voll', 'Halb voll', 'Leer'][Math.floor(Math.random() * 3)]
+                  manager: market.manager,
+                  visitDate: market.visitDate,
+                  travelMin: market.travelMin,
+                  durationMin: market.durationMin,
+                  status: market.status
                 }))}
               />
             </div>
