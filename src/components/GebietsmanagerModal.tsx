@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
-import { createPortal } from 'react-dom'
 import GebietsmanagerModalFilters from './GebietsmanagerModalFilters'
 import GebietsmanagerDonutChart from './GebietsmanagerDonutChart'
 import GebietsmanagerLegendPanel from './GebietsmanagerLegendPanel'
 import IPPLineChart from './IPPLineChart'
 import CategoryFillChart from './CategoryFillChart'
+import AustriaMap from './AustriaMap'
 
 interface GebietsmanagerModalProps {
   isOpen: boolean
@@ -16,11 +16,6 @@ export default function GebietsmanagerModal({ isOpen, onClose }: GebietsmanagerM
   const [selectedChain, setSelectedChain] = useState('Alle')
     const progressTarget = Math.round((1567 / 1750) * 100)
     const [progressWidth, setProgressWidth] = useState(0)
-    const [tooltip, setTooltip] = useState<{ show: boolean; x: number; y: number }>({
-      show: false,
-      x: 0,
-      y: 0
-    })
   
   // Animate progress bar on open/refesh
   useEffect(() => {
@@ -138,79 +133,21 @@ export default function GebietsmanagerModal({ isOpen, onClose }: GebietsmanagerM
               <CategoryFillChart />
             </div>
             <div className="modal-bottom-chart-container" style={{ flex: 0.5, overflow: 'hidden' }}>
-              <img 
-                src="/image53.png" 
-                alt="Weltkarte" 
-                style={{
-                  width: '118%',
-                  height: '118%',
-                  objectFit: 'cover',
-                  borderRadius: '12px',
-                  transform: 'translate(-9%, -9%)',
-                  cursor: 'pointer'
-                }}
-                onMouseEnter={(e) => {
-                  setTooltip({ show: true, x: e.pageX, y: e.pageY })
-                }}
-                onMouseMove={(e) => {
-                  setTooltip(prev => ({ ...prev, x: e.pageX, y: e.pageY }))
-                }}
-                onMouseLeave={() => {
-                  setTooltip({ show: false, x: 0, y: 0 })
-                }}
+              <AustriaMap 
+                pins={[
+                  { id: '1', name: 'Billa+ Sägestraße 22-96', lat: 47.0707, lng: 15.4395, manager: 'Mario Riedenbauer', visitDate: '2025-09-30', travelMin: 25, durationMin: 36, status: 'Halb voll' },
+                  { id: '2', name: 'BILLA 1010', lat: 48.2084, lng: 16.3721, manager: 'Thomas Nobis', visitDate: '2025-09-28', travelMin: 15, durationMin: 45, status: 'Sehr voll' },
+                  { id: '3', name: 'Spar Salzburg', lat: 47.8095, lng: 13.0550, manager: 'Josef Schellhorn', visitDate: '2025-09-27', travelMin: 35, durationMin: 50, status: 'Leer' },
+                  { id: '4', name: 'BILLA 1020', lat: 48.2164, lng: 16.3838, manager: 'Eva Zausinger', visitDate: '2025-09-25', travelMin: 20, durationMin: 40, status: 'Sehr voll' },
+                  { id: '5', name: 'Interspar Linz', lat: 48.3069, lng: 14.2858, manager: 'Michael Wilhelmi', visitDate: '2025-09-24', travelMin: 30, durationMin: 55, status: 'Halb voll' },
+                  { id: '6', name: 'ADEG Innsbruck', lat: 47.2692, lng: 11.4041, manager: 'Benjamin Spiegel', visitDate: '2025-09-23', travelMin: 45, durationMin: 60, status: 'Leer' },
+                  { id: '7', name: 'Eurospar Graz', lat: 47.0707, lng: 15.4395, manager: 'Mario Riedenbauer', visitDate: '2025-09-22', travelMin: 25, durationMin: 35, status: 'Sehr voll' },
+                  { id: '8', name: 'BILLA Plus Wien', lat: 48.1851, lng: 16.4242, manager: 'Thomas Nobis', visitDate: '2025-09-21', travelMin: 18, durationMin: 42, status: 'Halb voll' },
+                  { id: '9', name: 'Spar Klagenfurt', lat: 46.6244, lng: 14.3055, manager: 'Josef Schellhorn', visitDate: '2025-09-20', travelMin: 40, durationMin: 48, status: 'Sehr voll' },
+                  { id: '10', name: 'BILLA Steyr', lat: 48.0458, lng: 14.4189, manager: 'Eva Zausinger', visitDate: '2025-09-19', travelMin: 28, durationMin: 38, status: 'Leer' }
+                ]}
+                fitToPins={true}
               />
-
-              {/* Tooltip */}
-              {tooltip.show && createPortal(
-                <div 
-                  className="line-chart-tooltip"
-                  style={{
-                    position: 'fixed',
-                    left: tooltip.x + 15,
-                    top: tooltip.y - 10,
-                    pointerEvents: 'none',
-                    zIndex: 999999,
-                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.12)'
-                  }}
-                >
-                  <div className="tooltip-header">
-                    Billa+ Sägestraße 22-96 8911
-                  </div>
-                  <div className="tooltip-content">
-                    <div className="tooltip-row">
-                      <span className="tooltip-label">Gebietsleiter:</span>
-                      <span className="tooltip-value">Mario Riedenbauer</span>
-                    </div>
-                    <div className="tooltip-row" style={{ fontSize: '9px' }}>
-                      <span className="tooltip-label">Besuchsdatum:</span>
-                      <span className="tooltip-value">{new Date().toLocaleDateString('de-AT')}</span>
-                    </div>
-                    <div className="tooltip-divider"></div>
-                    <div className="tooltip-row">
-                      <span className="tooltip-label">Anfahrtszeit:</span>
-                      <span className="tooltip-value">25 Minuten</span>
-                    </div>
-                    <div className="tooltip-row">
-                      <span className="tooltip-label">Einsatz Dauer:</span>
-                      <span className="tooltip-value">36 Minuten</span>
-                    </div>
-                    <div className="tooltip-divider"></div>
-                    <div className="tooltip-row">
-                      <span className="tooltip-label">Display:</span>
-                      <span className="tooltip-value" style={{ color: '#28a745' }}>+1</span>
-                    </div>
-                    <div className="tooltip-row">
-                      <span className="tooltip-label">Zweitplatzierung:</span>
-                      <span className="tooltip-value" style={{ color: '#28a745' }}>+1</span>
-                    </div>
-                    <div className="tooltip-row">
-                      <span className="tooltip-label">Cooler:</span>
-                      <span className="tooltip-value" style={{ color: '#fd7e14' }}>Halb voll</span>
-                    </div>
-                  </div>
-                </div>,
-                document.body
-              )}
             </div>
           </div>
         </div>

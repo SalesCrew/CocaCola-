@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, Tooltip, CircleMarker, useMap } from 'react-leaflet'
-import { LatLngBounds } from 'leaflet'
+import { useState } from 'react'
+import { MapContainer, TileLayer, Marker, CircleMarker } from 'react-leaflet'
+import { createPortal } from 'react-dom'
 
 interface Pin {
   id: string
@@ -19,49 +19,76 @@ interface AustriaMapProps {
   fitToPins?: boolean
 }
 
-// Austria bounds approximately
-const AUSTRIA_BOUNDS: [[number, number], [number, number]] = [
-  [46.372, 9.530],  // SW corner
-  [49.021, 17.160]  // NE corner
-]
-
-// Component to handle fitting bounds after map loads
-function FitBounds({ pins, fitToPins }: { pins: Pin[], fitToPins: boolean }) {
-  const map = useMap()
-
-  useEffect(() => {
-    if (fitToPins && pins.length > 0) {
-      const bounds = new LatLngBounds(pins.map(pin => [pin.lat, pin.lng]))
-      map.fitBounds(bounds, { padding: [20, 20] }) // pad(0.2) equivalent
-    }
-  }, [pins, fitToPins, map])
-
-  return null
-}
-
-export default function AustriaMap({ pins, fitToPins = true }: AustriaMapProps) {
+export default function AustriaMap({ pins }: AustriaMapProps) {
   // Austria center coordinates
-  const austriaCenter: [number, number] = [47.5162, 14.5501]
+  const austriaCenter: [number, number] = [48.386124, 13.695549]
+  
+  // Custom tooltip state
+  const [hoveredPin, setHoveredPin] = useState<Pin | null>(null)
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
 
   return (
-    <div style={{ height: '100%', width: '100%', minHeight: '400px' }}>
-      <MapContainer
-        center={austriaCenter}
-        zoom={7}
-        style={{ height: '100%', width: '100%' }}
-        maxBounds={AUSTRIA_BOUNDS}
-        maxBoundsViscosity={1.0}
-        minZoom={6}
-        maxZoom={18}
-      >
+    <>
+      <style>{`
+        .leaflet-container {
+          background: transparent !important;
+        }
+        .leaflet-pane {
+          top: -50px !important;
+          bottom: -50px !important;
+          height: calc(100% + 100px) !important;
+        }
+        .leaflet-control-zoom {
+          margin-left: 30px !important;
+          margin-top: 35px !important;
+          box-shadow: none !important;
+          border: none !important;
+          outline: none !important;
+        }
+        .leaflet-control-zoom-in,
+        .leaflet-control-zoom-out {
+          background: white !important;
+          border: none !important;
+          box-shadow: none !important;
+          outline: none !important;
+          color: rgba(0, 0, 0, 0.6) !important;
+          font-weight: 400 !important;
+        }
+        .leaflet-control-zoom-in:hover,
+        .leaflet-control-zoom-out:hover {
+          border: none !important;
+          outline: none !important;
+        }
+        .leaflet-marker-icon {
+          filter: hue-rotate(-210deg) saturate(2.2) brightness(0.9) !important;
+        }
+        .leaflet-tooltip {
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          z-index: 10001 !important;
+          position: fixed !important;
+        }
+        .leaflet-tooltip-pane {
+          z-index: 10001 !important;
+        }
+      `}</style>
+      <div style={{ height: '100%', width: '115%', marginLeft: '-7.5%' }}>
+        <MapContainer
+          center={austriaCenter}
+          zoom={7}
+          style={{ height: 'calc(100% + 100px)', width: '100%', marginTop: '-50px', position: 'relative', outline: 'none' }}
+          minZoom={6}
+          maxZoom={18}
+        >
         {/* OSM TileLayer with attribution */}
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {/* Fit bounds component */}
-        <FitBounds pins={pins} fitToPins={fitToPins} />
 
         {/* Render pins */}
         {pins.map((pin) => (
@@ -70,10 +97,10 @@ export default function AustriaMap({ pins, fitToPins = true }: AustriaMapProps) 
             <CircleMarker
               center={[pin.lat, pin.lng]}
               radius={15}
-              color="#007bff"
+              color="#dc2626"
               weight={2}
               opacity={0.3}
-              fillColor="#007bff"
+              fillColor="#dc2626"
               fillOpacity={0.1}
             />
 
@@ -82,63 +109,74 @@ export default function AustriaMap({ pins, fitToPins = true }: AustriaMapProps) 
               position={[pin.lat, pin.lng]}
               eventHandlers={{
                 mouseover: (e: any) => {
-                  e.target.openTooltip()
+                  setTooltipPos({
+                    x: e.originalEvent.clientX,
+                    y: e.originalEvent.clientY
+                  })
+                  setHoveredPin(pin)
                 },
-                mouseout: (e: any) => {
-                  e.target.closeTooltip()
+                mouseout: () => {
+                  setHoveredPin(null)
                 },
                 click: (e: any) => {
-                  // For touch devices
-                  e.target.openTooltip()
+                  setTooltipPos({
+                    x: e.originalEvent.clientX,
+                    y: e.originalEvent.clientY
+                  })
+                  setHoveredPin(pin)
                 }
               }}
-            >
-              <Tooltip direction="top" offset={[0, -10]}>
-                <div style={{ 
-                  fontSize: '12px',
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif',
-                  lineHeight: '1.4'
-                }}>
-                  <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
-                    {pin.name}
-                  </div>
-                  {pin.manager && (
-                    <div style={{ color: '#666', marginBottom: '2px' }}>
-                      Manager: {pin.manager}
-                    </div>
-                  )}
-                  {pin.visitDate && (
-                    <div style={{ color: '#666', marginBottom: '2px' }}>
-                      Visit: {pin.visitDate}
-                    </div>
-                  )}
-                  {pin.travelMin && (
-                    <div style={{ color: '#666', marginBottom: '2px' }}>
-                      Travel: {pin.travelMin}min
-                    </div>
-                  )}
-                  {pin.durationMin && (
-                    <div style={{ color: '#666', marginBottom: '2px' }}>
-                      Duration: {pin.durationMin}min
-                    </div>
-                  )}
-                  {pin.status && (
-                    <div style={{ 
-                      color: pin.status === 'Sehr voll' ? '#28a745' : 
-                            pin.status === 'Halb voll' ? '#fd7e14' : 
-                            pin.status === 'Leer' ? '#dc3545' : '#666',
-                      fontWeight: '600',
-                      marginBottom: '2px'
-                    }}>
-                      Status: {pin.status}
-                    </div>
-                  )}
-                </div>
-              </Tooltip>
-            </Marker>
+            />
           </div>
         ))}
-      </MapContainer>
-    </div>
+
+        {/* Simple tooltip that WILL show */}
+        {hoveredPin && createPortal(
+          <div style={{
+            position: 'fixed',
+            left: tooltipPos.x + 10,
+            top: tooltipPos.y - 200,
+            zIndex: 2147483647, // Maximum z-index value
+            pointerEvents: 'none',
+            background: 'white',
+            padding: '12px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+            border: '1px solid #ccc',
+            maxWidth: '200px'
+          }}>
+            <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>
+              {hoveredPin.name}
+            </div>
+            <div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>
+              Georg Stockreiter
+            </div>
+            <div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>
+              Anfahrtszeit: 40 Minuten
+            </div>
+            <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+              Einsatz Dauer: 48 Minuten
+            </div>
+            <div style={{ borderTop: '1px solid #eee', paddingTop: '8px', marginBottom: '8px' }}>
+              <div style={{ fontSize: '12px', fontWeight: '500', marginBottom: '4px' }}>Einsatz Info</div>
+              <div style={{ fontSize: '12px', color: '#666' }}>
+                Schütten: <span style={{ color: '#28a745', fontWeight: '600' }}>+1</span>
+              </div>
+              <div style={{ fontSize: '12px', color: '#666' }}>
+                Displays: <span style={{ color: '#28a745', fontWeight: '600' }}>+1</span>
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>Cooler:</div>
+              <div style={{ fontSize: '14px', fontWeight: '600', color: '#28a745' }}>
+                Sehr voll
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+        </MapContainer>
+      </div>
+    </>
   )
 }
