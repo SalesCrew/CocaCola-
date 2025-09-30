@@ -16,7 +16,7 @@ export default function BesuchsFrequenzChart() {
   // Set default position to show newest values on mount and interval change
   useEffect(() => {
     const currentData = interval === 'daily' ? dailyData : interval === 'weekly' ? weeklyData : monthlyData
-    const maxPoints = interval === 'daily' ? 40 : interval === 'weekly' ? 60 : 40
+    const maxPoints = interval === 'daily' ? 15 : interval === 'weekly' ? 15 : 15
     const defaultStart = Math.max(0, currentData.length - maxPoints)
     setStartIndex(defaultStart)
   }, [interval])
@@ -145,7 +145,7 @@ export default function BesuchsFrequenzChart() {
   
   const allData = interval === 'daily' ? dailyData : interval === 'weekly' ? weeklyData : monthlyData
   
-  const maxVisiblePoints = interval === 'daily' ? 40 : interval === 'weekly' ? 60 : 40
+  const maxVisiblePoints = interval === 'daily' ? 15 : interval === 'weekly' ? 15 : 15
   const needsScrolling = allData.length > maxVisiblePoints
   
   // Add wheel event listener to handle scrolling and prevent bubbling
@@ -187,11 +187,11 @@ export default function BesuchsFrequenzChart() {
   const yMax = maxValue + 5
   const yRange = yMax - yMin
   
-  const chartHeight = 240
+  const chartHeight = 480
   const chartWidth = 2200
-  const padding = 30
+  const padding = 50
   
-  const xStep = (chartWidth - padding * 2) / (data.length - 1)
+  const xStep = (chartWidth - padding - 80) / (data.length - 1)
   const yScale = (chartHeight - padding) / yRange
   
   // Create step path with data points in the middle of horizontal segments
@@ -448,10 +448,10 @@ export default function BesuchsFrequenzChart() {
                   strokeDasharray="2,2" 
                 />
                 <text 
-                  x={15} 
+                  x={5} 
                   y={y + 4} 
                   textAnchor="start" 
-                  fontSize="12" 
+                  fontSize="32" 
                   fill="rgba(0,0,0,0.4)"
                 >
                   {Math.round(value)}
@@ -492,7 +492,7 @@ export default function BesuchsFrequenzChart() {
                   <circle 
                     cx={x} 
                     cy={chartHeight - ((point.oos - yMin) * yScale) - 40} 
-                    r="3" 
+                      r="3"
                     fill="#ff6b6b" 
                   />
                 )}
@@ -500,7 +500,7 @@ export default function BesuchsFrequenzChart() {
                   x={x} 
                   y={chartHeight - 10} 
                   textAnchor="middle" 
-                  fontSize="9" 
+                  fontSize="28" 
                   fill="rgba(0,0,0,0.5)"
                 >
                   {point.date}

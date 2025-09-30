@@ -7,6 +7,7 @@ import HaFiFilter from './HaFiFilter'
 import MarketFilter from './MarketFilter'
 import LineChart from './LineChart'
 import BesuchsFrequenzChart from './BesuchsFrequenzChart'
+import AustriaMapSecondary, { generateSecondaryPins } from './AustriaMapSecondary'
 
 interface ChartModalProps {
   isOpen: boolean
@@ -131,11 +132,19 @@ export default function ChartModal({ isOpen, onClose, selectedHaFi, onHaFiChange
           </div>
           
           <div className="modal-bottom-section">
-            <div className="modal-bottom-chart-container">
+            <div className="modal-bottom-chart-container" style={{ flex: 0.5 }}>
               <div className="modal-chart-header">
                 <div className="modal-chart-title">Frequenz Marktbesuche</div>
               </div>
               <BesuchsFrequenzChart />
+            </div>
+            <div className="modal-bottom-chart-container" style={{ flex: 0.5, overflow: 'hidden' }}>
+              <div className="modal-chart-header">
+                <div className="modal-chart-title">Discount Märkte</div>
+              </div>
+              <AustriaMapSecondary 
+                pins={generateSecondaryPins()}
+              />
             </div>
           </div>
         </div>
