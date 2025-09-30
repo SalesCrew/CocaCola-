@@ -641,18 +641,6 @@ export default function KundenDashboard({ onSwitchPage, onSettingsPage }: Kunden
                 isFlexMarket: true // Flag to identify flex markets
               }
             }).map((market) => {
-              const getGoalColor = (percentage: number) => {
-                if (percentage >= 90) return '#28a745'
-                if (percentage >= 75) return '#fd7e14'
-                return '#dc3545'
-              }
-
-              const getGoalGradient = (percentage: number) => {
-                if (percentage >= 90) return 'linear-gradient(90deg, #a8e6a3 0%, #28a745 100%)'
-                if (percentage >= 75) return 'linear-gradient(90deg, #ffe4a3 0%, #fd7e14 100%)'
-                return 'linear-gradient(90deg, #f8a8a8 0%, #dc3545 100%)'
-              }
-
               return (
                 <div
                   key={market.name}

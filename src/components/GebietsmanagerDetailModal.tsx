@@ -23,42 +23,6 @@ const generateGoalsData = () => {
   }
 }
 
-// Generate random markets data
-const generateMarketsData = () => {
-  const markets = [
-    'BILLA Wien Mitte', 'BILLA Plus Graz', 'Spar Innsbruck', 'Eurospar Salzburg',
-    'Interspar Linz', 'ADEG Klagenfurt', 'Maxi Markt Eisenstadt', 'BILLA St. Pölten',
-    'Merkur Wiener Neustadt', 'Hofer Villach', 'Lidl Steyr', 'Penny Wels'
-  ]
-  
-  const weeks = []
-  for (let week = 1; week <= 12; week++) {
-    const weekMarkets = []
-    const numMarkets = Math.floor(Math.random() * 4) + 2 // 2-5 markets per week
-    
-    for (let i = 0; i < numMarkets; i++) {
-      const randomMarket = markets[Math.floor(Math.random() * markets.length)]
-      const visits = Math.floor(Math.random() * 3) + 1 // 1-3 visits
-      const oos = Math.floor(Math.random() * 2) // 0-1 OOS situations
-      
-      weekMarkets.push({
-        name: randomMarket,
-        visits,
-        oos,
-        date: `KW${week.toString().padStart(2, '0')}`
-      })
-    }
-    
-    weeks.push({
-      week: `KW${week.toString().padStart(2, '0')}`,
-      markets: weekMarkets,
-      totalVisits: weekMarkets.reduce((sum, m) => sum + m.visits, 0),
-      totalOOS: weekMarkets.reduce((sum, m) => sum + m.oos, 0)
-    })
-  }
-  
-  return weeks
-}
 
 // Market assignment function - assigns 10 specific markets to each GL
 const getGLMarkets = (glName: string) => {
@@ -109,7 +73,6 @@ const getGLMarkets = (glName: string) => {
 export default function GebietsmanagerDetailModal({ isOpen, onClose, gmData }: GebietsmanagerDetailModalProps) {
   const [selectedTab, setSelectedTab] = useState<'goals' | 'markets' | 'mhd'>('goals')
   const [goals] = useState(generateGoalsData())
-  const [markets] = useState(generateMarketsData())
   const bonusAverage = Math.round((goals.schuetteDisplays + goals.distributionsziel + goals.flexziel + goals.qualitaetsziele) / 4)
   const praemie = Math.round((bonusAverage / 100) * 1050)
   const [mhdData] = useState(() => Array.from({ length: 7 }, (_, i) => ({
